@@ -174,8 +174,7 @@ semantics. The problem that animates this proposal is that the
 editor must confront many \emph{edit states} that do not map onto complete
 programs.
 
-\vspace{0.25ex}
-\noindent\textbf{Problem 1: Syntactically Malformed Edit States.} 
+\paragraph{Problem 1: Syntactically Malformed Edit States.} 
 Textual program editors frequently encounter edit states
 that are not well-formed with respect to the textual syntax of complete
 programs. For example, consider a programmer in the midst of
@@ -207,8 +206,7 @@ We will return to the topic of structure editors and projections below.
 \vspace{-2ex}
 \end{figure}
 
-\vspace{0.25ex}
-\noindent\textbf{Problem 2: Statically Meaningless Edit States.} Regardless of how an 
+\paragraph{Problem 2: Statically Meaningless Edit States.} Regardless of how an 
 editor confronts syntactically malformed edit states, it must also confront 
 edit states that are syntactically well-formed but statically meaningless. For
 example, the following value binding has a type inconsistency:
@@ -241,8 +239,7 @@ communicate to the programmer (see right column of Figure \ref{fig:hazel-mockup}
 \li{summary_stats} as a whole will be assigned the following incomplete function
 type: \texttt{matrix<float> -> \{ {mean} : vec<float>, std : vec<float>, median :~$\square$ \}}.
 
-\vspace{0.25ex}
-\noindent\textbf{Problem 3: Dynamically Meaningless Edit States.} Modern programming
+\paragraph{Problem 3: Dynamically Meaningless Edit States.} Modern programming
 tools are increasingly moving beyond simple ``batch'' programming models by
 incorporating \emph{live programming} features that interleave editing and
 evaluation \cite{DBLP:conf/icse/Tanimoto13,DBLP:journals/vlc/Tanimoto90,McDirmid:2007:LUL:1297105.1297073}. These tools provide programmers with more rapid feedback about the
@@ -296,8 +293,7 @@ the sense of Milner to mean that it will not have undefined behavior~\cite{milne
 This represents the ``gold standard'' for evaluating claims in formal
 semantics.  Our preliminary work has used Agda~\cite{norell2009dependently}.
 
-\vspace{0.25ex}
-\noindent\textbf{Problem 4: Meaningless Edit Actions.} Our first two specific aims
+\paragraph{Problem 4: Meaningless Edit Actions.} Our first two specific aims
 allow us to assign meaning to intermediate edit states. However, to
 understand the act of \emph{editing} itself, we propose to develop a system of
 \emph{edit actions} that governs transitions between edit
@@ -324,8 +320,7 @@ program in sequence. Each intermediate state during these ``tutorials'' can be e
 by the learner, due to the sensibility invariant. The comments can mention bindings, and are 
 subject to static operations like renaming.
 
-\vspace{0.25ex}
-\noindent\textbf{Problem 5: Meaningless and Improbable Suggestions.} The simplest 
+\paragraph{Problem 5: Meaningless and Improbable Suggestions.} The simplest 
 edit actions will be bound to keyboard shortcuts (studies suggest that programmers experienced with a keyboard-driven structure editors can be highly productive \cite{DBLP:conf/vl/Asenov014}). However, \HazelEnv will 
 also present a search-based user
 interface for discovering relevant higher-level actions -- marked with \textbf{(d)} in Figure \ref{fig:hazel-mockup}. 
@@ -340,8 +335,7 @@ our fourth specific aim: a \textbf{statistical action suggestion semantics} (Sec
 formally is that every suggestion assigned non-zero probability must be semantically sensible 
 relative to the edit state.% Moreover, all probability distributions must ``integrate'' to $1$.
 
-\vspace{0.25ex}
-\noindent\textbf{Roadmap.} Sections~\ref{sec:statics}--\ref{sec:statistics} detail the
+\paragraph{Roadmap.} Sections~\ref{sec:statics}--\ref{sec:statistics} detail the
 specific aims mentioned above; our evaluation plan is discussed in Section~\ref{sec:eval}.
 The collaboration plan details our 
 research timeline, and the relevant qualifications of the PIs.

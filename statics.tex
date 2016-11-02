@@ -264,7 +264,7 @@ The simple static semantics just described has been mechanized using the Agda pr
 
 \subsection{Proposed Research}
 
-\noindent\textbf{Binding inconsistencies.} In the simple calculus developed so far,
+\paragraph{Binding inconsistencies.} In the simple calculus developed so far,
     all variables must be bound before they are used,
     including those in holes. We will extend this system to support reasoning
     in the presence of binding inconsistencies. This 
@@ -278,8 +278,7 @@ The simple static semantics just described has been mechanized using the Agda pr
     nor formally mathematically specificied their
     technique. However, they provide a useful starting point for us.
 
-\vspace{0.25ex} 
-\noindent\textbf{Practical extensions.} The simple calculus
+\paragraph{Practical extensions.} The simple calculus
     is only as expressive as the typed lambda calculus with numbers. We have further investigated,
     as an exercise, an extension with binary sum
     types. We propose to scale up the semantics to handle other modern language
@@ -293,8 +292,7 @@ The simple static semantics just described has been mechanized using the Agda pr
     kind inconsistencies; (2) holes in label position; (3) label inconsistency
     errors; and (4) holes and type inconsistencies in patterns. 
 
-\vspace{0.25ex} 
-\noindent\textbf{Automation.} Although we plan to
+\paragraph{Automation.} Although we plan to
     explore some of these language extensions 
     ``manually,'' extending our existing mechanization, we ultimately plan 
     to \emph{automatically}

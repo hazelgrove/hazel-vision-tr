@@ -230,7 +230,7 @@ metatheorem, \emph{sensibility}, is formally stated as follows:% , so the
 % we present the rules.
 \begin{theorem}[Action Sensibility]
   \label{thrm:actsafe} Both of the following hold:
-  \begin{enumerate}[itemsep=0px,partopsep=0px,topsep=0px]
+  \begin{enumerate}%[itemsep=0px,partopsep=0px,topsep=0px]
   \item If $\hsyn{\hGamma}{\removeSel{\zexp}}{\htau}$ and
     $\performSyn{\hGamma}{\zexp}{\htau}{\alpha}{\zexp'}{\htau'}$ then
     $\hsyn{\hGamma}{\removeSel{\zexp'}}{\htau'}$.
@@ -262,14 +262,12 @@ to construct any meaningful expression), have been mechanized in Agda.
 \subsection{Proposed Work}
 The static semantics and action semantics developed in our preliminary work on Hazelnut lay the foundation for a number of proposed problems:
 
-\vspace{0.25ex}
-\noindent\textbf{Practical extensions.} In Section~\ref{sec:statics}, we
+\paragraph{Practical extensions.} In Section~\ref{sec:statics}, we
 discussed our plans to add a number of modern language features to the static
 semantics. These require corresponding extensions to the action semantics, and
 we plan to maintain the static and action semantics in lockstep. 
 
-\vspace{0.25ex}
-\noindent\textbf{Automation.} Similarly, in Section~\ref{sec:actions}, we
+\paragraph{Automation.} Similarly, in Section~\ref{sec:actions}, we
 discussed the need to automatically generate certain ``boilerplate''
 constructs. This is perhaps even more important in the action semantics. For
 example, the zipper structure and the movement rules could easily be generated
@@ -281,8 +279,7 @@ structure editor generators, e.g. Barista~\cite{ko_barista:_2006}. Our
 contribution would be in producing a structure editor generator with a
 correctness guarantee. 
 
-\vspace{0.25ex}
-\noindent\textbf{Programmable Actions.} Our language of actions is intentionally primitive. However, even now it
+\paragraph{Programmable Actions.} Our language of actions is intentionally primitive. However, even now it
 acts much like a simple imperative command language. We propose to develop the
 notion of an \emph{action macro}, whereby 
 functional programs could themselves be lifted to the level of actions to
@@ -292,16 +289,14 @@ uniform description of transformations ranging from the simple---like
 program refactorings, while remaining subject to the core semantics. Using proof automation, it should be possible to prove that an action macro implements derived action logic that 
 is admissible with respect to the core semantics. This would eliminate the possibility of ``edit-time'' errors.
 
-\vspace{0.25ex}
-\noindent\textbf{Type-Specific Projections.} Another important research
+\paragraph{Type-Specific Projections.} Another important research
 direction lies in exploring how types can be used to control  
 the presentation of expressions in the editor. Following an
 approach developed by PI Aldrich in a textual setting of \emph{type-specific
 languages} (TSLs), it should be possible to have the type that an
 expression is being analyzed against define a \emph{type-specific projection} defined by elaboration to the underlying static semantics and action semantics of \HazelEnv \cite{TSLs}. For example, the matrix projection shown in Figure \ref{fig:hazel-mockup} need not be built in to \HazelEnv. Instead, the \li{Numerics} library provider could introduce this logic. This line of research is also closely related to \emph{active code completion}, which investigated type-specific code generation interfaces \cite{Omar:2012:ACC:2337223.2337324}. The first author on that work is advised by PI Aldrich and contributed to the writing of this proposal.
 
-\vspace{0.25ex}
-\noindent\textbf{Interactive Semantic Documentation.} Finally, we propose
+\paragraph{Interactive Semantic Documentation.} Finally, we propose
 to develop a semantics of semantic comments, 
 i.e. comments that mention semantic structures. These would be subject to
 the same operations, e.g. renaming, as other structures, helping to address

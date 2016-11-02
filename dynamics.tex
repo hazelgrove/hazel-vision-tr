@@ -295,7 +295,7 @@ f(2,3) &{\color{gray} \longmapsto} & {\color{gray} 3 + 2 * 3 {\div} (2+1)}
 \label{fig:dynamics}
 \end{figure}
 
-\noindent\textbf{Scenario 1: Testing.} Consider the simple incomplete function $f$ defined in Figure \ref{fig:dynamics} (top left).  
+\paragraph{Scenario 1: Testing.} Consider the simple incomplete function $f$ defined in Figure \ref{fig:dynamics} (top left).  
 %
 A hole appears in the denominator of the division. In the previous section,
 holes were unadorned. In this section, it will be helpful to adorn each hole with a unique name, $u$. In addition, each hole is adorned with an \emph{environment} that defines a substitution for each variable in scope
@@ -322,8 +322,7 @@ Figure~\ref{fig:hazel-mockup}, except that there, we also applied
 the heuristic that we should not step
 into the definition of \li{std} because it was defined in an imported library.}
 
-\vspace{0.25ex}
-\noindent\textbf{Scenario 2: Edit and Resume.}
+\paragraph{Scenario 2: Edit and Resume.}
 Suppose the programmer decides that the denominator should
 be $x+1$, and, through some sequence of edits (considered formally in the next section), arrives at 
 the new definition of $f$ shown on the top right of Figure \ref{fig:dynamics}. This edit state is now complete -- no holes remain -- so the live programming environment 
@@ -357,7 +356,7 @@ The notion of holes being associated with unique names and substitutions, and th
 
 \subsection{Proposed Research}
 
-\noindent\textbf{Core Semantics.} The preliminary work outlined above, with its roots in CMTT, suggests a theoretical foundation for moving forward. However, there remain two major missing pieces:
+\paragraph{Core Semantics.} The preliminary work outlined above, with its roots in CMTT, suggests a theoretical foundation for moving forward. However, there remain two major missing pieces:
 
 First, CMTT does not come equipped with a dynamic semantics that supports evaluation of terms with free metavariables, which is precisely what we require (see Scenario 1, above). As such, we need to formally develop the notion of an \emph{indeterminate evaluation state}, define a dynamics that can handle free metavariables, and formally state and prove our Indeterminate Progress and commutativity conjectures. We also need to carefully consider how non-termination (and, perhaps, other effects) affects the commutativity property.
 
