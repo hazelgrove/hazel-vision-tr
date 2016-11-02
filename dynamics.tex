@@ -1,0 +1,782 @@
+% !TEX root = prop.tex
+%\clearpage
+
+\definecolor{dRed}{rgb}{0.65, 0.0, 0.0}
+\definecolor{dDkRed}{rgb}{0.35, 0.0, 0.0}
+\definecolor{dLighterGreen}{rgb}{0.70, 0.95, 0.70}
+\definecolor{dGreen}{rgb}{0.0, 0.65, 0.0}
+\definecolor{dDkGreen}{rgb}{0.0, 0.35, 0.0}
+\definecolor{dBlue}{rgb}{0.0, 0.0, 0.65}
+\definecolor{dLightBlue}{rgb}{0.4, 0.4, 0.9}
+\definecolor{dLighterBlue}{rgb}{0.8, 0.8, 1.0}
+\definecolor{dDkBlue}{rgb}{0.0, 0.0, 0.45}
+\definecolor{dLightPurple}{rgb}{0.9, 0.5, 0.9}
+\definecolor{dLighterPurple}{rgb}{1.0, 0.7, 1.0}
+\definecolor{dPurple}{rgb}{0.65, 0.0, 0.65}
+\definecolor{dDigPurple}{rgb}{0.5, 0.0, 0.5}
+% \definecolor{DDIGPURPLE}{rgb}{0.5, 0.0, 0.5}  % laughable
+\definecolor{dFaint}{rgb}{0.7, 0.7, 0.7}
+\definecolor{dVeryFaint}{rgb}{0.9, 0.9, 0.9}
+\definecolor{dGray}{rgb}{0.5, 0.5, 0.5}
+\definecolor{dDark}{rgb}{0.2, 0.2, 0.2}
+\definecolor{dAlmostBlack}{rgb}{0.1, 0.1, 0.1}
+\definecolor{lred}{rgb}{1.0, 0.8, 0.8}
+\definecolor{white}{rgb}{1.0, 1.0, 1.0}
+
+\newcommand{\OmitThis}[1]{}
+\newcommand{\metavar}[0]{u}
+
+%Matt's hole macro
+%\newcommand{\mhole}[1]{%
+%{\color{dPurple}(\!|}%
+%{#1}%
+%{\color{dPurple}|\!)}%
+%}
+%\newcommand{\mhole}[1]{\colorbox{dPurple}{\colorbox{white}{\ensuremath{#1}}}}
+\newcommand{\mhole}[1]{\hehole}
+\newcommand{\indet}[1]{\lfloor{#1}\rfloor}
+\newcommand{\desc}[1]{\textrm{#1}}
+%% \newcommand{\testaction}[1]{\colorbox{dLighterGreen}{\ensuremath{#1}}}
+%% \newcommand{\editaction}[1]{\colorbox{dLighterPurple}{\ensuremath{#1}}}
+%% \newcommand{\editreaction}[1]{\colorbox{dLightPurple}{\ensuremath{#1}}}
+%% \newcommand{\indetaction}[1]{\colorbox{dFaint}{\ensuremath{#1}}}
+%% \newcommand{\detaction}[1]{\colorbox{dLightPurple}{\ensuremath{#1}}}
+%% \newcommand{\stepaction}[1]{\colorbox{dLighterBlue}{#1}}
+\newcommand{\testaction}[1]{\ensuremath{#1}}
+\newcommand{\editaction}[1]{\ensuremath{#1}}
+\newcommand{\editreaction}[1]{\ensuremath{#1}}
+\newcommand{\indetaction}[1]{\ensuremath{#1}}
+\newcommand{\detaction}[1]{\ensuremath{#1}}
+\newcommand{\stepaction}[1]{{#1}}
+\newcommand{\ScenerioOne}{Scenario 1\xspace}
+\newcommand{\ScenerioOneA}{Scenario 1(a)\xspace}
+\newcommand{\ScenerioOneB}{Scenario 1(b)\xspace}
+\newcommand{\ScenerioTwo}{Scenario 2\xspace}
+\newcommand{\Pass}{\colorbox{dLighterBlue}{P}}
+\newcommand{\Fail}{\colorbox{lred}{F}}
+\newcommand{\Indet}{\colorbox{dFaint}{I}}
+
+
+\section{Aim 2: A Dynamic Semantics for Incomplete Programs}
+\label{sec:dynamics}
+
+Broadly speaking, live programming environments interleave editing and evaluation. 
+Several examples were listed in Section \ref{sec:objectives}, and indeed many more
+are under development. In the words of Burckhardt et al., live programming environments 
+``capture the imagination of today's programmers and promise to narrow the temporal and perceptive gap 
+between program development and code execution'' \cite{burckhardt2013s}. However,
+contemporary live programming environments are typically equipped only to provide feedback once the program or 
+program fragment being evaluated is complete. This leaves a temporal and perceptive gap. Listing \ref{fig:hazel-mockup} showed an example where
+useful information---the column-wise mean---can be extracted from an incomplete program, even though a final value cannot be computed. It is not difficult to imagine other such scenarios.
+
+The second specific aim of this proposal is to develop a semantics that characterizes exactly how
+evaluation of an incomplete program should proceed. A related semantic question (which is also of 
+substantial practical relevance) has to do with how 
+evaluation and editing interact: it should, ideally, be possible to avoid restarting
+evaluation ``from scratch'' after every edit to the program.
+
+%% \todo{It would be nice if we could more explicitly separate
+%% out concrete research objectives from the overview, to lay it out
+%% really simply for the reader.  CLG is having a hard time detangling
+%% them; perhaps Matt or Cyrus could try?}
+
+%
+%In particular, the programmer uses this interface to edit the
+%expression that they are running, while making edits ``retroactive''
+%when they choose to do so.
+%
+% CLG says:  I think that the multiple levels of intro to the idea by pointing
+% to the Hazel mockup and walking through the scenarios is really helpful for
+% clarity.  BUT we also don't have room for them, and so I made the executive
+% decision to keep the code 
+% For example, in Figure~\ref{fig:hazel-mockup}, cells~$a$ and~$c$ are related by
+% evaluation.
+% %
+% Cell~$a$ defines an incomplete function, \texttt{summary\_stats}, and
+% cell~$c$ shows the call for and result of invoking this function on a
+% concrete input, the matrix constant defined in cell~$b$.
+% %
+% This result in cell~$c$ is \emph{incomplete} since it
+% depends on an incomplete function in cell~$a$.
+% %
+% Suppose that the programmer wants to finish this program by using
+% dynamic information that is kept ``live'', or up-to-date, with the
+% program as they edit.  In particular, they wish to mix
+% editing these holes with the live relationship between cells~$a$
+% and~$c$, where the latter is the output of running the former.
+%
+% First, notice that in cell~$c$, the hole in field~\texttt{std} can be
+% attributed uniquely to the field~\texttt{std} hole in cell~$a$.
+% %
+% This is an instance of a more general property that we refer to
+% as \textbf{hole provenance}.
+% %
+% Suppose that the user edits this hole, choosing to enter the abstract
+% constant \texttt{ColumnWise}.
+% %
+% We can imagine this interacting with evaluation in one of two ways:
+% First, we imagine editing the hole in cell~$c$, and permitting
+% cell~$c$ to evaluate further, to produce, say, cell~$d$ (not shown).
+% %
+% Second, we imagine \emph{retroactively editing} the hole in cell~$a$,
+% and updating the evaluation of cell~$c$ to reflect this edit.
+% %
+% In fact, we expect that the results from these two scenerios are the
+% same, which is an instance of more a general property: \emph{hole
+% evaluation commutes with hole edits}.
+% %
+% Finally, if there are several holes in the program, the terms that are
+% separated across hole boundaries cannot interact, giving the property
+% that \emph{inter-hole evaluation commutes}.
+% %
+% Each of these meta-theoretic properties supports formal reasoning
+% about live programming, that is, interposing evaluation and program
+% edits into a unified system, with a semantics that enforces that
+% edited programs always carry static and dynamic meanings.
+
+%% At a high level, \HazelML with dynamics provides a foundation for
+%% running partial programs, viz., programs that have holes.
+%% %
+%% Further, \HazelML permits partially-typed programs, where potential
+%% type-mismatches are explicitly designated by hole-based boundaries.
+%% %
+%% Since we assign types to these programs, we should try to assign them
+%% a dynamic behavior, in the support of richer interactive programming
+%% experiences, such as mixing editing and testing.
+%
+%The formalization of \Hazel stratifies the program being edited from
+%the program that edits it.
+%
+%The former may consist of a subset of ML, or another typed language,
+%augmented with the core concepts informed by \Hazelnut: Expressions
+%and types each admit holes, which may be either empty or non-empty, in
+%which case they hold an expression whose type does not match the
+%surrounding context of the hole.
+%
+
+\subsection{Preliminary Work} 
+
+%% \begin{figure}[ht]
+%% \center
+%% \small
+%% \ensuremath{
+%% \begin{array}{rclcrcl}
+%% \multicolumn{3}{l}{\textbf{\ScenerioOne: Test, Suspend, Edit}}
+%% &
+%% &
+%% \multicolumn{3}{l}{\textbf{\ScenerioTwo: Edit, Test}}
+%% \\
+%% \hline
+%% \texttt{fun}~f(x,y) &=& 3 + x * y {\div} \hehole{}^\metavar_\textrm{id}
+%% &
+%% &
+%% \texttt{fun}~f(x,y) &=& 3 + x * y {\div} \hehole{}^\metavar_\textrm{id}
+%% \\
+%% \multicolumn{3}{l}{
+%% \colorbox{dVeryFaint}{  
+%% \textrm{where}~$\textrm{id} = [x/x, y/y]$
+%% }}
+%% &
+%% &
+%% \multicolumn{3}{l}{
+%% \colorbox{dVeryFaint}{  
+%% \textrm{where}~$\textrm{id} = [x/x, y/y]$
+%% }}
+%% \\
+%% &&&&
+%% \desc{Insert~$(x+1)$}& \leadsto & 3 + x * y {\div} \hhole{x+1}^\metavar_\textrm{id}
+%% \\
+%% &&&&
+%% \desc{Finalize}& \leadsto & 3 + x * y {\div} (x+1)
+%% \\[2mm]
+%% % - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+%% \hline
+%% f(2,3) &\longmapsto & 3 + 2 * 3 {\div} \hehole{}^\metavar_\sigma
+%% &&
+%% f(2,3) &\longmapsto & 3 + 2 * 3 {\div} (2+1)
+%% \\
+%% &\longmapsto& 3 + 6 {\div} \hehole{}^\metavar_\sigma
+%% &
+%% %% \multicolumn{2}{l}{
+%% %% \colorbox{dVeryFaint}{$\xrightarrow{[\!| (x+1) / u |\!]~\circ~{\textsf{det}}}$}
+%% %% }
+%% \multicolumn{1}{l}{
+%% \colorbox{dVeryFaint}{$\xrightarrow{[\!| (x+1) / u |\!]}$}
+%% }
+%% && \longmapsto& 3 + 6 {\div} (2 + 1)
+%% \\
+%% &\longmapsto& 3 + \indetaction{\lfloor} 6 {\div} \hehole{}^\metavar_{\sigma} \indetaction{\rfloor}
+%% &&& \longmapsto& 3 + 2
+%% \\
+%% &\longmapsto& \indetaction{\lfloor} 3 + \lfloor 6 {\div} \hehole{}^\metavar_\sigma \rfloor \indetaction{\rfloor}
+%% &&& \longmapsto& 5
+%% \\
+%% \multicolumn{3}{r}{
+%%         \colorbox{dVeryFaint}{
+%%           \textrm{where}~$\sigma = [2/x,3/y]$
+%%         }
+%% }
+%% \end{array}
+%% }
+%% \caption{Two testing scenerios, related by the edit~$[\!| (x+1) / u |\!]$ (CMTT hole instantiation).}
+%% \label{fig:dynamics}
+%% \end{figure}
+
+
+\begin{figure}[ht]
+\center
+\small
+\ensuremath{
+\begin{array}{rclcrcl}
+\multicolumn{3}{l}{\textbf{\ScenerioOne: Testing}}
+&
+&
+\multicolumn{3}{l}{\textbf{\ScenerioTwo: Edit and Resume}}
+\\
+\hline
+\multicolumn{3}{l}{\texttt{fun}~f(x,y) = 3 + x * y {\div} \hehole{}^\metavar_{[x/x,y/y]}}
+&
+\multicolumn{1}{l}{
+\colorbox{dVeryFaint}{$\xrightarrow{[\!| (x+1) / u |\!]}$}
+}
+&
+\multicolumn{3}{l}{\texttt{fun}~f(x,y) = 3 + x * y {\div} (x+1)}
+% \\
+% \multicolumn{3}{l}{
+% \colorbox{dVeryFaint}{  
+% \textrm{where}~$\textrm{id} = [x/x, y/y]$
+% }}
+% &
+% &
+%\multicolumn{3}{l}{
+%\colorbox{dVeryFaint}{  
+%\textrm{where}~$\textrm{id} = [x/x, y/y]$
+%}}
+\\[2mm]
+% - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+\hline
+f(2,3) &\longmapsto & 3 + 2 * 3 {\div} \hehole{}^\metavar_{[2/x, 3/y]}
+&
+% \multicolumn{1}{l}{
+% \colorbox{dVeryFaint}{$\xrightarrow{[\!| (x+1) / u |\!]}$}
+% }
+&
+f(2,3) &{\color{gray} \longmapsto} & {\color{gray} 3 + 2 * 3 {\div} (2+1)}
+\\
+&\longmapsto& 3 + 6 {\div} \hehole{}^\metavar_{[2/x, 3/y]}
+&
+%% \multicolumn{2}{l}{
+%% \colorbox{dVeryFaint}{$\xrightarrow{[\!| (x+1) / u |\!]~\circ~{\textsf{det}}}$}
+%% }
+\multicolumn{1}{l}{
+\colorbox{dVeryFaint}{$\xrightarrow{[\!| (x+1) / u |\!]}$}
+}
+&& {\color{gray} \longmapsto} & 3 + 6 {\div} (2 + 1)
+\\
+&&
+% \multicolumn{3}{l}{
+%         \colorbox{dVeryFaint}{
+%           \textrm{where}~$\sigma = [2/x,3/y]$
+%         }
+% }
+%&&
+% &\longmapsto& 3 + \indetaction{\lfloor} 6 {\div} \hehole{}^\metavar_{\sigma} \indetaction{\rfloor}
+&&& \longmapsto& 3 + 6 {\div} 3
+\\
+&&
+% &\longmapsto& \indetaction{\lfloor} 3 + \lfloor 6 {\div} \hehole{}^\metavar_\sigma \rfloor \indetaction{\rfloor}
+&&& \longmapsto& 3 + 2
+\\
+&&
+&&& \longmapsto& 5
+\end{array}
+}
+\caption{An example demonstrating 1) evaluation of an incomplete program; 2) support for ``edit-and-resume'' when transitioning between edit states related by some edit that can be understood as hole instantiation.}
+\label{fig:dynamics}
+\end{figure}
+
+\noindent\textbf{Scenario 1: Testing.} Consider the simple incomplete function $f$ defined in Figure \ref{fig:dynamics} (top left).  
+%
+A hole appears in the denominator of the division. In the previous section,
+holes were unadorned. In this section, it will be helpful to adorn each hole with a unique name, $u$. In addition, each hole is adorned with an \emph{environment} that defines a substitution for each variable in scope
+where the hole appears. Initially, the environment is the appropriate identity substitution -- in this example, $[x/x, y/y]$. 
+
+A subsequent cell (bottom left) applies $f$ to $2$ and $3$ (perhaps because the programmer intends this to be a test of $f$). Function application operates in the usual way: 
+we substitute $2$ for $x$ and $3$ for $y$ in the body of $f$. Substitution proceeds also into the environment associated with each hole -- here, the environment for hole $u$ becomes $[2/x, 3/y][x/x, y/y] = [2/x, 3/y]$.
+
+The next step of evaluation proceeds to reduce $2 * 3$ to $6$, again in the usual way.
+%
+The next step would divide $6$ by a number, except that the number is
+absent; there is a hole in its place. No evaluation step can be taken. 
+%
+Normally, this would violate the classical notion of Progress -- 
+evaluation can neither proceed, nor has it produced a value. We conjecture that this is
+resolved by (1) positively characterizing \emph{indeterminate} 
+evaluation states, those where a hole blocks progress at all locations
+within the expression, and (2) defining
+a notion of Indeterminate Progress that allows for evaluation to stop at an 
+indeterminate evaluation state. This ``fix'' is in some ways analagous to the fix needed when introducing 
+run-time errors into a language \cite{pfpl}.\footnote{%
+This example is similar to the example shown in cell~\textbf{(c)} in
+Figure~\ref{fig:hazel-mockup}, except that there, we also applied
+the heuristic that we should not step
+into the definition of \li{std} because it was defined in an imported library.}
+
+\vspace{0.25ex}
+\noindent\textbf{Scenario 2: Edit and Resume.}
+Suppose the programmer decides that the denominator should
+be $x+1$, and, through some sequence of edits (considered formally in the next section), arrives at 
+the new definition of $f$ shown on the top right of Figure \ref{fig:dynamics}. This edit state is now complete -- no holes remain -- so the live programming environment 
+could evaluate $f(2, 3)$ in the usual way by taking the steps shown on
+the bottom right of Figure \ref{fig:dynamics} (including the first
+grayed out step).
+
+However, if the editor has already computed the indeterminate evaluation 
+state from the version of $f$ with a hole, and it also knows that the 
+two edit states differ only up to \emph{hole instantiation}, written 
+$[\!| (x+1) / u
+|\!]$, then it can take advantage of an important commutativity property that we aim 
+to prove about our dynamics: that 
+\emph{hole instantiation commutes with evaluation}. 
+
+Hole instantiation, $[\!| \hexp / u |\!]\hexp'$ is similar to substitution, except that it acts on
+ hole(s) named $u$ in $\hexp'$. At each such hole, the corresponding substitution is applied to $\hexp$. For example,
+$[\!| x + 1 / u |\!]\hehole{}^\metavar_{[2/x, 3/y]} = 2 + 1$. 
+
+Assuming hole instantiation commutes with evaluation, then it suffices to start from any indeterminate evaluation 
+state previously computed and perform hole instantiation on it. After doing so, evaluation can resume. The end result is guaranteed to coincide with that of evaluating the new version of $f$ from scratch. In Figure \ref{fig:dynamics}, this implies that we need not perform the two grayed out evaluation steps. This relates to PI Hammer's
+ongoing research into combining general-purpose incremental
+computation (IC) with static analysis~\cite{OVV2016}. 
+%
+Currently, IC research focuses on input
+changes~\citep{TypedAdapton2016, Fisher2016, Hammer2015, Chen2014,
+Hammer2014, Chen2011, Hammer2011, Hammer2009, Hammer2008}, whereas the
+work proposed here considers incremental \emph{program changes}.
+
+The notion of holes being associated with unique names and substitutions, and the notion of hole instantiation just described, is borrowed directly from work in \emph{contextual modal type theory (CMTT)} \cite{Nanevski2008}. Hole names correspond to \emph{metavariables} and holes themselves to \emph{closures}. CMTT is, in turn, the Curry-Howard interpretation of contextual modal logic. This gives us confidence that our approach is not \emph{ad hoc}, but rather rooted in the established logical tradition.
+
+\subsection{Proposed Research}
+
+\noindent\textbf{Core Semantics.} The preliminary work outlined above, with its roots in CMTT, suggests a theoretical foundation for moving forward. However, there remain two major missing pieces:
+
+First, CMTT does not come equipped with a dynamic semantics that supports evaluation of terms with free metavariables, which is precisely what we require (see Scenario 1, above). As such, we need to formally develop the notion of an \emph{indeterminate evaluation state}, define a dynamics that can handle free metavariables, and formally state and prove our Indeterminate Progress and commutativity conjectures. We also need to carefully consider how non-termination (and, perhaps, other effects) affects the commutativity property.
+
+Second, CMTT's closures nicely handle empty expression holes, but non-empty holes, type holes, and other problems that we plan to internalize with our statics need to be considered carefully. Non-empty holes can likely be understood as a simple variation on empty holes. In the previous section, we discussed the relationship between type holes and gradual typing. Work in gradual typing appears to provide one solution to the problem of evaluating terms with type holes (by inserting run-time casts \cite{Siek06a}.) This suggests that a comprehensive dynamics for incomplete programs, i.e. one that assigns dynamic meaning to every statically meaningful incomplete program, will require developing a \emph{gradual contextual modal type theory} (GCMTT).
+
+\paragraph{Further Developments.} There are several more practical applications that we aim to explore after developing the initial foundations just described.
+
+It would be useful for the programmer to be able to select a hole that appears in an indeterminate state and 1) be taken to its original location; 2) be able to inspect the \emph{value} of a subexpression under the cursor in the environment of the selected hole (rather than just its type.)
+
+We need to develop a semantics that characterizes when two edit states are related by hole instantiation. There are two ways to approach this: as a function of the ``diff'' between the two edit states; and 2) as a function of an edit action that was actually performed (see the next section.)
+
+IPython/Jupyter \cite{Perez:2007:ISI:1251563.1251831} supports a feature whereby numeric variable(s) in cells can be marked as being ``interactive'', which causes the user interface to display a slider. As the slider value changes, the new value of the cell is recomputed. It would be useful to be able to use the mechanisms just described to incrementalize parts of this recomputation automatically.
+
+
+% \begin{wrapfigure}{l}{0.42\textwidth}
+% \[
+% \small
+% \begin{array}{|l||cccccc|}
+% \hline
+% \textrm{}
+% & \multicolumn{6}{c|}{\desc{Versions across program edits~$\alpha_i$}}
+% \\
+% %\hline
+% \textrm{Test}
+% & \editaction{\alpha_1} & \editaction{\alpha_2} 
+%   & \editaction{\alpha_3} & \editaction{\alpha_4} 
+%   & \editaction{\alpha_5} & \editaction{\alpha_6}
+% \\
+% \hline
+% \testaction{\texttt{test1}}&\Pass&\Pass&\Fail&\Pass&\Pass&\Pass
+% \\
+% \testaction{\texttt{test2}}&\Indet&\Pass&\Pass&\Indet&\Pass&\Pass
+% \\
+% \testaction{\texttt{test3}}&\Indet&\Indet&\Indet&\Pass&\Pass&\Pass
+% \\
+% \testaction{\texttt{test4}}&\Indet&\Indet&\Indet&\Indet&\Pass&\Pass
+% \\
+% \testaction{\texttt{test5}}&\Indet&\Indet&\Indet&\Indet&\Indet&\Pass
+% \\
+% \hline
+% \end{array}
+% \]
+% \end{wrapfigure}
+% In general, a programmer will define more than one test for a given function or module. It would be useful to be able to 1) apply the ideas just discussed to the specific problem of \emph{live (incremental) testing}; and 2)  visualize a set of test results as they change across program edits, at varying levels of edit granularity. The example on the left shows Passing (\Pass), Indeterminate (\Indet) and
+% Failing (\Fail) as possible test results. This is related to work by Omar and Aldrich on tabular visualizations of tests designed to evaluate different implementations of a common interface\todo{citation}. 
+% % %
+% % After inserting $x+1$ at hole~$\metavar$, suppose that the programmer
+% %  also chooses to erase the hole.
+% % %
+% % There are two ways to think about performing this edit, which is an
+% % instance of CMTT \emph{hole instantiation} (written as $[\!| (x+1) / u
+% % |\!]$ in the figure).
+
+% % First, we can imagine doing the edit, and running this edited program,
+% % shown as the right column of Figure~\ref{fig:dynamics}~(Scenario 2).
+% % %
+% % Unlike the program with the hole, this program is complete, and after
+% % several steps it results in a final value of 5.
+% % %
+% % The center column shows how both the programs and intermediate states
+% % are related by hole instantiation.  In particular, the intermediate
+% % forms are in correspondance until the left program becomes
+% % indeterminate.
+
+% % Second, we can imagine that after the left execution terminates in an
+% % indeterminate form, as shown, the programmer edits hole~$\metavar$ to
+% % contain~$x + 1$.
+% % %
+% % Then, \Hazel may respond by ``rewinding'' those indeterminate forms,
+% % and by \emph{resuming} execution of~$f$, modulo this edit.  The
+% % behavior will be identifcal to the steps shown in the right column.
+% % %
+% % In particular, the evaluation of~$f$ after the edit takes exactly the
+% % steps shown in the right column, which is to say, that hole
+% % instantiation commutes with program evaluation.
+% % %
+% % That hole editing and program evaluation commute is useful, and
+% % represents an instance of a more general property that stems from the
+% % connections between \Hazel and CMTT.
+% % %
+% % The meta theory of \Hazel's dynamics, proposed below, will explore
+% % this connection, and its implications for mixing editing and testing.
+
+% %% \paragraph{Retroactive edits.} 
+% %% %
+% %% Alternatively, the programmer may decide to lift their edit from \ScenerioOne to
+% %% occur \emph{before} executing the test. This is shown in \ScenerioTwo.
+% %% %
+% %% Notice that the first reduction step, for $*$, is the
+% %% same as in \ScenerioOne.
+% %% %
+% %% The final reduction steps for $/$ and $+$ are also the
+% %% same, and thus elided for brevity.
+% %% %
+% %% The key difference is the absence of the introduction
+% %% and elimination of the indeterminate forms that separated the first
+% %% reduction step and the final two.
+
+% %% Although the programmer exchanged the
+% %% order of edits and reduction steps between the scenarios, the edits and reduction
+% %% steps themselves have not changed order, and the outcome is the same.
+% %% %
+% %% We can view this has a simple example of a more general phenomenon
+% %% that captures the ideas of live programming, and of interactive
+% %% editing and testing.
+
+% %% \paragraph{The meta theory of evaluating incomplete programs.} 
+% %% %
+% %% If the programmer had inserted $x$ but not chosen to remove
+% %% the hole by ``finishing'' it,
+% %% %
+% %% the edit in \ScenerioOne would not have
+% %% affected the evaluation trace, and no further reduction would occur.
+% %% %
+% %% Until the hole is explicitly removed, the behavior within the hole is isolated
+% %% from the behavior outside of it, a phenomena that we refer
+% %% to as \emph{hole parametricty}.
+% %% %
+% %% Hole parametricity is critical for live programming since it also
+% %% means that eventually, when and if the hole is complete, that edit
+% %% will commute with the evaluation of the hole's context.
+% %% %
+% %% Hole parametricity gives rise to the following meta
+% %% properties about the dynamics of \Hazel, which each have implications
+% %% for live programming:
+% %% \begin{itemize}[labelwidth=0.7em, labelsep=0.6em, topsep=0ex, itemsep=0ex,
+% %%   parsep=0ex]
+
+% %% \item \emph{Hole provenance}: 
+% %% %
+% %% Every hole in the reduced program corresponds to a hole in the
+% %% original program, with a (possibly-empty) dynamic substitution. For
+% %% instance, the hole in the example above corresponds to the denominator
+% %% sub-expression in the original~$e$.
+
+% %% \item \emph{Retroactive edits}: 
+% %% %
+% %% Editing (when limited to holes) commutes with evaluation of the hole's
+% %% context.  As a result, we can consider these edits ``retroactive'':
+% %% The dynamic behavior of the program is the same as if the edit
+% %% occurred \emph{before} any evaluation steps.
+
+% %% \item \emph{Inter-hole evaluation commutativity:}
+% %% %
+% %% Evaluation steps on opposite sides of a hole boundary commute.
+% %% Intuitively, the presence of holes isolates sub-programs dynamically:
+% %% Holes are irreducible syntax that prevents the syntax within the hole
+% %% from interacting directly with the sytnax outside of the hole.
+
+% %% \end{itemize}
+
+% %% %\paragraph{Undefined and exceptional behavior as indeterminate forms.}
+
+% %% Finally, suppose that the programmer had run the program with $x =
+% %% -1$, making the denominator equal zero.
+% %% %
+% %% Since division by zero is undefined, this term does not reduce, and we
+% %% can put the program into an indeterminate form, much like dividing by
+% %% a hole, as in the left column.
+% %% %
+% %% Unlike a traditional \emph{exception} that halts execution, or sends
+% %% control to an explicit error handler, indeterminate forms represent
+% %% these situations, plus the (non-exceptional) situation where the
+% %% program is incomplete.
+
+% \paragraph{Module implementation and specification co-design.}
+% %
+% The dynamics of \Hazel, plus the additional ingredient
+% of \emph{general-purpose incremental computation}, permits incomplete
+% programs to be constructed and tested as one unified activity, with
+% live feedback to the programmer about the outcome of tests.
+% %
+% \Hazel eagerly evaluates the content of holes, 
+% which leads to different termination behavior than treating holes as
+% suspensions under which we do not evaluate and allows
+% a correspondance with the termination behavior of a program
+% where the holes are ``finished'', and can be erased.
+% %
+% This allows us to interestingly formalize a notion of mixing testing, debugging
+% and editing.
+
+% %
+% %
+
+% To illustrate, consider a programmer that defines five
+% tests of their module before implementing it; each test consists of running an expression
+% that exercises the module interface with some concrete input values,
+% similar to (but more complex than) the scenerios above, where the
+% programmer chose values for $x$ and $y$.
+% %
+% The figure to the left shows these tests stacked vertically.
+% %
+% After defining the input-output behavior of their module with these
+% five examples, the user inspects the output of the tests, which are
+% each one of three status:  The columns show the state of the tests after each
+% edit, or editing session.
+% %
+% At some scale of edit action size, the display summarizes how the test
+% statuses change across edit actions, $a_i$.
+% %
+% The granularity of this display can vary, depending on what scale of
+% edit history the programmer wants to visualize.
+
+% In this case, the edit history shows that the programmer is editing
+% the program to make more tests pass, until they all eventually pass.
+% %
+% Along the way, some tests regress, which the display makes evident.
+% %
+% For exploratory programming that co-evolves a model with an
+% co-evolving specification (as tests), this immediate-feedback display
+% charts the programmer's progress, and summarize the work that remains.
+% %
+% %\MattSays{Really want this for giving assignments; they have to pass my tests, plus generate their own; then, I take the superset of all (reasonable) tests and test all implementations.}
+
+% In making this experience live (responsive), there are several
+% interrelated challenges. 
+% %
+% First, The dynamics of \Hazel must be designed carefully to permit
+%  interactions like the example above.
+% %
+% Second, the implementation of \Hazel must be engineered so that tests
+% that are affected by edits are rerun, while tests that are unaffected
+% are not rerun.
+% \todo{Pointer to change impact analysis, which should
+% be...easy?  I assume we're punting to someone else's work or initial
+% work of Matt's?}
+% %
+% In general, we wish to make the task of running the test suite a
+% \emph{provably sound} and practically efficient \emph{incremental computation}: Being incremental is
+% important for responsiveness, since regression tests are typically
+% expected to complete within ten minutes or less \MattSays{Michael: any
+% citations about this?}, and being sound is critical for reasoning
+% about how and whether to fix the software based on these tests.
+
+% In \Hazel, we propose to go further, integrating incremental
+% computation into the semantics of the dynamics, to help guide its
+% correct and efficient implementation.
+% %
+% This will also help \Hazel imitate aspects of spreadsheets (with
+% fine-grained dependency tracking), as well as incremental test systems
+% (with coarse-grained dependency tracking).
+% %
+
+
+% \subsection{Proposed Work: Theory, Meta Theory and Implementation for \Hazel Dynamics.}
+
+% In the example we toured above, we noted several instances of more
+% general, desirable properties, which correspond to the work we propose to do on
+% \Hazel dynamics:
+% %
+% \begin{itemize}[labelwidth=0.7em, labelsep=0.6em, topsep=0ex, itemsep=0ex,
+%   parsep=0ex]
+% \item \textbf{Dynamics for incomplete programs} such that we get \emph{hole parametricty}, wherein hole instantiations (via editing) commute with program evaluation (via testing), and where all edits can be related back to the original program.
+
+% \item An implementation of this dynamics that mixes retroactive edits with evaluation, including (eventually) an implementation of the live testing interface described above.  As discussed in Section~\ref{sec:eval}, we will test this implementation by deploying it in a classroom setting.
+
+% \item Testing and live interaction will benefit from both special-purpose and general-purpose techniques incremental computation; the former step from its connection to CMTT, and the latter from its usage as a kind of spreadsheet system.
+% \end{itemize}
+
+% In contrast to the statics and action semantics of \Hazel, which each
+% build on prior work in the context of the simpler Hazelnut system,
+% that prior work completely lacked a dynamic semantics for the edited
+% language.
+% %
+% In this sense, there is still significant design work in the theory of
+% the dynamics, even before arriving at the details of its meta theory
+% and efficient implementation.
+
+
+%\clearpage
+
+\OmitThis{
+\section{\Hazel Dynamics: Testing and Debugging amidst Program Design}
+
+%% We motivate the design of our dynamics by considering how the \Hazel
+%% programmer constructs and tests partial programs.
+%% %
+%% First, we consider functional \emph{batch programs} whose behavior can
+%% be characterized by giving input-output examples.
+%% %
+%% Next, we consider functional \emph{interactive programs} whose
+%% behavior can be characterized by giving examples of action-view lists
+%% (i.e., a list of user actions and the view provided to the user of the
+%% program state).
+%% %
+%% In each case, we give an example experience that highlights how
+%% development in \Hazel enhances interactive programming that developers
+%% and students already do today.
+
+\paragraph{Interactive development of a batch program.}
+
+The user starts a new program by first thinking about the functional
+behavior of the program; i.e., they think about concrete input-output
+pairs that the program should relate, when they should be considered
+equal, and in particular, about their structural relationship.
+
+The user writes the datatype definitions of the input and output
+structures, a way to compare them for equality, and writes several
+examples of input-output pairs that the program should relate.
+
+The user writes the function definition~XXX, with its type
+signature~XXX; they leave a hole for its body.
+
+The user begins interactive development in full by specifying to
+\Hazel that the input-output pairs should be a test-based
+specification of the function definition.  They do this by XXX.
+
+Upon doing XXX, \Hazel responds by running the (undefined) function on
+the test input, and checks its output against the test output.
+%
+Because the body of the function is empty, the test \emph{succeeds}
+but \emph{inconclusively}: the test does not witness an inconsistency
+in the program and the input-output pair, but the equality comparison
+against the output has been \emph{partial}.  In particular, the
+function body produced an empty hole as output, which is (trivially)
+consistent with every other value.
+
+\Hazel assists the programmer in understanding the inconclusive
+aspects of the result by showing a visual differencing of the program
+and test outputs, indicating where the program output is partial (in
+this case, entirely).
+
+\MattSays{XXX Is value consistency something that the programmer specifies?  I
+would assume so, and that they thusly need to compare against hole
+values, and that hole values can be pattern-matched when writing this
+testing code.}
+
+\MattSays{XXX Can the test input-output pairs have holes? Presumably, they can.  Is this useful?}
+
+Next, the user begins to pattern-match the input structure, in
+preparation for processing it recursively.
+%
+Like some modern proof assistants, \Hazel uses the type declaration of
+the function to assist the user in specifying an exhaustive pattern
+match that covers every case of the input datatype; initially, the
+right-hand-sides of the pattern match (its \emph{arms}) are each an
+empty hole.
+%
+By doing XXX, the user guides \Hazel to each relevant sub case,
+coalescing sub-cases (and their arms) when their output and behavior
+is equivalent.
+%
+\Hazel assists in this coalescing by doing XXX.
+%
+Initially, coalescing is permitted trivially since the arms are each
+empty, and two empty expressions can be coalesced.
+%
+When the arms are non-empty, \Hazel forbids coalescing arms that are
+inconsistent (\MattSays{XXX not alpha-convertible? something more powerful?}).
+
+As the user changes the input pattern-match structure, \Hazel runs the
+test input-output pairs.  It detects paths in the program that are not
+explored by any test inputs, and indicates them to the user by doing
+XXX.
+%
+This informs the user about which test input-outputs may be missing
+from their test suite, and they add them as they think of them; in so
+doing, \Hazel updates the indication of program paths.  This process
+continues until the user is satisfied that their input-output pairs
+cover the most important paths of the program, and that the input
+pattern match is plausible.
+
+After considering the input case structure by settling on an initial
+pattern match, the user begins to fill in the arms of the pattern
+match.
+%
+As the user identifies a base case, they change the empty hole of its
+arm to compute the correct value, (e.g., an empty list, etc.)
+%
+The input-output tests that cover this base case change state from
+``inconclusive success'' to ``(conclusive) success''.
+
+As the user identifies a recursive case, they change the empty hole of
+its arm to a primitive recursive call.
+%
+Initially, this change omits the construction of output, and the
+input-output tests that cover recursive cases change state from
+``inconclusive success'' to ``failure''.
+%
+As with inconclusive results, \Hazel shows the failure as a
+differencing between the two outputs, indicating where they differ.
+
+As the user navigates their cursor through this differenced output,
+\Hazel indicates positions in the program that \emph{produced} this
+output.
+%
+Further, they can also see the execution state when this output was
+produced, including the full calling context and the values of
+(dynamically-computed) variables.
+%
+Realizing that they have made a mistake in their recursive case, they
+begin to edit this arm, but now edit the program \emph{in the dynamic
+  context of the failing test case}.
+%%
+\MattSays{XXX Can we think of a concrete example where this would help?  Would it help in something simple like listmap?}
+
+Looking at the differenced outputs (e.g., one is the empty list, and
+one is a mapped list), they notice that they forgot a step: they
+mapped the head of the input cons cell to the head of the output cons
+cell, and they remembered to do the recursive call to map, but they
+forgot to construct the output Cons cell. Instead, they just returned
+the mapped tail, which produces the empty list, overall.
+%
+They edit the program to construct the output Cons cell, and \Hazel
+responds by showing a \emph{two-dimensional} differencing:
+
+\begin{tabular}{lll}
+                & Version 0 & Version 1
+\\
+Program output & nil          & a::b::c::nil
+\\
+Test output    & a::b::c::nil & a::b::c::nil
+\end{tabular}
+
+
+\paragraph{Interactive development of an \emph{interactive} program.}
+
+XXX
+Recapitulate the programming model that we use in our implementation
+of HZ as the programming model for interactive programs.
+
+}

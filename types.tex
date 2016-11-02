@@ -1,0 +1,675 @@
+\def\OPTIONConf{0}%
+\def\OPTIONArxiv{0}%
+%
+% \documentclass{article}
+\documentclass{purple}
+% `purple' is an experimental class with unusual formatting
+
+\usepackage{etoolbox}
+\usepackage{hyperref}
+
+\usepackage{srcltx}
+\usepackage{goodcharter}
+\usepackage{euler}
+
+\usepackage{joshuadunfield}
+\usepackage{llproof}
+%\usepackage{jdproof}
+\usepackage{rulelinks}
+
+\usepackage{latexsym,stmaryrd}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{thmtools,thm-restate}
+
+\usepackage{enumerate}
+
+\usepackage[authoryear]{natbib}
+\bibpunct{(}{)}{;}{a}{}{,}
+
+%\mprset{sep=1em}
+\def\MathparLineskip{\lineskiplimit=0.9em\lineskip=0.8em plus 0.2em}
+
+\declaretheoremstyle[
+  bodyfont=\sl
+]{mytheoremstyle}
+
+
+\input{defs}
+
+\newcommand{\RuleHead}[1]{\text{\raisebox{1em}[0pt]{\ensuremath{\mathsz{\ifnum\OPTIONConf=1 14pt\else 18pt \fi}{#1}}}}~~~~~}
+
+\newcommand{\abort}{\keyword{abort}\xspace}
+\newcommand{\xerrs}{\keyword{error}}
+\newcommand{\errs}{\;\xerrs}
+% \newcommand{\xmatchfailure}{\keyword{match-failure}}
+% \newcommand{\matchfailure}{\;\xmatchfailure}
+\newcommand{\inj}[1]{\keyword{inj}_{#1}\,}
+\newcommand{\Inj}[1]{\inj{#1}}
+
+\newcommand{\rulename}[1]{\text{\normalfont\textsf{#1}}}
+
+\newcommand{\srctyperulename}[1]{\rulename{\textcolor{dDkRed}{S#1}}}
+\newcommand{\srcintrorulename}[1]{\srctyperulename{{#1}Intro}}
+\newcommand{\srcelimrulename}[1]{\srctyperulename{{#1}Elim}}
+
+\newrulecommand{TAbort}{\targettyperulename{Abort}}
+
+% \newcommand{\subrulename}[1]{\rulename{$\subtype${#1}}}
+% \newrulecommand{SubInjDynsum}{\subrulename{Inj$+?$}}
+% \newrulecommand{SubDynsumSum}{\subrulename{${+?}{+}$}}
+% \newrulecommand{SubRefl}{\subrulename{Refl}}
+% \newrulecommand{SubTrans}{\subrulename{Trans}}
+% \newrulecommandONE{SubDynsumInj}{\subrulename{${+?}\Inj{#1}$}}
+
+\newcommand{\tytrans}[1]{{|}{#1}{|}}
+\newcommand{\ctxtrans}[1]{\tytrans{#1}}
+
+
+%\title{A type system for Adapton}
+\title{Typed Adapton:
+  \\
+ Refinement Types for Nominal Memoization 
+ %
+ of Purely Functional Incremental Programs}
+
+\author{
+Matthew A. Hammer
+\\
+University of Colorado Boulder
+\\
+\textsf{matthew.hammer@colorado.edu} 
+\and
+Joshua Dunfield
+\\
+University of British Columbia
+\\
+\textsf{joshdunf@cs.ubc.ca}
+}
+
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Nominal memoization combines memoized functional programming with a
+controlled form of imperative cache effects.
+%
+By leveraging these imperative effects, nominal memoization can
+dramatically outperform traditional (``structural'') memoization.
+%
+However, the nominal memoization programming model is error-prone:
+when the programmer unintentionally misuses names, their incremental
+program ceases to correspond with a purely functional specification.
+
+This paper develops a refinement type system for nominal memoization
+that enforces a program's correspondence with a purely functional
+specification.
+%
+Our type system employs set-indexed types in the style of DML \citep{Xi99popl},
+extended with polymorphism over kinds and index functions.
+%
+We prove that our type system enforces the dynamic side
+conditions proposed by \citet{Hammer15:names}.
+%
+Past work shows that these conditions suffice to write useful examples
+of nominal memoization while also guaranteeing \emph{from-scratch consistency}
+of the incremental programs.
+%
+%
+These features contribute to its overall goal of expressing 
+generic \emph{naming strategies} 
+in type-generic incremental code.
+%
+In particular, we show various forms of \emph{namespace parametricity}
+and illustrate through these examples its importance for expressing
+nominal memoization in library code.
+%
+We also show how extensions to our type system can permit controlled
+forms of naming strategies that encode incremental \emph{churn} and
+\emph{feedback}.
+%
+We speculate that certain feedback and churn patterns constitute
+naming strategies that encode existing forms of functional reactive
+computation as a mode of use of nominal memoization.
+\end{abstract}
+
+\section{Introduction}
+
+%\paragraph{TO DO:} Flesh this out; introduce, motivate and then summarize the contributions below.
+
+Memoization is an evaluation technique that records a mapping
+from computation identities to computation results (e.g., the identity
+of a function application may consist of a function name and an
+argument); the goal of memoization is to \emph{reuse} computations'
+results and avoid recomputing them redundantly.
+
+\emph{Structural memoization} is defined by comparing the input and
+output structures of memoized computations based on their
+\emph{structural identity}, which is commonly implemented in $O(1)$
+time per pointer comparison by using a variant of hash-consing.
+%
+Hash-consing is an \emph{allocation strategy} that hashes and shares
+identical structures, assigning them identical pointers.  This
+allocation strategy allows memoization implementors to use pointer
+identity as a practical method for efficiently testing structural
+identity.
+
+\emph{Nominal memoization} uses a notion of \emph{pointer name}
+identity to identify both computations and data structures (input and
+output structures).
+%
+Unlike structural memoization, the users of nominal memoization
+provide explicit, first-class names to each allocation site, and in
+turn, these names orchestrate an explicit, deterministic \emph{naming
+  strategy}, with direct implications for incremental computations.
+%
+
+By convention, programs that employ nominal memoizaton compute with
+inductive input and output structures that contain these first-class
+names, as well as pointers named by them.
+%
+The first-class names to determine, for each recursive function, how
+the individual components of an input structure are related,
+structurally, to the components of its output structure.
+%
+In \Secref{sec:overview}, we give a detailed example of this style, in
+terms of mapping a list of input elements to a list of output
+elements.
+%
+Prior work showed for this example that using names, we can respond to
+an imperative input change, such as element insertion, with worst-case
+$O(1)$ re-executions and fresh allocations, rather than the $O(n)$
+required with structural memoization.
+%
+That work also showed other examples where names permit an otherwise
+purely functional specification to use nominal memoization to respond
+to input changes efficiently.
+
+The practical performance of nominal memoization stems directly from
+how the programmer designs a naming strategy.
+%
+To implement it, they instrument an otherwise functional program with
+names that \emph{explicitly relate input and output structures}.
+%
+This instrumentation is error-prone, and making a mistake may change
+the meaning of the program, rendering it into an imperative program
+whose behavior no longer corresponds to a purely functional program.
+
+%overwrites previously-allocated data with later allocations in
+%the would-be functional program.
+
+This paper presents a refinement type system for nominal memoization
+of purely functional programs.  Specifically, the type system enforces
+that all programs behave as though they are purely functional,
+excluding behavior that overwrites prior allocations with later ones.
+%
+Meanwhile, the type system provides a way to statically specify the
+meaning of a program that uses nominal memoization, and thus, a
+verifiable way to safely compose incremental programs from generic
+library code.
+%
+In particular, we illustrate how generic naming strategies can be
+encoded statically as various forms of name parametricity.
+
+\paragraph{Contributions:}
+
+\begin{itemize}
+\item We develop a type system for a variant of Nominal Adapton
+  \citep{Hammer15:names}. 
+%  To permit incremental changes in content, the operational semantics of this
+%  work holds thunks and references in the store, and each stored
+%  entity's name identifies its unique location.  
+%  % 
+%
+% Specifically,
+We use types to \emph{statically} enforce that nominal
+memoization behaves as though the program is purely functional, a
+condition modeled after the dynamic soundness criteria from
+\citep{Hammer15:names}.
+
+In this work, unlike prior work, we only consider non-incremental runs.
+
+\item 
+%Central to the efficient dynamics of \citet{Hammer15:names} is
+%  \emph{nominal memoization}, wherein programmers use first-class
+%  names to control how and when memoized results are overwritten.
+%  %
+  We formalize a type system that permits writing code that is generic
+  in a \emph{naming strategy}.  In particular, we show various forms
+  of \emph{name- and name-function parametricity} and illustrate through these
+  examples its importance for expressing nominal memoization in
+  composable library code.
+  % 
+
+\item To encode the necessary invariants on names, our type system
+  uses set-indexed types in the style of DML \citep{Xi99popl}, extended with
+  polymorphism over kinds and index functions; the latter was inspired by
+  abstract refinement types \citep{Vazou13}.
+%  These elements of our type system
+%  are separable from their particular application in this paper, and constitute a
+%  contribution in their own right.
+%%%% Let's dial this back.  With no implementation and no detailed
+%%%% comparison to similar systems, I'm not comfortable claiming this (yet).
+
+%\item We prove that our type system is sound with respect to the operational
+%  semantics previously developed by \citet{Hammer15:names}.
+  
+  %In
+  %particular, types for names, thunks, references and arbitrary
+  %computations each carry refinements that express how they use names.
+  %Meanwhile, computations that consume and produce this content reads
+  %and writes names in the store, respectively.
+
+\NotInScope{
+\item We show that our type system accepts a number of example programs,
+  including some presented by \citet{Hammer15:names}.
+%  that empirically satisfy the dynamic soundness requirements on names.
+  This gives further evidence that the type system is sufficiently expressive,
+  and that the programs admitted by the type system are, in fact, sound.
+}
+
+\NotInScope{
+\item
+  We also explore ways of encoding intended places where imperative
+  name effects are permitted with explicit annotations. 
+  % 
+  %
+  We speculate that certain feedback and churn patterns consistitute
+  naming strategies that encode existing forms of functional reactive
+  computation as a mode of use of nominal memoization.
+}
+
+% Not Yet: XXX
+%\item Drawing closer to an implementation, we derive a bidirectional version of the
+%  type system, and prove that it corresponds to our declarative type system.
+
+%   \item We extend prior language designs for incremental computation
+%     (\eg, \citet{SAC1,SAC2,Adapton2014,Hammer15:names}) with the ability
+%     to \emph{nest regimes} of alternating \emph{pure} computation
+%     whose dynamic dependencies results are cached, and \emph{impure}
+%     computation, which mutates the input of cached computation, and
+%     determines when it is recomputed (in a demand-driven fashion).  By
+%     contrast, prior formal models of IC either elide the impure
+%     mutators and demanders entirely, or restrict their composition
+%     with the incremental computation (i.e., pure computation within
+%     impure is permitted, but not vice versa).  Our proposed model is
+%     more flexible, and as we show with new examples, it expresses
+%     \emph{nested incremental loops} that were not expressible in prior
+%     work.  For instance, in several examples, the outer loop computes
+%     something incrementally via an inner loop that also exploits
+%     incremental computation, whereas all prior IC models limited
+%     incremental computing to one global, outer loop.
+\end{itemize}
+
+%\clearpage
+
+\input{example-listmap}
+
+% Unnecessary to play the space-saving game for a draft;
+% consider for a later submission.
+%
+% \section{Abridged Language Definition}
+% \label{sec:lang-def}
+% 
+% This section gives an abridged definition of our core language. 
+%
+% For the entire definition, see Section~\ref{sec:full-lang-def}.
+%
+%\clearpage
+%
+% This might end up later, in the full language definition:
+
+\input{progsyntax}
+\input{typesystem.tex}
+
+% \section{Abridged Meta Theory}
+% \label{sec:lang-metatheory}
+%
+% This section gives an abridged definition of our core language. 
+% %
+% For the entire definition, see Sections~\ref{sec:meta-statics}
+% and~\ref{sec:meta-dynamics}.
+
+\NotInScope{
+\section{Annotations for Imperative Effects: Explicit Feedback and Churn}
+\label{sec:imp-anno}
+
+In this section, we explore how typing annotations can delimit and
+control feedback and churn, limiting its presence to those designated
+by the annotations, and limiting its effects to match these
+annotations.
+%
+To permit these behaviors incrementally in the dynamics, we extend the
+definition of the permitted read/write effects to permit imperative
+effects that are soundly approximated by these annotations.
+%
+Note: formally, the dynamics of these constructs just relaxes the
+dynamically-enforced side-conditions for overwriting prior
+allocations; it does not add new behavior.
+%
+Rather, the new structure is that of the statics:
+}
+\NotInScope{
+\paragraph{TO DO:} Write new typing rules for permitted imperative effects
+\paragraph{TO DO:} Write examples from Section~\ref{sec:overview}.
+}
+
+%\section{Full Language Definition}
+%\label{sec:calc}
+%\label{sec:full-lang-def}
+
+%\clearpage
+\input{dynamics}
+
+% \clearpage
+% \subsection{Incremental Dynamics: Graphic Edges, Cached Results, Dirtying and Cleaning}
+% \input{fig-inc-dynamics.tex}
+%
+% \clearpage
+
+%\section{Working Notes}
+%
+% \paragraph{Notes on dynamics.}
+% %
+% \begin{itemize}
+% \item names encompass pointers (``pointer names''), namespaces (``namespace names'') and names as first-class values; the distinct syntaxes of namespaces and pointers are gone (compared with OOPSLA 2015).
+% \item decided to explicitly save the current namespace in the graph with thunks; then it's easy to restore this namespace in rule force-computeDep. Namespaces are also (redundantly) part of the thunk's pointer name, but that's okay.
+% \item left off fix, since it didn't seem interesting
+% \item fork is gone
+% \item modulo notes above, all of the rules exactly resemble the dynamics from the OOPSLA 2015.
+% \end{itemize}
+%
+% \paragraph{DONE:}
+%
+% \begin{itemize}
+% \item Define effect sequencing ``$\e_1 \effseq \e_2$''.
+% \item Kinding judgments $\Gamma |- A : K$, etc.
+% \item Replaced ``$; W$'' with ``$; \hist$'' (for ``history''). %  Do we need this?  How should it work?  (The main typing rule involved is `let'.)
+% \item Fixed syntactic mismatch in `app' typing rule, which required introducing ``$\effcoalsym$''.
+% \item Added typing rules for $\impty$.
+% \item Replaced typing rule for `fork' with `name-app' (for $t\;v$).
+% \item We think `scope' is highly desirable, but maybe not absolutely necessary.
+%   Updated typing rule `scope'.
+% \item Dropped $\Pi$; using $\forall$ for both type and index polymorphism.
+%   \\ Added $\Namearrsym$ for name function polymorphism.
+% % \item What's the best type notation for passing name functions?
+% \item Define the structure of names.
+% \item Added typing rules for ref (alloc), get.
+% \item Define the dynamic semantics of $t$ on names.
+% \end{itemize}
+%
+% \paragraph{TO DO:}
+% Lots, including:
+%
+% \begin{itemize}
+% \item Figure out the grammar of $\Gamma$, and this ``has-store-type'' business.
+% \item Expanding read set in eff-subsume would definitely be unsound (force-again could be applied
+%   where it should be impossible to apply it).  What about the write set?
+% \item Untangle names vs.\ name sets.  Define the dynamic semantics of $t$ on name sets?
+% \end{itemize}
+
+% \paragraph{Questions (Sep 2016):}
+% \begin{itemize}
+% \item In typing rules for thunk and ref, should the index meta var be $n$, or $i$? (what happens if the index is not a single name, but a set of names?)
+% \end{itemize}
+
+% \input{meta.tex}  % working notes, totally superseded
+%\clearpage
+\input{meta-statics.tex}
+%\clearpage
+% \input{meta-dynamics.tex}   % copied from previous paper
+
+
+\section{Related Work}
+\label{sec:relatedwork}
+
+DML \citep{Xi99popl,Xi07} is an influential system of limited dependent types
+or \emph{indexed} types.  Inspired by \citet{Freeman91},
+who created a system in which datasort refinements were clearly separated from ordinary types,
+DML separates the ``weak'' index level of typing from ordinary typing;
+the dynamic semantics ignores the index level.
+
+Motivated in part by the perceived burden of type annotations in DML,
+liquid types \citep{Rondon08,Vazou13} deploy machinery to infer
+more annotations.  These systems also provide more flexibility:
+types are not indexed by fixed tuples of indices.
+
+% GADTs?  nah
+
+To our knowledge, \citet{Gifford86} were the first to express effects within (or alongside) types.
+Since then, a variety of systems with this power have been developed.
+A full accounting of these systems is beyond the scope of this report;
+for an overview of some of them, see \citet{Henglein05:ATTAPL-Chapter}.
+We briefly discuss a type system for regions \citep{Tofte97},
+in which allocation is central.
+Regions organize subsets of data, so that they can be deallocated together.
+The type system tracks each block's region, which in turn requires effects on types:
+for example, a function whose effect is to return a block within a given region.
+% Functions can be polymorphic in regions and effects.
+% XX double-check what is in Tofte97 vs. the ATTAPL chapter (see around p. 116)
+Our type system shares region typing's emphasis on allocation,
+but we differ in how we treat the names of allocated objects.
+First, names in our system are fine-grained: each allocated object is uniquely named.
+Second, names have structure and are related by that structure:
+the names $\rootname.1.1$ and $\rootname.1.2$ are not arbitrary distinct names
+(because they share a prefix).
+
+%\paragraph{TO DO}: Edit text below.
+
+\paragraph{Techniques for general-purpose incremental computation.}
+%
+A computation is \emph{incremental} if repeating it with a changed input is
+faster than from-scratch recomputation.
+%
+Incremental computation (IC, for short) is ubiquitous in computing.
+
+Across computer science, many have studied \emph{incremental
+  algorithms} (variously called \emph{online algorithms} and
+\emph{dynamic algorithms}), where the traditional fixed-input
+computing paradigm is replaced with one where programs run repeatedly
+on changing inputs.
+%
+Typically, researchers study each such problem in isolation, and they
+exploit domain-specific structure to justify a special incremental
+algorithm for the given domain.
+%
+For example, search algorithms in
+robotics are incremental versions of standard search
+algorithms,
+and motion simulation algorithms can be
+viewed as incremental versions of standard computational
+geometry algorithms~(e.g.,
+see~\cite{AgarwalBaBeGuHe99,AgarwalGuHeVe01,AlexandronKaSh05,Basch99,BaschErGuHeZh04},
+and see \cite{motion-survey02} for a survey).
+
+%% XXX- Cite SAC work, and earlier IC work
+In contrast to solving online problems in a domain-specific, one-off
+fashion, the programming languages community offers several threads of
+research that attempt to offer \emph{general-purpose programming
+  language abstractions}, so that the language (not the program)
+abstracts over the incremental aspect of the desired program behavior~\cite{RamalingamRe93,RamalingamRe96,DemersReTe81,RepsTe88,LiuTeitelbaum95,LiuStTe98,Acar09,Guo2011}.
+%
+These incremental languages are aware of incremental change, and
+through specially-designed abstractions, they help the programmer
+avoid thinking about changes directly.  Instead, she thinks about how
+to apply the abstractions, which are general purpose.
+
+Through careful language design, modern incremental abstractions
+elevate implementation questions, such as ``how does this
+  particular change pattern affect a particular incremental state of
+  the system?'' into simpler, more general questions, answered with
+special programming abstractions (e.g., via special annotations).
+%
+These abstractions identify changing data and reusable
+sub-computations \citep{AcarAhBl08,NominalAdapton2015-arxiv-version,Adapton2014,HammerAcCh09,Mitschke2014},
+%
+and they allow the programmer to relate
+the expression of incremental algorithm with the ordinary version of
+the algorithm that operates over fixed, unchanging input: The gap
+between these two programs is witnessed by the special abstractions
+offered by the incremental language.
+%
+Through careful algorithm and run-time system design, 
+these abstractions admit a fast \emph{change propagation implementation}.
+%
+In particular, after an initial run of the program, as the input changes dynamically,
+change propagation provides a general (provably sound) approach for
+recomputing the affected output
+\citep{AcarBlBlTa06,AcarLW09,NominalAdapton2015-arxiv-version}.
+Further,
+IC can deliver~\emph{asymptotic}
+speedups~\citep{AcarIhMeSu07,HammerAcRaGh07,AcarIhMeSu08,AcarBlTaTu08,AcarAhBl08,Acar09,SumerAcIhMe11b},
+and has even addressed open problems~\citep{AcarCoHuTu10}.
+%
+These IC abstractions exist in many languages~\citep{Shankar07,
+  HammerAcRaGh07, HammerAc08, HammerAcCh09,
+  Chen14:implicit}.
+
+
+\paragraph{Functional reactive programming.}
+%
+Incremental computation and reactive programming (especially
+functional reactive programming or FRP) share common elements: both
+attempt to respond to outside changes and their implementations often
+both employ dependence graphs to model dependencies in a program that
+change over time
+\citep{Cooper06embeddingdynamic,DBLP:conf/icfp/KrishnaswamiB11,Czaplicki2013AFR}.
+%
+In a sketch of future work below, we hope to marry the \emph{feedback}
+that is unique to FRP with the \emph{incremental data structures and
+  algorithms} that are unique to IC.
+
+
+\section{Conclusion and Future Work}
+\label{sec:futurework}
+\label{sec:conclusion}
+
+%\paragraph{TO DO}: Write me.
+
+In this report, we motivate the need for generic naming strategies in
+programs that use nominal memoization.
+%
+We define a refinement type system that gives practical static
+approximations of these strategies.
+%
+We prove that our type system enforces that well-typed programs that
+use nominal memoization always correspond with a purely functional
+program.
+%
+Meanwhile, prior work shows that these programs can dramatically
+outperform non-incremental programs as well as those using traditional
+memoization.
+
+\paragraph{Future work: Meta-level programs.}
+%
+The entire point of incremental computation (IC) is to \emph{update}
+input with \emph{changes}, and then propagate these changes
+(efficiently) into a \emph{changed} output.
+%
+Hence, imperative updates are fundemental to IC.
+%
+To address this fact, future work should follow the direction of
+\cite{Adapton2014} and give explicit type-based annotations that
+permit such imperative behavior in explicit locations.
+%
+We discuss feedback in further detail, below.
+
+\paragraph{Future work: Functional reactive programming with explicit names.}
+%
+The effect patterns of feedback and churn, described as problems in
+\Secref{sec:overview}, may also be viewed as desirable patterns,
+especially in contexts such as functional reactive programming (FRP).
+%
+By definition, feedback occurs when a proram overwrites prior
+allocations with new data, and thus these overwrite effects violate a
+purely functional allocation strategy.
+%
+However, we can view this allocation strategy as corresponding to an
+operational view of FRP with an explicit store where controlled
+(annotated) feedback may occur safely.
+
+The type system presented here suggests that we can go further than
+modeling FRP in isolation, and (potentially) marry the controlled
+feedback of FRP with nominal memoization, and thus, with
+general-purpose incremental computation.
+%
+In particular, future work may explore explicit programming
+annotations for marking intended places and names where feedback
+occurs:
+% Thou shalt not have a blank line before thy "\[", nor after thy "\]".
+\[
+\Infer{feedback-loop}
+{\Gamma |- e : \textsf{LoopComp}~A |> <<R\disj F; W \cup F; F>>}
+{\Gamma |- \keyword{loop}~e~\keyword{over}~F : \F A |> <<R\disj F; W \cup F; \emptyset>>}
+\]
+%
+The statics of this rule says that sub-expression~$e$ has type
+$\textsf{LoopComp}~A |> \e$, which is a computation that produces the
+following (recursive) sum type:
+%
+\[
+\big(
+  \textsf{LoopComp}~A |> \e
+\big)
+= 
+\big(
+  \F (A + \Thk{X}{(\textsf{LoopComp}_X~A) |> \e}) |> \e
+\big)
+\]
+%
+Statically, the expression $e$ will either produce a value of
+type~$A$, or a thunk that produces more thunks (and perhaps possibly a
+value) in the future.
+
+The dynamics of this rule would re-run expression~$e$ until it
+produces its value (if ever) and in so doing, the write effects of
+expression~$e$ would be free to \emph{overwrite} the reads of $e$,
+creating a feedback loop.
+%
+In the rule above, the annotation~$\cdots$~\text{over}~$F$ explicates
+the over-written set of names~$F$.
+%
+To statically distinguish delayed, feedback writes from ordinary
+(immediate) writes, we may track three (not two) name sets in each
+effect~$\e$: the read set, the write set, and the set of feedback
+writes, here~$F$.
+%
+Operationally, the dynamic semantics treats feedback writes specially,
+by delaying them until the \textsf{LoopComp} fully completes an
+iteration.
+%
+This proposal corresponds closely with prior work on synchronous,
+discrete-time FRP~\citep{DBLP:conf/icfp/KrishnaswamiB11}.
+
+\paragraph{Future work: Bidirectional type system.}
+%
+Drawing closer to an implementation, we intend to derive a
+bidirectional version of the type system, and prove that it
+corresponds to our declarative type system.
+A key challenge in implementing the bidirectional system
+would be to handle constraints over names and name sets. 
+
+
+\subsection{Acknowledgments}
+
+This material is based in part upon work supported by a gift from
+Mozilla, and support from the National Science Foundation under grant
+number CCF-1619282.
+%
+Any opinions, findings, and conclusions or recommendations expressed
+in this material are those of the author(s) and do not necessarily
+reflect the views of Mozilla or the National Science Foundation.
+
+
+\bibliographystyle{plainnat}
+\bibliography{j,adapton}
+
+\appendix
+
+\end{document}
+
+
+% Local Variables: 
+% mode: latex
+% TeX-master: "types"
+% End: 

@@ -1,0 +1,312 @@
+% !TEX root = prop.tex
+\section{Aim 3: An Edit Action Semantics}\label{sec:actions}
+
+\HazelEnv is a structure editor, i.e. a 
+program editor where every edit state maps onto a program structure. By
+avoiding the parsing step, the problem of reasoning about malformed text is
+eliminated.  Programmers interact with structure editors by performing
+\emph{edit actions}.
+
+Structure editors have a long history. For example, the Cornell Program
+SSynthesizer was developed in the early 1980s \cite{teitelbaum_cornell_1981}. There is still significant   
+ interest in structure editors today. For example,  Scratch is a 
+structure editor that has achieved success as a tool for teaching children
+how to program \cite{Resnick:2009:SP:1592761.1592779}. \texttt{mbeddr} is an editor for a C-like
+language \cite{voelter_mbeddr:_2012}. TouchDevelop is an editor for an
+object-oriented language \cite{tillmann_touchdevelop:_2011} and Lamdu is an
+editor for a functional language similar to Haskell \cite{lamdu}. Most work on structure editors has focused on the user
+interfaces that they present. Indeed, this is important work -- presenting a
+fluid user interface involving higher-level edit actions is a non-trivial
+problem, and some aspects of this problem remain open.
+
+By contrast, the \emph{semantics of edit actions} has received comparatively little
+attention. In particular, we seek a formal system that describes how each action acts on the edit
+state. 
+% %
+% \begin{wrapfigure}{R}{0.35\textwidth}
+% \includegraphics[width=0.35\textwidth]{impl-overview}
+% %\caption{}
+% \vspace{-1.3em}
+% \end{wrapfigure}
+Formalizing the semantics of edit actions is important in \HazelEnv
+because it allows us to formally establish a critical and non-trivial invariant,
+which we call \emph{sensibility}: that every edit state can be assigned static
+and dynamic meaning according to the static and dynamic semantics for incomplete
+programs that we have proposed above. 
+
+% The
+% edit state of a cell in \HazelEnv is drawn $\zexp_i \Rightarrow
+% \htau_i$. It consists of an H-expression with a superimposed
+% cursor, which we collectively call a Z-expression, $\zexp_i$ (so named because
+% our encoding uses the \emph{zipper} pattern~\cite{huet}, discussed
+% below.) Each Z-expression is semantically meaningful, i.e. the underlying
+% H-expression synthesizes an H-type, $\htau_i$, according to the static semantics (Section~\ref{sec:statics}).
+% This, in turn, implies that it is also dynamically
+% meaningful according to the dynamic semantics (Section~\ref{sec:dynamics}).
+
+In addition to maintaining the sensibility invariant,
+developing a formal action semantics also allows us to establish that the edit
+actions are sufficiently \emph{expressive}. For example, we can mathematically
+prove that there is some way to construct every meaningful program (i.e. that we
+have not forgotten to define critical term construction actions).
+
+Finally, because we are proposing a \emph{clean-slate} design for \HazelEnv
+where we design the static semantics together with the action semantics, we can
+explore novel features that blur the boundary between the language
+and the editor. We summarize these features below.
+
+\subsection{Preliminary Work}
+\newcommand{\cvert}{{\,{\vert}\,}}
+\begin{figure}
+\small 
+\hspace{-3px}$\arraycolsep=2pt\begin{array}{lllllll}
+\mathsf{ZTyp} & \ztau & ::= &
+  \zwsel{\htau} \cvert
+  \tarr{\ztau}{\htau} \cvert
+  \tarr{\htau}{\ztau} 
+\qquad
+\mathsf{ZExp} & \zexp & ::= &
+  \zwsel{\hexp} \cvert
+  \zexp : \htau \cvert
+  \hexp : \ztau \cvert
+  \hlam{x}{\zexp} \cvert
+  \hap{\zexp}{\hexp} \cvert
+  \hap{\hexp}{\zexp} \cvert
+  \hadd{\zexp}{\hexp} \cvert
+  \hadd{\hexp}{\zexp} \cvert
+  \hhole{\zexp}
+\end{array}$
+\caption{Syntax of Z-types and Z-expressions.}
+\label{fig:zexp-syntax}
+\vspace{-2ex}
+\end{figure}
+
+In preparation for this proposal, we have developed Hazelnut, an action semantics
+for the minimal language of H-types and H-expressions described in
+Section~\ref{sec:statics}. Portions of this work is scheduled to appear in our forthcoming POPL paper~\cite{popl-paper}. Figure \ref{fig:zexp-syntax} defines the syntax
+of Z-types, $\ztau$, and Z-expressions, $\zexp$. A Z-type (resp. Z-expression)
+represents an H-type (resp. H-expression) with a single superimposed
+\emph{cursor}, indicated as $\zwsel{\htau}$ (resp. $\zwsel{\hexp}$.) The grammar
+can be understood as an instance of Huet's well-known \emph{zipper pattern}
+\cite{JFP::Huet1997} (which, coincidentally, Huet encountered while implementing
+a structure editor).
+
+% The only base cases in these inductive grammars are $\zwsel{\htau}$ and
+% $\zwsel{\hexp}$, which identify the H-type or H-expression that the cursor
+% is on. All of the other forms correspond to the recursive forms in the
+% syntax of H-types and H-expressions, and contain exactly one ``hatted''
+% subterm that identifies the subtree where the cursor will be found. Any
+% other sub-term is ``dotted'', i.e. it is either an H-type or
+% H-expression. Taken together, every Z-type and Z-expression contains
+% exactly one selected H-type or H-expression by construction. 
+
+
+\begin{wrapfigure}{l}{0.55\textwidth}
+\small 
+\hspace{-3px}$\arraycolsep=3pt\begin{array}{llcllll}
+\mathsf{Action} & \alpha & ::= &
+  \aMove{\delta} ~\vert~
+  \aConstruct{\psi} ~\vert~
+  \aDel ~\vert~
+  \aFinish\\
+\mathsf{Dir} & \delta & ::= &
+  \dChildnm{n} ~\vert~
+  \dParent\\
+\mathsf{Shape} & \psi & ::= &
+  \farr ~\vert~
+  \fnum \\
+& & \vert &
+  \fasc ~\vert~
+  \fvar{x} ~\vert~
+  \flam{x} ~\vert~
+  \fap ~\vert~
+  % \farg ~\vert~
+  \fnumlit{n} ~\vert~
+  \fplus\\
+& & \vert &
+  {\color{gray}\fnehole}
+\end{array}$
+\caption{Syntax of actions.}
+\label{fig:action-syntax}
+\end{wrapfigure}
+The heart of Hazelnut's editing model is its \emph{bidirectional action
+  semantics}.  Figure~\ref{fig:action-syntax} defines the syntax of
+\emph{actions}, $\alpha$, some of which involve \emph{directions},
+$\delta$, and \emph{shapes}, $\psi$. Expression actions are governed by two mutually defined judgements, the
+\emph{synthetic action judgement}:
+$\performSyn{\hGamma}{\zexp}{\htau}{\alpha}{\zexp'}{\htau'}$
+and \emph{the analytic action judgement}, 
+$\performAna{\hGamma}{\zexp}{\htau}{\alpha}{\zexp'}$. 
+In some Z-expressions, the cursor is in a type ascription, so we also need
+a \emph{type action judgement}, $\performTyp{\ztau}{\alpha}{\ztau'}$, pronounced ``performing $\alpha$ on $\ztau$
+results in $\ztau'$''.
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+\small
+  \label{ex2}
+\begin{center}
+\colorbox{light-gray}{\hspace{44px}  assume $incr : \tarr{\tnum}{\tnum}$ \hspace{44px}}
+$\arraycolsep=4px
+\begin{array}{|r||l|l||l|}
+\hline
+\# & \textbf{Z-Expression} &
+\textbf{Next Action} 
+\\
+\hline
+1 &
+\zwsel{\hhole{}} &
+\aConstruct{\fvar{incr}} \hphantom{~\,\,~~}
+\\ 2 &
+\zwsel{incr} &
+\aConstruct{\fap}
+\\ 3 &
+incr(\zwsel{\hhole{}}) &
+\aConstruct{\fvar{incr}}
+\\ 4 &
+incr(\hhole{\zwsel{incr}}) &
+\aConstruct{\fap}
+\\ 5 &
+incr(\hhole{incr(\zwsel{\hhole{}})}) \hphantom{~~~~} &
+\aConstruct{\fnumlit{3}}
+\\ 6 &
+incr(\hhole{incr(\zwsel{\hnum{3}})}) &
+\aMove{\dParent}
+\\ 7 &
+incr(\hhole{\zwsel{incr(\hnum{3})}}) &
+\aMove{\dParent}
+\\ 8 &
+incr(\zwsel{\hhole{incr(\hnum{3})}})&
+\aFinish
+\\ 9 &
+incr(\zwsel{incr(\hnum{3})}) &
+\textrm{---}
+\\ \hline
+\end{array}
+$\end{center}\vspace{-10px}
+\caption{Applying the increment function.}
+\label{fig:second-example}
+\end{wrapfigure}
+In the interest of brevity, we will not reproduce all of the rules, but will
+instead give the intuition in the form of the example edit
+sequence shown in Figure~\ref{fig:second-example}. Every edit state here, after \emph{cursor erasure}, synthesizes a type according
+to the semantics developed in Sec. \ref{sec:statics}. 
+We begin on Line 1 by constructing the variable $incr$. Line 2 then
+constructs the application form with $incr$ in function position, leaving
+the cursor on a hole in the argument position. Notice that we did not need
+to construct the outer application form before identifying the function
+being applied. 
+
+%
+We now wish to apply $incr$ again, so we perform the same action on Line 3
+as we did on Line 1, i.e. $\aConstruct{\fvar{incr}}$. Na\"ively, performing such an action would result in an 
+edit state that is ill-typed after \emph{cursor erasure}:
+$incr(\zwsel{incr})$. 
+The argument of
+$incr$ must be of type $\tnum$ but here it is of type
+$\tarr{\tnum}{\tnum}$. The action semantics avoids this problem by inserting a non-empty hole, marking the type inconsistency as described in Sec. \ref{sec:statics}. Actions are \emph{type aware}, so a non-empty hole is inserted only if necessary.
+
+The programmer could alternatively have performed the $\aConstruct{\fap}$
+action on Line 15, which would result in the following well-typed edit state (according to our static semantics Section~\ref{sec:statics}):
+$incr(\hhole{}(\zwsel{\hhole{}}))$. 
+The problem is that the programmer is not able to identify the intended
+function before constructing the function application form. We aim to avoid this prescriptive ``outside-in'' editing style.
+% This stands in
+% contrast to Lines 14-15.
+
+Lines 4--5 proceed to apply the inner
+mention of $incr$ to a number literal, $\hnum{3}$. Finally, Lines
+6--7 move the cursor to the non-empty hole. Line 8 performs a $\aFinish$
+action, which removes the hole if the type of the
+expression inside it is consistent with the expected type, as it now
+is. This results in the desired final edit state on Line 9. In
+practice, the editor would automatically perform the $\aFinish$ action as
+soon as it becomes possible, but for simplicity, Hazelnut currently formally requires
+that it be performed explicitly.
+
+The key 
+metatheorem, \emph{sensibility}, is formally stated as follows:% , so the
+% reader is encouraged to think about the relevant cases of these proofs as
+% we present the rules.
+\begin{theorem}[Action Sensibility]
+  \label{thrm:actsafe} Both of the following hold:
+  \begin{enumerate}[itemsep=0px,partopsep=0px,topsep=0px]
+  \item If $\hsyn{\hGamma}{\removeSel{\zexp}}{\htau}$ and
+    $\performSyn{\hGamma}{\zexp}{\htau}{\alpha}{\zexp'}{\htau'}$ then
+    $\hsyn{\hGamma}{\removeSel{\zexp'}}{\htau'}$.
+  \item If $\hana{\hGamma}{\removeSel{\zexp}}{\htau}$ and
+    $\performAna{\hGamma}{\zexp}{\htau}{\alpha}{\zexp'}$ then
+    $\hana{\hGamma}{\removeSel{\zexp'}}{\htau}$.
+  \end{enumerate}
+\end{theorem}
+\noindent In other words, if an edit state (i.e. a Z-expression) is
+statically meaningful, i.e. its cursor erasure, $\removeSel{\zexp}$, is well-typed, then
+performing an action on it leaves the resulting edit state statically
+meaningful. In particular, the first clause of Theorem \ref{thrm:actsafe}
+establishes that when an action is performed on an edit state whose cursor
+erasure synthesizes an H-type, the result is an edit state whose cursor
+erasure also synthesizes some (possibly different) H-type. The second
+clause establishes that when an action is performed using the analytic
+action judgement on an edit state whose cursor erasure analyzes against
+some H-type, the result is a Z-expression whose cursor erasure also
+analyzes against the same H-type.
+
+This and a number of other theorems that establish that the rules governing
+the various actions are satisfying (e.g. that movement indeed allows one 
+to move the cursor to anywhere, and that construction indeed allows one 
+to construct any meaningful expression), have been mechanized in Agda.
+
+
+
+
+\subsection{Proposed Work}
+The static semantics and action semantics developed in our preliminary work on Hazelnut lay the foundation for a number of proposed problems:
+
+\vspace{0.25ex}
+\noindent\textbf{Practical extensions.} In Section~\ref{sec:statics}, we
+discussed our plans to add a number of modern language features to the static
+semantics. These require corresponding extensions to the action semantics, and
+we plan to maintain the static and action semantics in lockstep. 
+
+\vspace{0.25ex}
+\noindent\textbf{Automation.} Similarly, in Section~\ref{sec:actions}, we
+discussed the need to automatically generate certain ``boilerplate''
+constructs. This is perhaps even more important in the action semantics. For
+example, the zipper structure and the movement rules could easily be generated
+automatically by following the term structure. Ultimately, we would like to
+produce an \emph{Editorializer}, i.e. a transformation that produces a sensible
+and expressive action semantics from a lightly annotated definition of the
+static semantics of complete expressions. There is precedent in various
+structure editor generators, e.g. Barista~\cite{ko_barista:_2006}. Our
+contribution would be in producing a structure editor generator with a
+correctness guarantee. 
+
+\vspace{0.25ex}
+\noindent\textbf{Programmable Actions.} Our language of actions is intentionally primitive. However, even now it
+acts much like a simple imperative command language. We propose to develop the
+notion of an \emph{action macro}, whereby 
+functional programs could themselves be lifted to the level of actions to
+compute non-trivial compound actions. Such compound actions would give a
+uniform description of transformations ranging from the simple---like
+``move the cursor to the next hole to the right''---to quite complex whole
+program refactorings, while remaining subject to the core semantics. Using proof automation, it should be possible to prove that an action macro implements derived action logic that 
+is admissible with respect to the core semantics. This would eliminate the possibility of ``edit-time'' errors.
+
+\vspace{0.25ex}
+\noindent\textbf{Type-Specific Projections.} Another important research
+direction lies in exploring how types can be used to control  
+the presentation of expressions in the editor. Following an
+approach developed by PI Aldrich in a textual setting of \emph{type-specific
+languages} (TSLs), it should be possible to have the type that an
+expression is being analyzed against define a \emph{type-specific projection} defined by elaboration to the underlying static semantics and action semantics of \HazelEnv \cite{TSLs}. For example, the matrix projection shown in Figure \ref{fig:hazel-mockup} need not be built in to \HazelEnv. Instead, the \li{Numerics} library provider could introduce this logic. This line of research is also closely related to \emph{active code completion}, which investigated type-specific code generation interfaces \cite{Omar:2012:ACC:2337223.2337324}. The first author on that work is advised by PI Aldrich and contributed to the writing of this proposal.
+
+\vspace{0.25ex}
+\noindent\textbf{Interactive Semantic Documentation.} Finally, we propose
+to develop a semantics of semantic comments, 
+i.e. comments that mention semantic structures. These would be subject to
+the same operations, e.g. renaming, as other structures, helping to address
+the problem of comments becoming inconsistent with code. Going further, it should be possible to use the 
+action semantics as the foundation for a ``tutorial'' system that introduces portions of a program in non-linear
+sequence. The learner can proceed through the tutorial with the full array of
+editor services available at each intermediate edit state. There is evidence to
+suggest that revealing pieces of programs in sequence and interacting with
+intermediate edit states can be valuable in educational settings~\cite{Bennedsen:2005:RPP:1047344.1047413,Paxton:2002:LPL:771322.771332}.  
