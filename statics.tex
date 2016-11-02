@@ -13,7 +13,7 @@ and binding structure of every edit state.
 \subsection{Preliminary Work}
 
 \begin{figure}[t]
-\small
+%\small
 $\arraycolsep=4pt\begin{array}{lllllll}
 \mathsf{HTyp:} & \htau & ::= &
   \tarr{\htau}{\htau} ~\vert~
@@ -49,8 +49,8 @@ incomplete and, as we will see, behave semantically much like empty holes. Types
   types} and \emph{complete expressions}, respectively.
 
 
-\begin{wrapfigure}{r}{0.35\textwidth}
-\small
+\begin{figure}%{r}{0.35\textwidth}
+%\small
 \footnotesize
 \begin{subequations}
 \fbox{$\hsyn{\hGamma}{\hexp}{\htau}$}~~\text{$\hexp$ synthesizes $\htau$}
@@ -122,7 +122,7 @@ incomplete and, as we will see, behave semantically much like empty holes. Types
 \end{subequations}
 \vspace{-5px}
 \caption{The bidirectional H-typing rules for incomplete expressions.\label{fig:ana-synth}}
-\end{wrapfigure}
+\end{figure}
 We define the static semantics of H-types and H-expressions as a \emph{bidirectional type
   system}~\cite{Pierce:2000:LTI:345099.345100,DBLP:conf/icfp/DaviesP00,DBLP:conf/tldi/ChlipalaPH05,bidi-tutorial}
 around the two mutually defined judgements in Figure~\ref{fig:ana-synth}. Typing contexts, $\hGamma$, map each variable $x \in
@@ -211,8 +211,8 @@ typing introduced this notion of type matching to resolve this redundancy \cite{
 % well-defined static semantics. 
 
 
-\begin{wrapfigure}{l}{0.5\textwidth}
-\small
+\begin{figure}%{l}{0.5\textwidth}
+%\small
 \footnotesize
 \noindent\fbox{$\tcompat{\htau}{\htau'}$}~~\text{$\htau$ and $\htau'$ are consistent}
 \begin{subequations}\label{eqns:consistency}
@@ -251,7 +251,7 @@ typing introduced this notion of type matching to resolve this redundancy \cite{
 \end{subequations}
 \caption{H-type consistency; matched arrow types.}
 \label{fig:type-consistency}
-\end{wrapfigure}
+\end{figure}
 Gradual type systems do not consider holes in expression position. Rule (\ref{rule:syn-ehole}) states that the empty expression hole
 synthesizes the type hole. Similarly, according to Rule
 (\ref{rule:syn-hole}), non-empty holes also synthesize the hole type, as long as the inner H-expression  synthesizes some type. By the subsumption rule and the definition of type consistency, holes can be analyzed against any type.

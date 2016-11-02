@@ -58,7 +58,7 @@ and the editor. We summarize these features below.
 \subsection{Preliminary Work}
 \newcommand{\cvert}{{\,{\vert}\,}}
 \begin{figure}
-\small 
+%\small 
 \hspace{-3px}$\arraycolsep=2pt\begin{array}{lllllll}
 \mathsf{ZTyp} & \ztau & ::= &
   \zwsel{\htau} \cvert
@@ -101,8 +101,8 @@ a structure editor).
 % exactly one selected H-type or H-expression by construction. 
 
 
-\begin{wrapfigure}{l}{0.55\textwidth}
-\small 
+\begin{figure}%{l}{0.55\textwidth}
+%\small 
 \hspace{-3px}$\arraycolsep=3pt\begin{array}{llcllll}
 \mathsf{Action} & \alpha & ::= &
   \aMove{\delta} ~\vert~
@@ -128,7 +128,7 @@ a structure editor).
 \end{array}$
 \caption{Syntax of actions.}
 \label{fig:action-syntax}
-\end{wrapfigure}
+\end{figure}
 The heart of Hazelnut's editing model is its \emph{bidirectional action
   semantics}.  Figure~\ref{fig:action-syntax} defines the syntax of
 \emph{actions}, $\alpha$, some of which involve \emph{directions},
@@ -141,13 +141,14 @@ In some Z-expressions, the cursor is in a type ascription, so we also need
 a \emph{type action judgement}, $\performTyp{\ztau}{\alpha}{\ztau'}$, pronounced ``performing $\alpha$ on $\ztau$
 results in $\ztau'$''.
 
-\begin{wrapfigure}{r}{0.5\textwidth}
-\small
+\begin{figure}
+%\small
   \label{ex2}
 \begin{center}
-\colorbox{light-gray}{\hspace{44px}  assume $incr : \tarr{\tnum}{\tnum}$ \hspace{44px}}
 $\arraycolsep=4px
-\begin{array}{|r||l|l||l|}
+\begin{array}{|r||l|l|}
+\multicolumn{2}{c}{\colorbox{light-gray}{assume $incr : \tarr{\tnum}{\tnum}$}}
+\\
 \hline
 \# & \textbf{Z-Expression} &
 \textbf{Next Action} 
@@ -185,7 +186,7 @@ incr(\zwsel{incr(\hnum{3})}) &
 $\end{center}\vspace{-10px}
 \caption{Applying the increment function.}
 \label{fig:second-example}
-\end{wrapfigure}
+\end{figure}
 In the interest of brevity, we will not reproduce all of the rules, but will
 instead give the intuition in the form of the example edit
 sequence shown in Figure~\ref{fig:second-example}. Every edit state here, after \emph{cursor erasure}, synthesizes a type according
