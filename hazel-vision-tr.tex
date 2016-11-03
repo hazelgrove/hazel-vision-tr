@@ -149,7 +149,7 @@ relative to an approach that relies on non-interactive documentation.
 
 This proposal aims to bridge two historically divided traditions: (1) the formal
 tradition, which has produced seminal advances by viewing programming languages,
-and therefore programs, as mathematical structures~\cite{pfpl,Pierce:2002hj}; and (2) the design
+and therefore programs, as mathematical structures~\citep{pfpl,Pierce:2002hj}; and (2) the design
 tradition, which has produced a number of innovative interactive programming
 tools by viewing programming as an interaction between a human programmer and a
 tool. We borrow from both views to propose \HazelEnv: a clean-slate interactive programming
@@ -160,7 +160,7 @@ which we will reference throughout this discussion.
 
 \HazelEnv, like many existing language-specific program editors (e.g. Eclipse
 and Emacs, with the appropriate  
-extensions installed \cite{gamma2004contributing}), will provide a number of standard editor services, including (1)
+extensions installed \citep{gamma2004contributing}), will provide a number of standard editor services, including (1)
 syntax highlighting, (2)
 the ability to inspect the type of an expression, (3)
 the ability to jump to the binding site of a variable, and (4)
@@ -168,7 +168,7 @@ the ability to rename a variable in a semantics-preserving manner.
 Were \HazelEnv to encounter only \emph{complete programs}, it would be clear how
 to proceed. For example, a syntax highlighter could automatically be produced
 from a lightly annotated version of the context-free syntax of the
-language \cite{DBLP:conf/tools/KrahnRV08,DBLP:conf/cc/BrandDHJJKKMOSVVV01}. The remaining editor services could be implemented
+language \citep{DBLP:conf/tools/KrahnRV08,DBLP:conf/cc/BrandDHJJKKMOSVVV01}. The remaining editor services could be implemented
 by following the language's type and binding structure, as specified by a formal
 semantics. The problem that animates this proposal is that the
 editor must confront many \emph{edit states} that do not map onto complete
@@ -179,13 +179,13 @@ Textual program editors frequently encounter edit states
 that are not well-formed with respect to the textual syntax of complete
 programs. For example, consider a programmer in the midst of
 constructing a call to a function \lstinline{std}: 
-
-$\texttt{std(y, }$
-
+\[
+\texttt{std(y, }
+\]
 There is a syntax
 error at this moment in the editing process, so editor services that require a syntactically
-complete program must be disabled. This is unsatisfying. Sophisticated editors like Eclipse, and editor generators like Spoofax \cite{DBLP:conf/oopsla/KatsV10}, use \emph{error recovery} heuristics that can support the continued provision 
-of various services in some formally malformed states, by using secondary notational conventions (e.g. whitespace) to segregate malformed portions of the program  \cite{DBLP:conf/oopsla/KatsJNV09,DBLP:conf/sle/JongeNKV09}. These heuristics work most, but not all, of the time.
+complete program must be disabled. This is unsatisfying. Sophisticated editors like Eclipse, and editor generators like Spoofax \citep{DBLP:conf/oopsla/KatsV10}, use \emph{error recovery} heuristics that can support the continued provision 
+of various services in some formally malformed states, by using secondary notational conventions (e.g. whitespace) to segregate malformed portions of the program  \citep{DBLP:conf/oopsla/KatsJNV09,DBLP:conf/sle/JongeNKV09}. These heuristics work most, but not all, of the time.
 
 The alternative approach that we take for \HazelEnv is to build a
 \emph{structure editor} -- a program editor where every edit state
@@ -203,7 +203,7 @@ We will return to the topic of structure editors and projections below.
 \includegraphics[width=\textwidth]{mockup-1}
 \caption{A mockup of \HazelEnv.}
 \label{fig:hazel-mockup}
-\vspace{-2ex}
+%\vspace{-2ex}
 \end{figure}
 
 \paragraph{Problem 2: Statically Meaningless Edit States.} Regardless of how an 
@@ -242,11 +242,11 @@ type: \texttt{matrix<float> -> \{ {mean} : vec<float>, std : vec<float>, median 
 \paragraph{Problem 3: Dynamically Meaningless Edit States.} Modern programming
 tools are increasingly moving beyond simple ``batch'' programming models by
 incorporating \emph{live programming} features that interleave editing and
-evaluation \cite{DBLP:conf/icse/Tanimoto13,DBLP:journals/vlc/Tanimoto90,McDirmid:2007:LUL:1297105.1297073}. These tools provide programmers with more rapid feedback about the
-dynamic behavior of the program they are editing, or selected portions thereof \cite{McDirmid:2013:ULP:2509578.2509585}. Examples include \emph{lab notebooks},
-e.g. the popular IPython/Jupyter~\cite{Perez:2007:ISI:1251563.1251831}, which allow the
+evaluation \citep{DBLP:conf/icse/Tanimoto13,DBLP:journals/vlc/Tanimoto90,McDirmid:2007:LUL:1297105.1297073}. These tools provide programmers with more rapid feedback about the
+dynamic behavior of the program they are editing, or selected portions thereof \citep{McDirmid:2013:ULP:2509578.2509585}. Examples include \emph{lab notebooks},
+e.g. the popular IPython/Jupyter~\citep{Perez:2007:ISI:1251563.1251831}, which allow the
 programmer to interactively edit and evaluate program fragments organized into a
-sequence of cells (an extension of the read-eval-print loop (REPL)); spreadsheets; {live graphics programming environments}, e.g. SuperGlue \cite{McDirmid:2007:LUL:1297105.1297073}, Sketch-n-Sketch \cite{DBLP:conf/pldi/ChughHSA16,DBLP:conf/icse/Chugh25} and the tools demonstrated by Bret Victor in his lectures \cite{victor2012inventing}; the TouchDevelop live UI framework \cite{burckhardt2013s}; and live visual and auditory dataflow languages \cite{DBLP:conf/vl/BurnettAW98}. 
+sequence of cells (an extension of the read-eval-print loop (REPL)); spreadsheets; {live graphics programming environments}, e.g. SuperGlue \citep{McDirmid:2007:LUL:1297105.1297073}, Sketch-n-Sketch \citep{DBLP:conf/pldi/ChughHSA16,DBLP:conf/icse/Chugh25} and the tools demonstrated by Bret Victor in his lectures \citep{victor2012inventing}; the TouchDevelop live UI framework \citep{burckhardt2013s}; and live visual and auditory dataflow languages \citep{DBLP:conf/vl/BurnettAW98}. 
 % \item \emph{Live debuggers} allow the programmer to:
 %   \begin{itemize}
 %   \item insert breakpoints, which pause evaluation; 
@@ -281,17 +281,17 @@ This brings us to our second specific aim: a
 static semantics. There is some precedent for this: research in gradual typing
 considers the dynamic semantics of programs with holes in types, and indeed, our
 proposed static semantics for incomplete programs borrows technical machinery
-from theoretical work on gradual typing~\cite{Siek06a}. We seek a dynamic semantics for the
+from theoretical work on gradual typing~\citep{Siek06a}. We seek a dynamic semantics for the
 other classes of incomplete programs that we will consider as well.
 
 This will require great formal care, because the presence of type
 and binding errors would violate the usual notions of type safety. As such we plan to develop a \emph{mechanized
-  metatheory}~\cite{Lee:2007:TMM:1190216.1190245}: we will use a proof assistant to mechanize the semantics and
+  metatheory}~\citep{Lee:2007:TMM:1190216.1190245}: we will use a proof assistant to mechanize the semantics and
 accompanying metatheorems that establish essential properties, e.g. that
 evaluating a statically meaningful incomplete programs will not ``go wrong'' (which we take in
-the sense of Milner to mean that it will not have undefined behavior~\cite{milner1978theory,pfpl}).
+the sense of Milner to mean that it will not have undefined behavior~\citep{milner1978theory,pfpl}).
 This represents the ``gold standard'' for evaluating claims in formal
-semantics.  Our preliminary work has used Agda~\cite{norell2009dependently}.
+semantics.  Our preliminary work has used Agda~\citep{norell2009dependently}.
 
 \paragraph{Problem 4: Meaningless Edit Actions.} Our first two specific aims
 allow us to assign meaning to intermediate edit states. However, to
@@ -321,7 +321,7 @@ by the learner, due to the sensibility invariant. The comments can mention bindi
 subject to static operations like renaming.
 
 \paragraph{Problem 5: Meaningless and Improbable Suggestions.} The simplest 
-edit actions will be bound to keyboard shortcuts (studies suggest that programmers experienced with a keyboard-driven structure editors can be highly productive \cite{DBLP:conf/vl/Asenov014}). However, \HazelEnv will 
+edit actions will be bound to keyboard shortcuts (studies suggest that programmers experienced with a keyboard-driven structure editors can be highly productive \citep{DBLP:conf/vl/Asenov014}). However, \HazelEnv will 
 also present a search-based user
 interface for discovering relevant higher-level actions -- marked with \textbf{(d)} in Figure \ref{fig:hazel-mockup}. 
 The suggestions 
@@ -374,7 +374,7 @@ strategy:
 A primary strategy is to evaluate the formal claims that we make by encoding
 the system we have designed and proving metatheoretic properties using an
 automated theorem prover. For our published preliminary work, we have done so
-using the Agda theorem prover~\cite{norell2009dependently}.
+using the Agda theorem prover~\citep{norell2009dependently}.
 
 \paragraph{Programmer Experiments.} 
 %
@@ -388,8 +388,8 @@ we will base tasks on common forum postings to enhance external validity. In
 each study, we will isolate a particular feature of \Hazel, and the experimental 
 condition will differ from the control condition only in that feature. We will 
 likely use ``dummy'' or ``Wizard of Oz''  versions of status quo tooling to 
-enable/disable the \HazelEnv-specific features \cite{wizard-of-oz}. We will also use 
-a think-aloud protocol~\cite{think-aloud-protocol}, in which participants are 
+enable/disable the \HazelEnv-specific features \citep{wizard-of-oz}. We will also use 
+a think-aloud protocol~\citep{think-aloud-protocol}, in which participants are 
 instructed to continuously verbalize what they are thinking/attempting. This 
 method will allow us to understand \textit{why} participants do things in a 
 particular way, and to determine the source of participant confusion. Since 
@@ -397,7 +397,7 @@ programmer skill varies tremendously, we will use a counterbalanced,
 within-subjects design in which each participant is exposed to both the 
 experimental and control conditions. 
 The design just outlined has been profitably used in many recent programming 
-experiments~\cite{stylos-constructor-params, static-typing-apidoc, benefits-generic-types}.
+experiments~\citep{stylos-constructor-params, static-typing-apidoc, benefits-generic-types}.
 
 %We intend to pursue a series of such experiments, the exact details of
 %which will depend on the examples we use to evaluate preliminary
