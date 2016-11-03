@@ -51,75 +51,88 @@ incomplete and, as we will see, behave semantically much like empty holes. Types
 
 \begin{figure}%{r}{0.35\textwidth}
 %\small
-\footnotesize
-\begin{subequations}
+%\footnotesize
+%\begin{subequations}
 \fbox{$\hsyn{\hGamma}{\hexp}{\htau}$}~~\text{$\hexp$ synthesizes $\htau$}
-\begin{equation}\label{rule:syn-var}
-\inferrule{ }{
+\begin{mathpar}
+%\begin{equation}\label{rule:syn-var}
+\Infer{\Rule{rule:syn-var}{var}}{
   \hsyn{\hGamma, x : \htau}{x}{\htau}
 }
-\end{equation}
-\begin{equation}\label{rule:syn-ap}
-\inferrule{
+%\end{equation}
+%\begin{equation}\label{rule:syn-ap}
+\and
+\Infer{\Rule{rule:syn-ap}{ap}}{
   \hsyn{\hGamma}{\hexp_1}{\htau}\\
   \arrmatch{\htau}{\tarr{\htau_2}{\htau'}}\\
   \hana{\hGamma}{\hexp_2}{\htau_2}
 }{
   \hsyn{\hGamma}{\hap{\hexp_1}{\hexp_2}}{\htau'}
 }
-\end{equation}
-\begin{equation}\label{rule:syn-num}
-\inferrule{ }{
+%\end{equation}
+%\begin{equation}\label{rule:syn-num}
+\and
+\Infer{\Rule{rule:syn-num}{num}}{ }{
   \hsyn{\hGamma}{\hnum{n}}{\tnum}
 }
-\end{equation}
-\begin{equation}\label{rule:syn-plus}
-\inferrule{
+%\end{equation}
+%\begin{equation}\label{rule:syn-plus}
+\and
+\Infer{\Rule{rule:syn-plus}{plus}}{
   \hana{\hGamma}{\hexp_1}{\tnum}\\
   \hana{\hGamma}{\hexp_2}{\tnum}
 }{
   \hsyn{\hGamma}{\hadd{\hexp_1}{\hexp_2}}{\tnum}
 }
-\end{equation}
-\begin{equation}\label{rule:syn-asc}
-\inferrule{
+%\end{equation}
+%\begin{equation}\label{rule:syn-asc}
+\and
+\Infer{\Rule{rule:syn-asc}{asc}}{
   \hana{\hGamma}{\hexp}{\htau}
 }{
   \hsyn{\hGamma}{(\hexp : \htau)}{\htau}
 }
-\end{equation}
-\begin{equation}\label{rule:syn-ehole}
-\inferrule{ }{
+%\end{equation}
+%\begin{equation}\label{rule:syn-ehole}
+\and
+\Infer{\Rule{rule:syn-ehole}{ehole}}{ }{
   \hsyn{\hGamma}{\hehole}{\tehole}
 }
-\end{equation}
-\begin{equation}\label{rule:syn-hole}
-\inferrule{
+%\end{equation}
+%\begin{equation}\label{rule:syn-hole}
+\and
+\Infer{\Rule{rule:syn-hole}{hole}}{
   \hsyn{\hGamma}{\hexp}{\htau}
 }{
   \hsyn{\hGamma}{\hhole{\hexp}}{\tehole}
 }
-\end{equation}
-\end{subequations}
+%\end{equation}
+%\end{subequations}
+\end{mathpar}
 \fbox{$\hana{\hGamma}{\hexp}{\htau}$}~~\text{$\hexp$ analyzes against $\htau$}
-\begin{subequations}
-\begin{equation}\label{rule:ana-subsume}
-\inferrule{
+\begin{mathpar}
+%\begin{subequations}
+%\begin{equation}
+\and
+\Infer{\Rule{rule:ana-subsume}{subsume}}{
   \hsyn{\hGamma}{\hexp}{\htau'}\\
   \tcompat{\htau}{\htau'}
 }{
   \hana{\hGamma}{\hexp}{\htau}
 }
-\end{equation}
-\begin{equation}\label{rule:syn-lam}
-\inferrule{
+%\end{equation}
+%\begin{equation}\label{rule:syn-lam} XXX -- Typo?
+\and
+\Infer{\Rule{rule:ana-lam}{lam}}
+{
   \arrmatch{\htau}{\tarr{\htau_1}{\htau_2}}\\
   \hana{\hGamma, x : \htau_1}{\hexp}{\htau_2}
 }{
   \hana{\hGamma}{\hlam{x}{\hexp}}{\htau}
 }
-\end{equation}
-\end{subequations}
+%\end{equation}
+%\end{subequations}
+\end{mathpar}
 %\vspace{-5px}
 \caption{The bidirectional H-typing rules for incomplete expressions.\label{fig:ana-synth}}
 \end{figure}
@@ -141,7 +154,8 @@ action semantics (Section~\ref{sec:actions}).
 Type synthesis is stronger than type analysis in that if an expression is
 able to synthesize a type, it can also be analyzed against that type, or
 any other \emph{consistent} type, according to the \emph{subsumption rule},
-Rule (\ref{rule:ana-subsume}). The \emph{H-type consistency judgement}, $\tcompat{\htau}{\htau'}$, that
+(Rule~\Rule{rule:ana-subsume}{subsume}).
+The \emph{H-type consistency judgement}, $\tcompat{\htau}{\htau'}$, that
 appears as a premise in the subsumption rule is a reflexive and symmetric
 (but not transitive) relation between H-types defined judgementally in
 Figure \ref{fig:type-consistency}. This relation coincides with equality
@@ -154,13 +168,12 @@ type hole as the $?$ (i.e. unknown) type \citep{Siek06a}. This discovery is quit
 desire to make sense of one class of ``intermediate edit states,'' or programs that
 have not yet been fully annotated with types.
 
-Rule (\ref{rule:syn-lam}) defines analysis for lambda abstractions,
+Rule~\Rule{rule:ana-lam}{lam} defines analysis for lambda abstractions,
 $\hlam{x}{\hexp}$. There is no type synthesis rule that applies  
 to this form, so lambda abstractions can appear only in analytic position,
 i.e. where an expected type is known.\footnote{It is possible to also define a
   ``half-annotated'' synthetic lambda form, $\lambda x{:}\tau.e$, but for
-  simplicity, we leave it out \citep{DBLP:conf/tldi/ChlipalaPH05}.}  Rule
-(\ref{rule:syn-lam}) is not quite the standard rule,
+  simplicity, we leave it out \citep{DBLP:conf/tldi/ChlipalaPH05}.}  Rule~\Rule{rule:ana-lam}{lam} is not quite the standard rule,
 %
 % CLG says we don't have room 
 % reproduced below:
@@ -189,7 +202,7 @@ simple auxiliary \emph{matched arrow type} judgement,
 $\arrmatch{\htau}{\tarr{\htau_1}{\htau_2}}$, defined in Figure
 \ref{fig:type-consistency}. This judgement leaves arrow types alone and
 assigns the type hole the matched arrow type $\tarr{\tehole}{\tehole}$.  
-Rule (\ref{rule:syn-ap}), which governs function
+Rule~\Rule{rule:syn-ap}{ap}, which governs function
 application, also makes use of the matched arrow type judgement to
 combine what would otherwise need to be two rules for function application:
 one for when $e_1$ synthesizes an arrow type, and another for when $e_1$
@@ -252,9 +265,8 @@ typing introduced this notion of type matching to resolve this redundancy \citep
 \caption{H-type consistency; matched arrow types.}
 \label{fig:type-consistency}
 \end{figure}
-Gradual type systems do not consider holes in expression position. Rule (\ref{rule:syn-ehole}) states that the empty expression hole
-synthesizes the type hole. Similarly, according to Rule
-(\ref{rule:syn-hole}), non-empty holes also synthesize the hole type, as long as the inner H-expression  synthesizes some type. By the subsumption rule and the definition of type consistency, holes can be analyzed against any type.
+Gradual type systems do not consider holes in expression position. Rule~\Rule{rule:syn-ehole}{ehole} states that the empty expression hole
+synthesizes the type hole. Similarly, according to Rule~\Rule{rule:syn-hole}{hole}, non-empty holes also synthesize the hole type, as long as the inner H-expression  synthesizes some type. By the subsumption rule and the definition of type consistency, holes can be analyzed against any type.
 
 % CLG this is really informative but just takes too much space.
 Given these rules, it is instructive to derive that $\hana{incr : \tarr{\tnum}{\tnum}}{\hhole{incr}}{\tnum}$. 
