@@ -64,7 +64,7 @@ Broadly speaking, live programming environments interleave editing and evaluatio
 Several examples were listed in Section \ref{sec:objectives}, and indeed many more
 are under development. In the words of Burckhardt et al., live programming environments 
 ``capture the imagination of today's programmers and promise to narrow the temporal and perceptive gap 
-between program development and code execution'' \citep{burckhardt2013s}. However,
+between program development and code execution'' \cite{burckhardt2013s}. However,
 contemporary live programming environments are typically equipped only to provide feedback once the program or 
 program fragment being evaluated is complete. This leaves a temporal and perceptive gap. Listing \ref{fig:hazel-mockup} showed an example where
 useful information---the column-wise mean---can be extracted from an incomplete program, even though a final value cannot be computed. It is not difficult to imagine other such scenarios.
@@ -316,7 +316,7 @@ evaluation states, those where a hole blocks progress at all locations
 within the expression, and (2) defining
 a notion of Indeterminate Progress that allows for evaluation to stop at an 
 indeterminate evaluation state. This ``fix'' is in some ways analagous to the fix needed when introducing 
-run-time errors into a language \citep{pfpl}.\footnote{%
+run-time errors into a language \cite{pfpl}.\footnote{%
 This example is similar to the example shown in cell~\textbf{(c)} in
 Figure~\ref{fig:hazel-mockup}, except that there, we also applied
 the heuristic that we should not step
@@ -345,14 +345,14 @@ $[\!| x + 1 / u |\!]\hehole{}^\metavar_{[2/x, 3/y]} = 2 + 1$.
 Assuming hole instantiation commutes with evaluation, then it suffices to start from any indeterminate evaluation 
 state previously computed and perform hole instantiation on it. After doing so, evaluation can resume. The end result is guaranteed to coincide with that of evaluating the new version of $f$ from scratch. In Figure \ref{fig:dynamics}, this implies that we need not perform the two grayed out evaluation steps. This relates to PI Hammer's
 ongoing research into combining general-purpose incremental
-computation (IC) with static analysis~\citep{OVV2016}. 
+computation (IC) with static analysis~\cite{OVV2016}. 
 %
 Currently, IC research focuses on input
-changes~\citep{TypedAdapton2016, Fisher2016, Hammer2015, Chen2014,
+changes~\cite{TypedAdapton2016, Fisher2016, Hammer2015, Chen2014,
 Hammer2014, Chen2011, Hammer2011, Hammer2009, Hammer2008}, whereas the
 work proposed here considers incremental \emph{program changes}.
 
-The notion of holes being associated with unique names and substitutions, and the notion of hole instantiation just described, is borrowed directly from work in \emph{contextual modal type theory (CMTT)} \citep{Nanevski2008}. Hole names correspond to \emph{metavariables} and holes themselves to \emph{closures}. CMTT is, in turn, the Curry-Howard interpretation of contextual modal logic. This gives us confidence that our approach is not \emph{ad hoc}, but rather rooted in the established logical tradition.
+The notion of holes being associated with unique names and substitutions, and the notion of hole instantiation just described, is borrowed directly from work in \emph{contextual modal type theory (CMTT)} \cite{Nanevski2008}. Hole names correspond to \emph{metavariables} and holes themselves to \emph{closures}. CMTT is, in turn, the Curry-Howard interpretation of contextual modal logic. This gives us confidence that our approach is not \emph{ad hoc}, but rather rooted in the established logical tradition.
 
 \subsection{Proposed Research}
 
@@ -360,7 +360,7 @@ The notion of holes being associated with unique names and substitutions, and th
 
 First, CMTT does not come equipped with a dynamic semantics that supports evaluation of terms with free metavariables, which is precisely what we require (see Scenario 1, above). As such, we need to formally develop the notion of an \emph{indeterminate evaluation state}, define a dynamics that can handle free metavariables, and formally state and prove our Indeterminate Progress and commutativity conjectures. We also need to carefully consider how non-termination (and, perhaps, other effects) affects the commutativity property.
 
-Second, CMTT's closures nicely handle empty expression holes, but non-empty holes, type holes, and other problems that we plan to internalize with our statics need to be considered carefully. Non-empty holes can likely be understood as a simple variation on empty holes. In the previous section, we discussed the relationship between type holes and gradual typing. Work in gradual typing appears to provide one solution to the problem of evaluating terms with type holes (by inserting run-time casts \citep{Siek06a}.) This suggests that a comprehensive dynamics for incomplete programs, i.e. one that assigns dynamic meaning to every statically meaningful incomplete program, will require developing a \emph{gradual contextual modal type theory} (GCMTT).
+Second, CMTT's closures nicely handle empty expression holes, but non-empty holes, type holes, and other problems that we plan to internalize with our statics need to be considered carefully. Non-empty holes can likely be understood as a simple variation on empty holes. In the previous section, we discussed the relationship between type holes and gradual typing. Work in gradual typing appears to provide one solution to the problem of evaluating terms with type holes (by inserting run-time casts \cite{Siek06a}.) This suggests that a comprehensive dynamics for incomplete programs, i.e. one that assigns dynamic meaning to every statically meaningful incomplete program, will require developing a \emph{gradual contextual modal type theory} (GCMTT).
 
 \paragraph{Further Developments.} There are several more practical applications that we aim to explore after developing the initial foundations just described.
 
@@ -368,7 +368,7 @@ It would be useful for the programmer to be able to select a hole that appears i
 
 We need to develop a semantics that characterizes when two edit states are related by hole instantiation. There are two ways to approach this: as a function of the ``diff'' between the two edit states; and 2) as a function of an edit action that was actually performed (see the next section.)
 
-IPython/Jupyter \citep{Perez:2007:ISI:1251563.1251831} supports a feature whereby numeric variable(s) in cells can be marked as being ``interactive'', which causes the user interface to display a slider. As the slider value changes, the new value of the cell is recomputed. It would be useful to be able to use the mechanisms just described to incrementalize parts of this recomputation automatically.
+IPython/Jupyter \cite{Perez:2007:ISI:1251563.1251831} supports a feature whereby numeric variable(s) in cells can be marked as being ``interactive'', which causes the user interface to display a slider. As the slider value changes, the new value of the cell is recomputed. It would be useful to be able to use the mechanisms just described to incrementalize parts of this recomputation automatically.
 
 
 % \begin{wrapfigure}{l}{0.42\textwidth}

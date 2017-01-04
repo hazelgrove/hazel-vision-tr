@@ -39,7 +39,7 @@ $\arraycolsep=4pt\begin{array}{lllllll}
 Partially in preparation for this proposal, we conducted preliminary research to define a static
 semantics for a simply typed lambda calculus (with a 
 single base type, $\tnum$, for simplicity) extended with holes and type
-inconsistencies, but no binding inconsistencies (the results summarized below are detailed in a paper accepted at POPL 2017 \citep{popl-paper}). Figure~\ref{fig:hexp-syntax} defines the syntactic
+inconsistencies, but no binding inconsistencies (the results summarized below are detailed in a paper accepted at POPL 2017 \cite{popl-paper}). Figure~\ref{fig:hexp-syntax} defines the syntactic
 objects of this calculus -- \emph{H-types}, $\htau$,
 are types with holes $\tehole$, and \emph{H-expressions}, $\hexp$, are
 expressions with holes $\hehole$, and marked type inconsistencies,
@@ -137,7 +137,7 @@ incomplete and, as we will see, behave semantically much like empty holes. Types
 \caption{The bidirectional H-typing rules for incomplete expressions.\label{fig:ana-synth}}
 \end{figure}
 We define the static semantics of H-types and H-expressions as a \emph{bidirectional type
-  system}~\citep{Pierce:2000:LTI:345099.345100,DBLP:conf/icfp/DaviesP00,DBLP:conf/tldi/ChlipalaPH05,bidi-tutorial}
+  system}~\cite{Pierce:2000:LTI:345099.345100,DBLP:conf/icfp/DaviesP00,DBLP:conf/tldi/ChlipalaPH05,bidi-tutorial}
 around the two mutually defined judgements in Figure~\ref{fig:ana-synth}. Typing contexts, $\hGamma$, map each variable $x \in
 \domof{\hGamma}$ to a hypothesis $x : \htau$ in the usual manner. 
 %
@@ -164,7 +164,7 @@ only at positions where a hole appears in either type. The type hole is
 therefore consistent with every type. This notion of H-type consistency
 coincides with the notion of type consistency that Siek and Taha discovered
 in their foundational work on gradual type systems, if we interpret the
-type hole as the $?$ (i.e. unknown) type \citep{Siek06a}. This discovery is quite encouraging, given that gradual typing is also motivated by a 
+type hole as the $?$ (i.e. unknown) type \cite{Siek06a}. This discovery is quite encouraging, given that gradual typing is also motivated by a 
 desire to make sense of one class of ``intermediate edit states,'' or programs that
 have not yet been fully annotated with types.
 
@@ -173,7 +173,7 @@ $\hlam{x}{\hexp}$. There is no type synthesis rule that applies
 to this form, so lambda abstractions can appear only in analytic position,
 i.e. where an expected type is known.\footnote{It is possible to also define a
   ``half-annotated'' synthetic lambda form, $\lambda x{:}\tau.e$, but for
-  simplicity, we leave it out \citep{DBLP:conf/tldi/ChlipalaPH05}.}  Rule~\Rule{rule:ana-lam}{lam} is not quite the standard rule,
+  simplicity, we leave it out \cite{DBLP:conf/tldi/ChlipalaPH05}.}  Rule~\Rule{rule:ana-lam}{lam} is not quite the standard rule,
 %
 % CLG says we don't have room 
 % reproduced below:
@@ -207,8 +207,8 @@ application, also makes use of the matched arrow type judgement to
 combine what would otherwise need to be two rules for function application:
 one for when $e_1$ synthesizes an arrow type, and another for when $e_1$
 synthesizes the type hole. Indeed, Siek and Taha needed two application
-rules for the same fundamental reason~\citep{Siek06a}. Later work on gradual
-typing introduced this notion of type matching to resolve this redundancy \citep{DBLP:conf/popl/CiminiS16,DBLP:conf/popl/GarciaC15,DBLP:conf/popl/RastogiCH12}.
+rules for the same fundamental reason~\cite{Siek06a}. Later work on gradual
+typing introduced this notion of type matching to resolve this redundancy \cite{DBLP:conf/popl/CiminiS16,DBLP:conf/popl/GarciaC15,DBLP:conf/popl/RastogiCH12}.
 
 % Rule (\ref{rule:syn-num}) states that numbers synthesize the $\tnum$
 % type. Rule (\ref{rule:syn-plus}) states that $\hexp_1 + \hexp_2$ behaves
@@ -285,7 +285,7 @@ The simple static semantics just described has been mechanized using the Agda pr
     the types of unbound variables will therefore require tracking and solving typing constraints.  Dagenais and
     Hendren also studied how to reason statically about programs
     with binding errors using a constraint system, focusing on
-    Java programs whose imports are not completely known~\citep{DBLP:conf/oopsla/DagenaisH08}. They neither
+    Java programs whose imports are not completely known~\cite{DBLP:conf/oopsla/DagenaisH08}. They neither
     considered programs with holes or other type inconsistencies,
     nor formally mathematically specificied their
     technique. However, they provide a useful starting point for us.
@@ -313,9 +313,9 @@ The simple static semantics just described has been mechanized using the Agda pr
     this in recent work on the Gradualizer, which is capable of
     producing a gradual type system from a standard type system with lightweight
     annotations that communicate the intended polarities of certain
-    constructs~\citep{DBLP:conf/popl/CiminiS16}. However, although it provides a good starting point, gradual type systems 
+    constructs~\cite{DBLP:conf/popl/CiminiS16}. However, although it provides a good starting point, gradual type systems 
     only consider the problem of holes in 
     types, and the Gradualizer does not support bidirectionally typed languages.
     Our plan is to build 
-    upon existing proof automation techniques, e.g. Agda's reflection \citep{van2012engineering}.
+    upon existing proof automation techniques, e.g. Agda's reflection \cite{van2012engineering}.
 

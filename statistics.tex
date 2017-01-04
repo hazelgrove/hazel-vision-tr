@@ -13,20 +13,20 @@ bug fixes. We plan to also consider bugs that do not correspond to static
 errors, including those identified explicitly by the programmer, and those
 related to assertion failures or exceptions encountered when using the live
 programming features of \HazelEnv. In these situations, we plan to defer to
-existing automated fault localization techniques~\citep{Jones02,
+existing automated fault localization techniques~\cite{Jones02,
   Qi13issta,Renieris03}.
 
 Note that features like these are not themselves novel. Many editors provide
 contextually relevant suggestions. Indeed, code inference and suggestion is
 closely related to several major research areas: code
-completion~\citep{Muslu12icse-nier,icse-naturalness12}, program
-synthesis~\citep{Gulwani2010}, and program
-repair~\citep{legoues12tse,angelix,prophet,Ke15ase}.  
+completion~\cite{Muslu12icse-nier,icse-naturalness12}, program
+synthesis~\cite{Gulwani2010}, and program
+repair~\cite{legoues12tse,angelix,prophet,Ke15ase}.  
 
 The problems that existing systems encounter is exactly the problem we have 
 been discussing throughout this proposal: when attempting to integrate these 
 features into an editor, it is difficult to reason about malformed or meaningless
-edit states. As such, many of these systems use tokenized representations of programs \citep{icse-naturalness12}. Because \HazelEnv maintains the invariant that every
+edit states. As such, many of these systems use tokenized representations of programs \cite{icse-naturalness12}. Because \HazelEnv maintains the invariant that every
 edit state is a syntactically and semantically meaningful formal structure, we can develop a
 more principled solution to the problem of generating meaningful suggestions. In particular,
 we will \emph{prove} that every action suggestion generated for a particular edit state is 
@@ -42,10 +42,10 @@ to these contributions as a \emph{statistical action suggestion semantics}.
 
 \paragraph{Action suggestion generation.}  Syntax guided program synthesis uses
 syntactic rules to constrain code generation with respect to a
-specification~\citep{sygus} and provides a natural starting point for
+specification~\cite{sygus} and provides a natural starting point for
 code generation in \Hazel. PI Le Goues has had recent success exploring its use
 for semantically-informed program repair in unannotated C
-programs~\citep{sygus-icsme-era}, developing a translation between value-based
+programs~\cite{sygus-icsme-era}, developing a translation between value-based
 specifications and a generic input language for various syntax-guided synthesis
 engines.  The connection between code generation for incomplete programs in \Hazel
 and generic program repair is natural: In both, we must reason over a partial
@@ -56,8 +56,8 @@ work) and of the semantics around a cursor to inform synthesis. We speculate
 that Hazel's semantics will scalably restrict the synthesis search space, while
 decreasing the technique's reliance on test suite behavior.  Incorporating
 semantic information as well as runtime values in suggestion generation mitigates the
-risk of overfitting to existing test suites~\citep{Qi13issta,Smith15fse}, as we
-have shown for other types of semantic reasoning in the context of program repair~\citep{Ke15ase}.
+risk of overfitting to existing test suites~\cite{Qi13issta,Smith15fse}, as we
+have shown for other types of semantic reasoning in the context of program repair~\cite{Ke15ase}.
 
 
 \begin{figure}
@@ -163,10 +163,10 @@ code. We plan to describe the estimation techniques abstractly, and prove that
 they are unbiased formally, as well as learn and evaluate them empirically over code or edit
 history corpora.  Existing work demonstrates that token-level models of code can
 often be sufficiently
-expressive~\citep{buggy-naturalness-icse16,icse-naturalness12}. However, we
+expressive~\cite{buggy-naturalness-icse16,icse-naturalness12}. However, we
 anticipate that our models may benefit from additional learned context at a
 higher level of representation, such as expressed as
-trees~\citep{changedistiller,probabilistic-cfgs}.  The research challenge lies in
+trees~\cite{changedistiller,probabilistic-cfgs}.  The research challenge lies in
 scalably and expressively integrating static context into these
 representations. We will use initial pilot studies with 
 \HazelEnv to gather concrete estimates. We will also investigate the possibility

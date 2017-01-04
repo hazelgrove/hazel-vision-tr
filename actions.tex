@@ -8,13 +8,13 @@ eliminated.  Programmers interact with structure editors by performing
 \emph{edit actions}.
 
 Structure editors have a long history. For example, the Cornell Program
-SSynthesizer was developed in the early 1980s \citep{teitelbaum_cornell_1981}. There is still significant   
+SSynthesizer was developed in the early 1980s \cite{teitelbaum_cornell_1981}. There is still significant   
  interest in structure editors today. For example,  Scratch is a 
 structure editor that has achieved success as a tool for teaching children
-how to program \citep{Resnick:2009:SP:1592761.1592779}. \texttt{mbeddr} is an editor for a C-like
-language \citep{voelter_mbeddr:_2012}. TouchDevelop is an editor for an
-object-oriented language \citep{tillmann_touchdevelop:_2011} and Lamdu is an
-editor for a functional language similar to Haskell \citep{lamdu}. Most work on structure editors has focused on the user
+how to program \cite{Resnick:2009:SP:1592761.1592779}. \texttt{mbeddr} is an editor for a C-like
+language \cite{voelter_mbeddr:_2012}. TouchDevelop is an editor for an
+object-oriented language \cite{tillmann_touchdevelop:_2011} and Lamdu is an
+editor for a functional language similar to Haskell \cite{lamdu}. Most work on structure editors has focused on the user
 interfaces that they present. Indeed, this is important work -- presenting a
 fluid user interface involving higher-level edit actions is a non-trivial
 problem, and some aspects of this problem remain open.
@@ -38,7 +38,7 @@ programs that we have proposed above.
 % edit state of a cell in \HazelEnv is drawn $\zexp_i \Rightarrow
 % \htau_i$. It consists of an H-expression with a superimposed
 % cursor, which we collectively call a Z-expression, $\zexp_i$ (so named because
-% our encoding uses the \emph{zipper} pattern~\citep{huet}, discussed
+% our encoding uses the \emph{zipper} pattern~\cite{huet}, discussed
 % below.) Each Z-expression is semantically meaningful, i.e. the underlying
 % H-expression synthesizes an H-type, $\htau_i$, according to the static semantics (Section~\ref{sec:statics}).
 % This, in turn, implies that it is also dynamically
@@ -83,12 +83,12 @@ and the editor. We summarize these features below.
 
 In preparation for this proposal, we have developed Hazelnut, an action semantics
 for the minimal language of H-types and H-expressions described in
-Section~\ref{sec:statics}. Portions of this work is scheduled to appear in our forthcoming POPL paper~\citep{popl-paper}. Figure \ref{fig:zexp-syntax} defines the syntax
+Section~\ref{sec:statics}. Portions of this work is scheduled to appear in our forthcoming POPL paper~\cite{popl-paper}. Figure \ref{fig:zexp-syntax} defines the syntax
 of Z-types, $\ztau$, and Z-expressions, $\zexp$. A Z-type (resp. Z-expression)
 represents an H-type (resp. H-expression) with a single superimposed
 \emph{cursor}, indicated as $\zwsel{\htau}$ (resp. $\zwsel{\hexp}$.) The grammar
 can be understood as an instance of Huet's well-known \emph{zipper pattern}
-\citep{JFP::Huet1997} (which, coincidentally, Huet encountered while implementing
+\cite{JFP::Huet1997} (which, coincidentally, Huet encountered while implementing
 a structure editor).
 
 % The only base cases in these inductive grammars are $\zwsel{\htau}$ and
@@ -276,7 +276,7 @@ automatically by following the term structure. Ultimately, we would like to
 produce an \emph{Editorializer}, i.e. a transformation that produces a sensible
 and expressive action semantics from a lightly annotated definition of the
 static semantics of complete expressions. There is precedent in various
-structure editor generators, e.g. Barista~\citep{ko_barista:_2006}. Our
+structure editor generators, e.g. Barista~\cite{ko_barista:_2006}. Our
 contribution would be in producing a structure editor generator with a
 correctness guarantee. 
 
@@ -295,7 +295,7 @@ direction lies in exploring how types can be used to control
 the presentation of expressions in the editor. Following an
 approach developed by PI Aldrich in a textual setting of \emph{type-specific
 languages} (TSLs), it should be possible to have the type that an
-expression is being analyzed against define a \emph{type-specific projection} defined by elaboration to the underlying static semantics and action semantics of \HazelEnv \citep{TSLs}. For example, the matrix projection shown in Figure \ref{fig:hazel-mockup} need not be built in to \HazelEnv. Instead, the \li{Numerics} library provider could introduce this logic. This line of research is also closely related to \emph{active code completion}, which investigated type-specific code generation interfaces \citep{Omar:2012:ACC:2337223.2337324}. The first author on that work is advised by PI Aldrich and contributed to the writing of this proposal.
+expression is being analyzed against define a \emph{type-specific projection} defined by elaboration to the underlying static semantics and action semantics of \HazelEnv \cite{TSLs}. For example, the matrix projection shown in Figure \ref{fig:hazel-mockup} need not be built in to \HazelEnv. Instead, the \li{Numerics} library provider could introduce this logic. This line of research is also closely related to \emph{active code completion}, which investigated type-specific code generation interfaces \cite{Omar:2012:ACC:2337223.2337324}. The first author on that work is advised by PI Aldrich and contributed to the writing of this proposal.
 
 \paragraph{Interactive Semantic Documentation.} Finally, we propose
 to develop a semantics of semantic comments, 
@@ -306,4 +306,4 @@ action semantics as the foundation for a ``tutorial'' system that introduces por
 sequence. The learner can proceed through the tutorial with the full array of
 editor services available at each intermediate edit state. There is evidence to
 suggest that revealing pieces of programs in sequence and interacting with
-intermediate edit states can be valuable in educational settings~\citep{Bennedsen:2005:RPP:1047344.1047413,Paxton:2002:LPL:771322.771332}.  
+intermediate edit states can be valuable in educational settings~\cite{Bennedsen:2005:RPP:1047344.1047413,Paxton:2002:LPL:771322.771332}.  
