@@ -15,10 +15,10 @@
 \bibliographystyle{plainurl}% the recommended bibstyle
 
 % Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\title{Toward Semantic Foundations for Interactive Programming Environments
+\title{Toward Semantic Foundations for Interactive Programming Tools
 %\footnote{This work was partially supported by someone.}
 }
-\titlerunning{Toward Semantic Foundations for Interactive Programming Environments} %optional, in case that the title is too long; the running title should fit into the top page column
+\titlerunning{Toward Semantic Foundations for Interactive Programming Tools} %optional, in case that the title is too long; the running title should fit into the top page column
 
 %% Please provide for each author the \author and \affil macro, even when authors have the same affiliation, i.e. for each author there needs to be the  \author and \affil macros
 \author[1]{Cyrus Omar}
@@ -156,18 +156,16 @@ Programming language definitions assign formal meaning to {complete}
 programs.
 %
 Programmers, however, spend a substantial amount of time interacting
-with \emph{incomplete} programs -- programs with holes, type inconsistencies, binding inconsistencies and other problems -- using tools like program editors and
+with \emph{incomplete} programs -- programs with holes, type inconsistencies, binding inconsistencies and other transient problems -- using tools like program editors and
 live programming environments (which interleave editing and
 evaluation.)
 %
-Semanticists have paid comparatively little attention to incomplete programs and the 
-interactions that programmers have with them. Consequently, the designers of these interactive programming tools lack foundational
-semantic principles comparable to those available to language
-designers. % Instead, they have had to rely on various \emph{ad hoc} heuristics. 
+Semanticists have done little to formally characterize 1) incomplete programs; 2) the 
+actions that programmers perform on incomplete programs; and 3) the behavior of editor services designed to assist the programmer as they perform these actions. Each tool designer has largely been left to develop their own \emph{ad hoc} heuristics. 
 %
+
 This paper serves as a vision statement for the HazelGrove project, which seeks to develop these ``missing'' semantic 
-principles, starting from the first principles of type theory, and to apply these principles in the design of \HazelEnv, a new \emph{live lab notebook} programming
-environment. 
+foundations. We hope that these contributions, which will take the form of a series of typed calculi, will guide the design of a variety of future interactive programming tools, much as various typed lambda calculi have guided a variety of modern language designs. In our own research, we plan to apply these principles in the design of \HazelEnv, a clean-slate \emph{live lab notebook} structure editor. 
 
 % We propose:
 % %
