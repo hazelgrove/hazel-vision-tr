@@ -15,10 +15,10 @@
 \bibliographystyle{plainurl}% the recommended bibstyle
 
 % Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\title{Designing an Interactive Programming Environment from First Principles
+\title{Toward Semantic Foundations for Interactive Programming Environments
 %\footnote{This work was partially supported by someone.}
 }
-\titlerunning{Designing an Interactive Programming Environment from First Principles} %optional, in case that the title is too long; the running title should fit into the top page column
+\titlerunning{Toward Semantic Foundations for Interactive Programming Environments} %optional, in case that the title is too long; the running title should fit into the top page column
 
 %% Please provide for each author the \author and \affil macro, even when authors have the same affiliation, i.e. for each author there needs to be the  \author and \affil macros
 \author[1]{Cyrus Omar}
@@ -40,12 +40,12 @@
   \texttt{clegoues@cs.cmu.edu}}
 \affil[6]{Carnegie Mellon University, Pittsburgh, PA, USA\\
   \texttt{aldrich@cs.cmu.edu}}
-\affil[7]{University of Colorado Boulder\\
+\affil[7]{University of Colorado Boulder, Boulder, CO, USA\\
   \texttt{matthew.hammer@colorado.edu}}
 
 \authorrunning{C. Omar, I. Voysey, M. Hilton, J. Sunshine, C. Le Goues, J. Aldrich, and M. Hammer} %mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
 
-\Copyright{Cyrus Omar, MO}%mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+\Copyright{the authors}%mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
 
 % \subjclass{Dummy classification -- please refer to \url{http://www.acm.org/about/class/ccs98-html}}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation". 
 % \keywords{Dummy keyword -- please provide 1--5 keywords}% mandatory: Please provide 1-5 keywords
@@ -68,19 +68,21 @@
 \usepackage{etoolbox}
 \usepackage{hyperref}
 
-\usepackage{srcltx}
-\usepackage{goodcharter}
-\usepackage{euler}
+% \usepackage{srcltx}
+% \usepackage{goodcharter}
+% \usepackage{euler}
 
-\usepackage{joshuadunfield}
+% \usepackage{joshuadunfield}
 \usepackage{llproof}
 %\usepackage{jdproof}
 \usepackage{rulelinks}
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{wrapfig}
-
-\usepackage{latexsym,stmaryrd}
+\usepackage{lmodern}
+\usepackage{anyfontsize}
+\usepackage{stmaryrd}
+\SetSymbolFont{stmry}{bold}{U}{stmry}{m}{n}
 \usepackage{amsmath,amsthm,amssymb}
 \usepackage{thmtools,thm-restate}
 
@@ -108,8 +110,8 @@ classoffset=0,belowskip=\smallskipamount, aboveskip=\smallskipamount
 \lstloadlanguages{Java,VBScript,XML,HTML,ML}
 \let\li\lstinline
 
-\newcommand{\Hazel}[0]{\textsf{Hazel}\xspace}
-\newcommand{\HazelEnv}[0]{\Hazel\xspace}
+\newcommand{\Hazel}[0]{\textsf{Hazel}}
+\newcommand{\HazelEnv}[0]{\Hazel}
 
 \newcommand{\RuleHead}[1]{\text{\raisebox{1em}[0pt]{\ensuremath{\mathsz{\ifnum\OPTIONConf=1 14pt\else 18pt \fi}{#1}}}}~~~~~}
 
@@ -149,42 +151,43 @@ classoffset=0,belowskip=\smallskipamount, aboveskip=\smallskipamount
 \maketitle
 
 \begin{abstract}
-%
-Programming language definitions assign meaning to \emph{complete}
+% 
+Programming language definitions assign formal meaning to {complete}
 programs.
 %
 Programmers, however, spend a substantial amount of time interacting
-with \emph{incomplete} programs using tools like program editors and
+with \emph{incomplete} programs -- programs with holes, type inconsistencies, binding inconsistencies and other problems -- using tools like program editors and
 live programming environments (which interleave editing and
 evaluation.)
 %
-Semanticists have paid comparatively little attention to these
-interactions, so the designers of tools like these lack foundational
+Semanticists have paid comparatively little attention to incomplete programs and the 
+interactions that programmers have with them. Consequently, the designers of these interactive programming tools lack foundational
 semantic principles comparable to those available to language
-designers.
+designers. % Instead, they have had to rely on various \emph{ad hoc} heuristics. 
 %
-The objective of the proposed research is to develop the ``missing''
-semantic principles for interactive programming tools. 
+This paper serves as a vision statement for the HazelGrove project, which seeks to develop these ``missing'' semantic 
+principles, starting from the first principles of type theory, and to apply these principles in the design of \HazelEnv, a new \emph{live lab notebook} programming
+environment. 
 
-We propose:
-%
-a \textbf{static semantics for incomplete programs} that assigns static meaning to programs with \emph{holes}, \emph{type inconsistencies}, \emph{binding inconsistencies} and other local, transient problems; 
-%
-a \textbf{dynamic semantics for incomplete programs} that assigns dynamic meaning to incomplete programs and supports ``edit-and-resume'' functionality, thereby tightening the live programming feedback loop;  
-%
-an \textbf{action semantics} that captures the process of editing a program using structured edit actions and maintains a powerful semantic invariant: that every intermediate edit state can be assigned static and dynamic meaning according to the aforementioned semantics for incomplete programs; and 
-%
-a \textbf{statistical action suggestion semantics}, which serves as a foundation for advanced editor features, like semantic code completion and automatic program repair, that need to generate both \emph{semantically valid} and \emph{statistically likely} code snippets and actions.
+% We propose:
+% %
+% a \textbf{static semantics for incomplete programs} that assigns static meaning to programs with \emph{holes}, \emph{type inconsistencies}, \emph{binding inconsistencies} and other local, transient problems; 
+% %
+% a \textbf{dynamic semantics for incomplete programs} that assigns dynamic meaning to incomplete programs and supports ``edit-and-resume'' functionality, thereby tightening the live programming feedback loop;  
+% %
+% an \textbf{action semantics} that captures the process of editing a program using structured edit actions and maintains a powerful semantic invariant: that every intermediate edit state can be assigned static and dynamic meaning according to the aforementioned semantics for incomplete programs; and 
+% %
+% a \textbf{statistical action suggestion semantics}, which serves as a foundation for advanced editor features, like semantic code completion and automatic program repair, that need to generate both \emph{semantically valid} and \emph{statistically likely} code snippets and actions.
 
-To ensure that these individual developments lead toward a coherent
-and practical \emph{theory of interactive programming}, we plan to
-integrate them into a \emph{live lab notebook} programming
-environment, \HazelEnv. By embracing a clean-slate integrative
-approach, we can investigate the semantics of novel constructs that
-are defined within programs but control the programming environment,
-notably \textbf{programmable edit action macros},
-\textbf{type-specific projection macros} and \textbf{semantic,
-  interactive documentation}.
+% To ensure that these individual developments lead toward a coherent
+% and practical \emph{theory of interactive programming}, we plan to
+% integrate them into a \emph{live lab notebook} programming
+% environment, \HazelEnv. By embracing a clean-slate integrative
+% approach, we can investigate the semantics of novel constructs that
+% are defined within programs but control the programming environment,
+% notably \textbf{programmable edit action macros},
+% \textbf{type-specific projection macros} and \textbf{semantic,
+%   interactive documentation}.
 
 % Although our proposed contributions are primarily {mathematical}, we
 % will also conduct small \textbf{pilot studies} involving in order to
@@ -201,32 +204,33 @@ notably \textbf{programmable edit action macros},
 
 \section{Introduction}
 
-This proposal aims to bridge two historically divided traditions: (1) the formal
-tradition, which has produced seminal advances by viewing programming languages,
-and therefore programs, as mathematical structures~\cite{pfpl,Pierce:2002hj}; and (2) the design
-tradition, which has produced a number of innovative interactive programming
-tools by viewing programming as an interaction between a human programmer and a
-tool. We borrow from both views to propose \HazelEnv: a clean-slate interactive programming
-environment equipped with a formal semantics that assigns meaning 
-to ``edit-time'' structures and interactions that have largely been 
-considered beyond the scope of the formal tradition to date. Figure~\ref{fig:hazel-mockup} shows a mockup of \HazelEnv's user interface,
-which we will reference throughout this discussion.
+% Our research aims to bridge two historically distinct traditions: (1) the formal
+% tradition, which has produced seminal advances by viewing programming languages,
+% and therefore programs, as mathematical structures~(see e.g. \cite{pfpl,Pierce:2002hj}); and (2) the interaction design
+% tradition, which has produced a number of innovative interactive programming
+% tools by viewing programming as an interaction between a human programmer and a tool. We borrow from both traditions to propose 
 
-\HazelEnv, like many existing language-specific program editors (e.g. Eclipse
-and Emacs, with the appropriate  
-extensions installed \cite{gamma2004contributing}), will provide a number of standard editor services, including (1)
+% This paper envisions \Hazel, a clean-slate interactive programming
+% environment equipped with a formal semantics that assigns meaning 
+% to ``edit-time'' structures and interactions that have largely been 
+% considered beyond the scope of the formal tradition to date. Figure~\ref{fig:hazel-mockup} shows a mockup of \HazelEnv's user interface,
+% which we will reference throughout our discussion.
+
+%\HazelEnv, like many existing 
+Language-aware program editors (e.g. Eclipse
+or Emacs, with the appropriate  
+extensions installed \cite{gamma2004contributing}) provide a number of useful editor services, including (1)
 syntax highlighting, (2)
 the ability to inspect the type of an expression, (3)
 the ability to jump to the binding site of a variable, and (4)
 the ability to rename a variable in a semantics-preserving manner. 
-Were \HazelEnv to encounter only \emph{complete programs}, it would be clear how
-to proceed. For example, a syntax highlighter could automatically be produced
-from a lightly annotated version of the context-free syntax of the
-language \cite{DBLP:conf/tools/KrahnRV08,DBLP:conf/cc/BrandDHJJKKMOSVVV01}. The remaining editor services could be implemented
-by following the language's type and binding structure, as specified by a formal
-semantics. The problem that animates this proposal is that the
-editor must confront many \emph{edit states} that do not map onto complete
-programs.
+
+When these editor services encounter \emph{complete programs} -- programs that are well-formed and semantically meaningful, according to the language definition -- they can rely on a variety of accompanying reasoning principles and program manipulation techniques. For example, a syntax highlighter for well-formed programs can be generated automatically 
+from a context-free grammar \cite{DBLP:conf/tools/KrahnRV08,DBLP:conf/cc/BrandDHJJKKMOSVVV01} and the remaining editor services enumerated above can be realized 
+by following the language's type and binding structure, as specified by a standard formal
+semantics.
+
+The problem, of course, is that many of the {edit states} encountered by a program editor do not correspond to complete programs. In these situations, many program editors simply disable various editor services. More advanced editors have developed various \emph{ad hoc}, poorly understood heuristics that attempt to recover from the problem and continue on.
 
 \paragraph{Problem 1: Syntactically Malformed Edit States.} 
 Textual program editors frequently encounter edit states
@@ -254,7 +258,7 @@ We will return to the topic of structure editors and projections below.
 
 
 \begin{figure}
-\includegraphics[width=\textwidth]{mockup-1}
+\includegraphics[width=1.025\textwidth]{mockup-1}
 \caption{A mockup of \HazelEnv.}
 \label{fig:hazel-mockup}
 %\vspace{-2ex}
