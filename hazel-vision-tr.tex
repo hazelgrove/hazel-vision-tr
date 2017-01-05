@@ -160,11 +160,11 @@ with \emph{incomplete} programs -- programs with holes, type inconsistencies, bi
 live programming environments (which interleave editing and
 evaluation.)
 %
-Theorists have done little to formally characterize 1) the static and dynamic semantics of incomplete programs; 2) the 
+Theorists have done comparatively little to formally characterize 1) the static and dynamic semantics of incomplete programs; 2) the 
 actions available to programmers as they edit and inspect incomplete programs; and 3) the semantics of editor services that suggest likely edit actions to the programmer based on semantic information extracted from the incomplete program being edited, and from programs that the system has encountered in the past. % Each tool designer has largely been left to develop their own \emph{ad hoc} heuristics. 
 %
 This paper serves as a vision statement for the HazelGrove research program, which seeks to develop these ``missing'' semantic 
-foundations. We hope that these contributions, which will take the form of a series of simple formal calculi equipped with mechanized metatheory, will guide the design of a variety of current and future interactive programming tools, much as various lambda calculi have guided modern language designs. In particular, we plan to apply these principles in the design of \HazelEnv, an experimental \emph{live lab notebook} programming environment designed for data science tasks. Notably, we plan to co-design the \HazelEnv~language and editor. This will open up interesting possibilities, e.g. for edit-time semantic conflict resolution strategies and semantic constructs that allow library providers to install new library-specific edit-time features.
+foundations. Our hope is that these contributions, which will take the form of a series of simple formal calculi equipped with mechanized metatheory, will guide the design of a variety of current and future interactive programming tools, much as various lambda calculi have guided modern language designs. Our own research will apply these principles in the design of \HazelEnv, an experimental \emph{live lab notebook} programming environment designed for data science tasks. Perhaps controversially, we plan to co-design the \HazelEnv~language and editor. This will open up interesting new possibilities, e.g. for edit-time semantic conflict resolution strategies and semantic constructs that allow library providers to install new library-specific edit-time features.
 
 % We propose:
 % %
