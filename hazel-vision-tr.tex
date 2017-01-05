@@ -15,33 +15,38 @@
 \bibliographystyle{plainurl}% the recommended bibstyle
 
 % Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\title{Toward Semantic Foundations for Interactive Programming Tools
+\title{Toward Semantic Foundations for Program Editors
 %\footnote{This work was partially supported by someone.}
 }
-\titlerunning{Toward Semantic Foundations for Interactive Programming Tools} %optional, in case that the title is too long; the running title should fit into the top page column
+\titlerunning{Toward Semantic Foundations for Program Editors} %optional, in case that the title is too long; the running title should fit into the top page column
 
 %% Please provide for each author the \author and \affil macro, even when authors have the same affiliation, i.e. for each author there needs to be the  \author and \affil macros
 \author[1]{Cyrus Omar}
-\author[2]{Ian Voysey}
-\author[3]{Michael Hilton}
-\author[4]{Joshua Sunshine}
-\author[5]{Claire Le Goues}
-\author[6]{Jonathan Aldrich}
-\author[7]{Matthew Hammer}
+\author[1]{Ian Voysey}
+\author[2]{Michael Hilton}
+\author[1]{Joshua Sunshine}
+\author[1]{Claire Le Goues}
+\author[1]{Jonathan Aldrich}
+\author[3]{Matthew Hammer}
 \affil[1]{Carnegie Mellon University, Pittsburgh, PA, USA\\
-  \texttt{comar@cs.cmu.edu}}
-\affil[2]{Carnegie Mellon University, Pittsburgh, PA, USA\\
-  \texttt{iev@cs.cmu.edu}}
-\affil[3]{Oregon State University, Corvallis, OR, USA\\
-  \texttt{hiltonm@eecs.oregonstate.edu}}
-\affil[4]{Carnegie Mellon University, Pittsburgh, PA, USA\\
-  \texttt{sunshine@cs.cmu.edu}}
-\affil[5]{Carnegie Mellon University, Pittsburgh, PA, USA\\
-  \texttt{clegoues@cs.cmu.edu}}
-\affil[6]{Carnegie Mellon University, Pittsburgh, PA, USA\\
-  \texttt{aldrich@cs.cmu.edu}}
-\affil[7]{University of Colorado Boulder, Boulder, CO, USA\\
+  \texttt{\{comar,iev,sunshine,clegoues,aldrich\}@cs.cmu.edu}}
+\affil[2]{Oregon State University, Corvallis, OR, USA\\
+\texttt{hiltonm@eecs.oregonstate.edu}}
+\affil[3]{University of Colorado Boulder, Boulder, CO, USA\\
   \texttt{matthew.hammer@colorado.edu}}
+
+% \affil[2]{Carnegie Mellon University, Pittsburgh, PA, USA\\
+%   \texttt{iev@cs.cmu.edu}}
+% \affil[3]{Oregon State University, Corvallis, OR, USA\\
+%   \texttt{hiltonm@eecs.oregonstate.edu}}
+% \affil[4]{Carnegie Mellon University, Pittsburgh, PA, USA\\
+%   \texttt{sunshine@cs.cmu.edu}}
+% \affil[5]{Carnegie Mellon University, Pittsburgh, PA, USA\\
+%   \texttt{clegoues@cs.cmu.edu}}
+% \affil[6]{Carnegie Mellon University, Pittsburgh, PA, USA\\
+%   \texttt{aldrich@cs.cmu.edu}}
+% \affil[7]{University of Colorado Boulder, Boulder, CO, USA\\
+%   \texttt{matthew.hammer@colorado.edu}}
 
 \authorrunning{C. Omar, I. Voysey, M. Hilton, J. Sunshine, C. Le Goues, J. Aldrich, and M. Hammer} %mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
 
@@ -85,7 +90,7 @@
 \SetSymbolFont{stmry}{bold}{U}{stmry}{m}{n}
 \usepackage{amsmath,amsthm,amssymb}
 \usepackage{thmtools,thm-restate}
-
+\usepackage{todonotes}
 \usepackage{enumerate}
 
 % \usepackage[authoryear]{natbib}
@@ -156,15 +161,16 @@ Programming language definitions assign formal meaning to {complete}
 programs.
 %
 Programmers, however, spend a substantial amount of time interacting
-with \emph{incomplete} programs -- programs with holes, type inconsistencies, binding inconsistencies and other local, transient problems -- using tools like program editors and
+with \emph{incomplete} programs -- programs with holes, type inconsistencies and binding inconsistencies -- using tools like program editors and
 live programming environments (which interleave editing and
 evaluation.)
 %
-Theorists have done comparatively little to formally characterize 1) the static and dynamic semantics of incomplete programs; 2) the 
-actions available to programmers as they edit and inspect incomplete programs; and 3) the semantics of editor services that suggest likely edit actions to the programmer based on semantic information extracted from the incomplete program being edited, and from programs that the system has encountered in the past. % Each tool designer has largely been left to develop their own \emph{ad hoc} heuristics. 
+Semanticists have done comparatively little to formally characterize 1) the static and dynamic semantics of incomplete programs; 2) the 
+actions available to programmers as they edit and inspect incomplete programs; and 3) the behavior of editor services that suggest likely edit actions to the programmer based on semantic information extracted from the incomplete program being edited, and from programs that the system has encountered in the past.% As such, each tool designer has largely been left to develop their own \emph{ad hoc} heuristics. 
+
 %
-This paper serves as a vision statement for the HazelGrove research program, which seeks to develop these ``missing'' semantic 
-foundations. Our hope is that these contributions, which will take the form of a series of simple formal calculi equipped with mechanized metatheory, will guide the design of a variety of current and future interactive programming tools, much as various lambda calculi have guided modern language designs. Our own research will apply these principles in the design of \HazelEnv, an experimental \emph{live lab notebook} programming environment designed for data science tasks. Perhaps controversially, we plan to co-design the \HazelEnv~language and editor. This will open up interesting new possibilities, e.g. for edit-time semantic conflict resolution strategies and semantic constructs that allow library providers to install new library-specific edit-time features.
+This paper serves as a vision statement for a research program that seeks to develop these ``missing'' semantic 
+foundations. Our hope is that these contributions, which will take the form of a series of simple formal calculi equipped with a clear mechanized metatheory, will guide the design of a variety of current and future interactive programming tools, much as various lambda calculi have guided modern language designs. Our own research will apply these principles in the design of \HazelEnv, an experimental \emph{live lab notebook} programming environment designed for data science tasks. Perhaps controversially, we plan to co-design the \HazelEnv~language with the editor so that we can explore e.g. edit-time semantic conflict resolution mechanisms and mechanisms that allow library providers to install new library-specific edit-time features.
 
 % We propose:
 % %
@@ -216,18 +222,23 @@ foundations. Our hope is that these contributions, which will take the form of a
 %\HazelEnv, like many existing 
 Language-aware program editors (e.g. Eclipse
 or Emacs, with the appropriate  
-extensions installed \cite{gamma2004contributing}) provide a number of useful editor services, including (1)
+extensions installed \cite{gamma2004contributing}) offer programmers a number of useful editor services. Simple examples include (1)
 syntax highlighting, (2)
-the ability to inspect the type of an expression, (3)
-the ability to jump to the binding site of a variable, and (4)
-the ability to rename a variable in a semantics-preserving manner. 
+type inspection, (3)
+navigation to variable binding sites, and (4)
+refactoring. More sophisticated editors provide context-aware suggestions to the programmer (using various code completion, program synthesis and program repair techniques.) Many editors also offer \emph{live programming} services, e.g. by displaying the run-time value of an expression directly within the editor as the program is running. \todo{citations}
 
-When these editor services encounter \emph{complete programs} -- programs that are well-formed and semantically meaningful, according to the language definition -- they can rely on a variety of accompanying reasoning principles and program manipulation techniques. For example, a syntax highlighter for well-formed programs can be generated automatically 
-from a context-free grammar \cite{DBLP:conf/tools/KrahnRV08,DBLP:conf/cc/BrandDHJJKKMOSVVV01} and the remaining editor services enumerated above can be realized 
-by following the language's type and binding structure, as specified by a standard formal
-semantics.
+When these editor services encounter \emph{complete programs} -- programs that are well-formed and semantically meaningful according to the definition of the language in use -- they can rely on a variety of well-understood reasoning principles and program manipulation techniques. For example, a syntax highlighter for well-formed programs can be generated automatically 
+from a context-free grammar \cite{DBLP:conf/tools/KrahnRV08,DBLP:conf/cc/BrandDHJJKKMOSVVV01} and the remaining editor services enumerated above can follow the language's type and binding structure as specified by a standard static
+semantics. Live programming services can additionally refer to the language's dynamic semantics.
 
-The problem, of course, is that many of the {edit states} encountered by a program editor do not correspond to complete programs. In these situations, many program editors simply disable various editor services. More advanced editors have developed various \emph{ad hoc}, poorly understood heuristics that attempt to recover from the problem and continue on.
+The problem, of course, is that many of the {edit states} encountered by a program editor do not correspond to complete programs. For example, the programmer may be in the midst of a transient edit, or the programmer may have introduced a type error somewhere in the program. Standard language definitions are silent about incomplete programs, so in these situations, many program editors simply disable various editor services until the program is again in a complete state. In other words, useful editor services become unavailable when the programmer needs them most of all! More advanced editors have developed various \emph{ad hoc} and poorly understood heuristics that attempt to recover from the problem and continue on, using some idiosyncratic internal representation of the incomplete program.
+
+This paper advocates for a research program that seeks to understand incomplete programs, and the editor services that interact with them, as semantically rich mathematical objects. In other words, we seek to broaden the scope of the ``programming language theory'' (PLT) tradition, which has made significant advances by treating complete programs, programming languages, logics and compilers as semantically rich mathematical objects. %Indeed, our view is that complete programs should ultimately be understood as ``trivially incomplete'' programs.
+
+In following the PLT tradition, we intend to start by developing a series of minimal calculi that build upon the well-understood typed lambda calculus to capture the essential character of incomplete programs and various editor services of interest. Editor designers can then apply the insights gained from studying these calculi (together with insights gained from the study of human factors and other topics) to design more elaborate program editors. Some of these editors will evolve directly from editors already in use today. At the same time, we plan to design a ``clean-slate'' programming environment, \Hazel, based directly on these first principles. This will allow researchers to cleanly explore the frontier of what is possible when one considers languages and editors within a common theoretical framework. Such a clean-slate design might also prove useful in certain educational settings, and perhaps ultimately even make its way into practice.
+
+Figure \ref{fig:hazel-mockup} shows a mockup of the \Hazel ~user interface, which is modeled on the widely adopted IPython / Jupyter lab notebook interface\todo{citation}. We will refer to this figure throughout the remainder of the paper, which briefly summarizes some of the fundamental problems that we must confront as we seek to develop a semantic foundation for advanced program editors. In each section, we discuss existing approaches, including our own recent research, and suggest a number of promising future research directions for the community to pursue.
 
 \paragraph{Problem 1: Syntactically Malformed Edit States.} 
 Textual program editors frequently encounter edit states
@@ -249,7 +260,7 @@ that have not yet been constructed.  This representation choice sidesteps the
 problem of syntactically malformed edit states. Notice that in
 Figure~\ref{fig:hazel-mockup}, the program fragment in cell
 \textbf{(a)} contains holes, appearing as squares. This design also permits
-non-textual \emph{projections} of expression, e.g. 
+non-textual \emph{projections} of expressions, e.g. 
 the 2D projection of a matrix value in cell \textbf{(b)}.
 We will return to the topic of structure editors and projections below.
 
