@@ -257,9 +257,10 @@ constructing a call to a function \lstinline{std}:
 There is a syntax
 error at this moment in the editing process, so editor services that require a syntactically
 complete program must be disabled. This is unsatisfying. Sophisticated editors like Eclipse, and editor generators like Spoofax \cite{DBLP:conf/oopsla/KatsV10}, use \emph{error recovery} heuristics that can support the continued provision 
-of various services in some formally malformed states, by using secondary notational conventions (e.g. whitespace) to segregate malformed portions of the program  \cite{DBLP:conf/oopsla/KatsJNV09,DBLP:conf/sle/JongeNKV09}. These heuristics work most, but not all, of the time.
+of various services in some formally malformed states, by using secondary notational conventions (e.g. whitespace) to segregate malformed portions of the program  \cite{DBLP:conf/oopsla/KatsJNV09,DBLP:conf/sle/JongeNKV09}. These heuristics are helpful, but do not work all of the time.
+%work most, but not all, of the time.
 
-The alternative approach that we take for \HazelEnv is to build a
+The alternative approach that we take for \HazelEnv~ is to build a
 \emph{structure editor} -- a program editor where every edit state
 maps onto a syntax tree, with \emph{holes} representing leaves of the tree
 that have not yet been constructed.  This representation choice sidesteps the
@@ -290,7 +291,7 @@ but the type annotation on \li{x} is \li{string}.) This leaves the entire progra
 formally meaningless according to a standard static semantics.
 
 In the presence of holes, the problem of reasoning statically about edit states
-becomes even more interesting.  Consider the incomplete expression \lstinline{std(m, #$\square$#)} 
+becomes even more interesting.  Consider the incomplete expression \texttt{std(m,~$\square$)} 
 from cell \textbf{(a)} in Figure \ref{fig:hazel-mockup}.
 %
 %\begin{lstlisting}[numbers=none]
@@ -306,7 +307,7 @@ approaches are implemented in Eclipse and other sophisticated tools, but the
 formal character of these heuristics are obscure, buried deep within their implementations. This brings us to our first specific research aim: the 
 development, from type-theoretic first principles, of \textbf{a static semantics for incomplete programs} (Section~\ref{sec:statics}),
 i.e. programs that contain holes, type inconsistencies, unbound variables, and
-other static problems. Using such a semantics, \HazelEnv can 
+other static problems. Using such a semantics, \HazelEnv~ can 
 communicate to the programmer (see right column of Figure \ref{fig:hazel-mockup}) that the expression at the cursor, highlighted in blue in cell \textbf{(a)}, must be of type \li{dimension}. The incomplete function
 \li{summary_stats} as a whole will be assigned the following incomplete function
 type: \texttt{matrix<float> -> \{ {mean} : vec<float>, std : vec<float>, median :~$\square$ \}}.
