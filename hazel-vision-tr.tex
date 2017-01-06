@@ -152,6 +152,8 @@ classoffset=0,belowskip=\smallskipamount, aboveskip=\smallskipamount
 \definecolor{Green}{rgb}{0.0, 0.99, 0.0}
 \definecolor{light-gray}{rgb}{0.95, 0.95, 0.95}
 
+\input{macros-popl17}
+
 \begin{document}
 \maketitle
 
@@ -233,18 +235,18 @@ When these editor services encounter \emph{complete programs} -- programs that a
 from a context-free grammar \cite{DBLP:conf/tools/KrahnRV08,DBLP:conf/cc/BrandDHJJKKMOSVVV01} and the remaining editor services enumerated above can follow the language's type and binding structure as specified by a standard static
 semantics. Live programming services can additionally refer to the language's dynamic semantics.
 
-The problem, of course, is that many of the {edit states} encountered by a program editor do not correspond to complete programs. For example, the programmer may be in the midst of a transient edit, or the programmer may have introduced a type error somewhere in the program. Standard language definitions are silent about incomplete programs, so in these situations, many program editors simply disable various editor services until the program is again in a complete state. In other words, useful editor services become unavailable when the programmer needs them most!
+The problem, of course, is that many of the {edit states} encountered by a program editor do not correspond to complete programs. For example, the programmer may be in the midst of a transient edit, or the programmer may have introduced a type error somewhere in the program. Standard language definitions are silent about incomplete programs, so in these situations, simple program editors simply disable various editor services until the program is again in a complete state. In other words, useful editor services become unavailable when the programmer needs them most!
 % THIS SENTENCE DOESN'T MAKE SENSE TO ME.  I REPLACED IT WITH WHAT I THINK WE ARE TRYING TI SAY. More advanced editors have developed various \emph{ad hoc} and poorly understood heuristics that attempt to recover from the problem and continue on, using some idiosyncratic internal representation of the incomplete program.
-Some editors attempt to provide feedback during these incomplete states by using various \emph{ad hoc} and poorly understood heuristics based on idiosyncratic internal representations of  incomplete programs.
+More advanced editors attempt to continue to provide editor services during these incomplete states by using various \emph{ad hoc} and poorly understood heuristics based on idiosyncratic internal representations of  incomplete programs.
 
-This paper advocates for a research program that seeks to understand both incomplete programs, and the editor services that interact with them, as semantically rich mathematical objects. In other words, we seek to broaden the scope of the ``programming language theory'' (PLT) tradition, which has made significant advances by treating complete programs, programming languages and logics as semantically rich mathematical objects. %Indeed, our view is that complete programs should ultimately be understood as ``trivially incomplete'' programs.
+This paper advocates for a research program that seeks to understand both incomplete programs, and the editor services that interact with them, as semantically rich mathematical objects. This will broaden the scope of the ``programming language theory'' (PLT) tradition, which has made significant advances by treating complete programs, programming languages and logics as semantically rich mathematical objects. %Indeed, our view is that complete programs should ultimately be understood as ``trivially incomplete'' programs.
 
-In following the PLT tradition, we intend to start by developing a series of minimal calculi that build upon well-understood typed lambda calculi to capture the essential character of incomplete programs and various editor services of interest. Editor designers can then apply the insights gained from studying these calculi (together with insights gained from the study of human factors and other topics) to design more elaborate program editors. Some of these editors will evolve directly from editors already in use today. At the same time, we plan to design a ``clean-slate'' programming environment, \Hazel, based directly on these first principles. This will allow researchers to cleanly explore the frontier of what is possible when one considers languages and editors within a common theoretical framework. Such a clean-slate design might also prove useful in certain educational settings, and perhaps even make its way into practice.
+In following the PLT tradition, we intend to start by developing a series of minimal calculi that build upon well-understood typed lambda calculi to capture the essential character of incomplete programs and various editor services of interest. Editor designers can then apply the insights gained from studying these calculi (together with insights gained from the study of human factors and other topics) to design more elaborate program editors. Some of these editors will evolve directly from editors already in use today. In parallel with these efforts, we plan to design a ``clean-slate'' programming environment, \Hazel, based directly on these first principles. This will allow researchers to cleanly explore the frontier of what is possible when one considers languages and editors within a common theoretical framework. Such a clean-slate design might also prove useful in certain educational settings, and perhaps even make its way into practice.
 
 Figure \ref{fig:hazel-mockup} shows a mockup of the \Hazel ~user interface, which is loosely modeled after the widely adopted IPython / Jupyter lab notebook interface~\cite{PER-GRA:2007}. 
-We use this figure as our running example 
+This figure will serve as our running example 
 %We will refer to this figure
-throughout the remainder of the paper. Each section briefly summarizes a fundamental problem that we must confront as we seek to develop a semantic foundation for advanced program editors. For each problem, we discuss existing approaches, including our own recent research, and suggest a number of promising future research directions for the community to pursue.
+throughout the remainder of the paper. Each section below briefly summarizes a fundamental problem that we must confront as we seek to develop a semantic foundation for advanced program editors. For each problem, we discuss existing approaches, including those advanced by our own recent research, and suggest a number of promising future research directions for the community to pursue.
 
 \section{Problem 1: Syntactically Malformed Edit States} 
 Textual program editors frequently encounter edit states
@@ -276,19 +278,19 @@ Although text-based syntax continues to predominate, there remains significant
 structure editor that has achieved success as a tool for teaching children
 how to program \cite{Resnick:2009:SP:1592761.1592779}. \texttt{mbeddr} is an editor for a C-like
 language \cite{voelter_mbeddr:_2012}, built using the commercially supported MPS structure editor workbench \cite{voelter2011language}. TouchDevelop is an editor for an
-object-oriented language \cite{tillmann_touchdevelop:_2011} and Lamdu is an
-editor for a functional language similar to Haskell \cite{lamdu}. Most work on structure editors has focused on the user
-interfaces that they present. Indeed, this is important work -- presenting a
+object-oriented language \cite{tillmann_touchdevelop:_2011}. Lamdu \cite{lamdu} and Unison \cite{unison} are open source structure
+editors for functional languages similar to Haskell. Most work on structure editors has focused on the user
+interfaces that they present. This is important work -- presenting a
 fluid user interface involving higher-level edit actions is a non-trivial
-problem, and some aspects of this problem remain open. There is reason to be optimistic, however, with recent studies 
-suggesting that programmers experienced with a keyboard-driven structure editors (e.g. \texttt{mbeddr}) 
+problem, and some aspects of this problem remain open even after many years of research. There is reason to be optimistic, however, with recent studies 
+suggesting that programmers experienced with a modern keyboard-driven structure editor (e.g. \texttt{mbeddr}) 
 can be highly productive \cite{DBLP:conf/vl/Asenov014,DBLP:conf/sle/VolterSBK14}.
 
-Researchers have also explored ``hybrid'' approaches. For example, recent work on \emph{syntactic placeholders} envisions 
-an editor where many edit actions cause textual placeholders to appear, rather than leaving the program transiently malformed \cite{Amorim:2016:PSC:2997364.2997374}. This 
+Researchers have also explored various ``hybrid'' approaches. For example, recent work on \emph{syntactic placeholders} envisions 
+a textual program editor where edit actions cause textual placeholders (a.k.a. holes) to appear, rather than leaving the program transiently malformed \cite{Amorim:2016:PSC:2997364.2997374}. This 
 ``approximates'' the experience of a structure editor in common usage, while allowing the programmer to perform arbitrary 
-text edits if desired. A related approach would be to perform error recovery by attempting to insert placeholders into the internal representation used 
-by the program editor, without including them in the surface syntax used by programmers. If ``pure'' structure editing proves too rigid as we design \Hazel, we will explore hybrid approaches like these.
+text edits when necessary. Some programming systems, e.g. recent iterations of the Glasgow Haskell Compiler (GHC) \cite{haskell-holes}\todo{cite GHC wiki page on holes} and the Agda proof assistant \cite{norell2009dependently}\todo{cite documentation on agda holes}, support a workflow where the programmer writes down holes manually at locations in the program that remain under construction. Another approach would be to perform error recovery by attempting to insert holes into the internal representation used 
+by the program editor, without including them in the surface syntax exposed to programmers. If ``pure'' structure editing proves too rigid as we design \Hazel, we will explore hybrid approaches like these.
 
 \begin{figure}
 \includegraphics[width=1.025\textwidth]{mockup-1}
@@ -300,18 +302,42 @@ by the program editor, without including them in the surface syntax used by prog
 \end{figure}
 
 \section{Problem 2: Statically Meaningless Edit States} 
-Regardless of how an 
+
+\begin{figure}[t]
+%\small
+$\arraycolsep=4pt\begin{array}{lllllll}
+\mathsf{HTyp:} & \htau & ::= &
+  \tarr{\htau}{\htau} ~\vert~
+  \tnum ~\vert~
+  \tehole
+\\
+\mathsf{HExp:} & \hexp & ::= &
+  x ~\vert~
+  \hlam{x}{\hexp} ~\vert~
+  \hap{\hexp}{\hexp} ~\vert~
+  \hnum{n} ~\vert~
+  \hadd{\hexp}{\hexp} ~\vert~
+  (\hexp : \htau) ~\vert~
+  \hehole ~\vert~
+  \hhole{\hexp}
+\end{array}$
+\caption{Syntax of H-types and H-expressions. Metavariable $x$ ranges over variables and $n$ over numerals.}
+\label{fig:hexp-syntax}
+%\vspace{-5px}
+\end{figure}
+
+No matter how an 
 editor confronts syntactically malformed edit states, it must also confront 
 edit states that are syntactically well-formed but statically meaningless. For
 example, the following value binding has a type inconsistency:
 \begin{lstlisting}[numbers=none]
-val x : string = std(m, ColumnWise)
+val x : float = std(m, ColumnWise)
 \end{lstlisting}
-(because \li{std} has type \li{matrix<float> * dimension -> vec<float>},
-but the type annotation on \li{x} is \li{string}.) This leaves the entire program
+because \li{std} has type \li{matrix<float> * dimension -> vec<float>},
+but the type annotation on \li{x} is \li{float}, rather than \li{vec<float>}. This leaves the entire surrounding program
 formally meaningless according to a standard static semantics.
 
-In the presence of holes, the problem of reasoning statically about edit states
+In the presence of syntactic holes, the problem of reasoning statically about incomplete programs 
 becomes even more interesting.  Consider the incomplete expression \texttt{std(m,~$\square$)} 
 from cell \textbf{(a)} in Figure \ref{fig:hazel-mockup}.
 %
@@ -319,19 +345,97 @@ from cell \textbf{(a)} in Figure \ref{fig:hazel-mockup}.
 %std(m, #$\square$#)
 %\end{lstlisting}
 %
-Although it is apparent that the type of this expression, after hole instantiation, could only be \lstinline{vec<float>} (the return type of \lstinline{std}),
+Although it is intuitively apparent that the type of this expression, after hole instantiation, could only be \lstinline{vec<float>} (the return type of \lstinline{std}),
 and that the hole must be instantiated with values of type \li{dimension}, the static
 semantics of complete expressions is again silent about these matters. 
 
 Various heuristic
 approaches are implemented in Eclipse and other sophisticated tools, but the 
-formal character of these heuristics are obscure, buried deep within their implementations. This brings us to our first specific research aim: the 
-development, from type-theoretic first principles, of \textbf{a static semantics for incomplete programs} (Section~\ref{sec:statics}),
-i.e. programs that contain holes, type inconsistencies, unbound variables, and
-other static problems. Using such a semantics, \HazelEnv~can 
+formal character of these heuristics are obscure, buried deep within their implementations. What is needed is a clear static semantics for incomplete programs, i.e. programs that contain holes (in both expressions and types), type inconsistencies, binding inconsistencies (i.e. unbound variables), and
+other static problems. Using such a static semantics, \HazelEnv~could 
 communicate to the programmer (see right column of Figure \ref{fig:hazel-mockup}) that the expression at the cursor, highlighted in blue in cell \textbf{(a)}, must be of type \li{dimension}. The incomplete function
-\li{summary_stats} as a whole will be assigned the following incomplete function
+\li{summary_stats} as a whole could be assigned the following incomplete function
 type: \texttt{matrix<float> -> \{ {mean} : vec<float>, std : vec<float>, median :~$\square$ \}}.
+
+We have investigated a subset of this problem, by defining a static
+semantics for a simply typed lambda calculus (with a 
+single base type, $\tnum$, for simplicity) extended with holes and type
+inconsistencies, but no binding inconsistencies. The results are detailed in a paper to appear at POPL 2017 \cite{popl-paper}. Figure~\ref{fig:hexp-syntax} defines the syntactic
+objects of this calculus -- \emph{H-types}, $\htau$,
+are types with holes $\tehole$, and \emph{H-expressions}, $\hexp$, are
+expressions with holes $\hehole$, and marked type inconsistencies,
+$\hhole{\hexp}$. We call marked type inconsistencies \emph{non-empty holes},
+because they mark portions of the syntax tree that remain
+incomplete and behave semantically much like empty holes. Types and expressions that contain no holes are \emph{complete
+  types} and \emph{complete expressions}, respectively.
+
+ We will not reproduce the details in this submission. Instead, let us simply note some interesting connections with other work. 
+
+ First, type holes behave much like unknown types, $?$, from Siek and Taha's pioneering work on gradual typing \cite{Siek06a}. This discovery is quite encouraging, given that gradual typing is also motivated by a 
+desire to make sense of one class of ``intermediate edit states'' -- programs that
+have not yet been fully annotated with types.
+
+Empty expression holes have also been studied formally, e.g. as the \emph{metavariables} 
+of contextual modal type theory (CMTT) \cite{DBLP:journals/tocl/NanevskiPP08}. In particular, expression
+holes can have types and are surrounded by contexts, just as metavariables in
+CMTT are associated with types and contexts. This begins to clarify the
+logical meaning of a typing derivation in Hazelnut -- it conveys
+well-typedness relative to an (implicit) modal context that extracts each
+expression hole's type and context. The modal context must be emptied --
+i.e. the expression holes must be instantiated with expressions of the
+proper type in the proper context -- before the expression can be
+considered complete. This relates to the notion of modal necessity in
+contextual modal logic.
+
+For interactive
+proof assistants that support a tactic model based directly on hole
+filling, the connection to CMTT and similar systems is quite salient. For
+example, Beluga \cite{DBLP:conf/flops/Pientka10} is based on dependent CMTT
+and aspects of Idris' editor support \cite{brady2013idris} are based on a similar system -- 
+McBride's OLEG \cite{mcbride2000dependently}. Lee and Friedman have
+explored a lambda calculus with contexts for a similar
+purpose \cite{DBLP:conf/icfp/LeeF96}. As we will discuss below, our notion of a program editor supports actions beyond hole filling.
+
+There are a number of future research directions that are worth exploring.\todo{collapse space before these paragraphs if necessary}
+
+\subparagraph{Binding inconsistencies.} In the simple calculus developed so far,
+    all variables must be bound before they are used,
+    including those in holes. We must extend this system to support reasoning
+    when a variable is used before it is bound (as is a common workflow.) Dagenais and
+    Hendren also studied how to reason statically about programs
+    with binding errors using a constraint system, focusing on
+    Java programs whose imports are not completely known~\cite{DBLP:conf/oopsla/DagenaisH08}. They neither
+    considered programs with holes or other type inconsistencies,
+    nor formally mathematically specificied their
+    technique. However, they provide a useful starting point.
+
+\subparagraph{Expressiveness.} The simple calculus discussed above 
+    is only as expressive as the typed lambda calculus with numbers. We must scale up the semantics to handle other modern language
+    features, focusing initially on functional language
+    constructs (so that \HazelEnv can be used to teach courses that
+    are today taught using Standard ML, OCaml or Haskell.) This will include recursive and
+    polymorphic functions, recursive types, and labeled product (record) and sum types.
+    We also propose to investigate ML-style structural pattern
+    matching. All of these will require defining new sorts of holes and static
+    inconsistencies, including: (1) non-empty holes at the type level, to handle
+    kind inconsistencies; (2) holes in label position; (3) label inconsistency
+    errors; and (4) holes and type inconsistencies in patterns. 
+
+\subparagraph{Automation.} Although we plan to
+    explore some of these language extensions 
+    ``manually,'' extending our existing mechanization, we ultimately plan 
+    to \emph{automatically}
+    generate a statics for incomplete terms from a standard statics for complete terms,
+    annotated perhaps with additional information. There is some precedent for
+    this in recent work on the Gradualizer, which is capable of
+    producing a gradual type system from a standard type system with lightweight
+    annotations that communicate the intended polarities of certain
+    constructs~\cite{DBLP:conf/popl/CiminiS16}. However, although it provides a good starting point, gradual type systems 
+    only consider the problem of holes in 
+    types.
+    Our plan is to build 
+    upon existing proof automation techniques, e.g. Agda's reflection \cite{van2012engineering} (in part because our present mechanization effort is in Agda.)
+
 
 \section{Problem 3: Dynamically Meaningless Edit States.} Modern programming
 tools are increasingly moving beyond simple ``batch'' programming models by
@@ -452,7 +556,6 @@ research timeline, and the relevant qualifications of the PIs.
 
 % \end{enumerate}
 
-\input{macros-popl17}
 \input{statics}
 \input{dynamics}
 \input{actions}

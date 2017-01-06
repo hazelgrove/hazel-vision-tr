@@ -12,28 +12,6 @@ and binding structure of every edit state.
 
 \subsection{Preliminary Work}
 
-\begin{figure}[t]
-%\small
-$\arraycolsep=4pt\begin{array}{lllllll}
-\mathsf{HTyp:} & \htau & ::= &
-  \tarr{\htau}{\htau} ~\vert~
-  \tnum ~\vert~
-  \tehole
-\\
-\mathsf{HExp:} & \hexp & ::= &
-  x ~\vert~
-  \hlam{x}{\hexp} ~\vert~
-  \hap{\hexp}{\hexp} ~\vert~
-  \hnum{n} ~\vert~
-  \hadd{\hexp}{\hexp} ~\vert~
-  (\hexp : \htau) ~\vert~
-  \hehole ~\vert~
-  \hhole{\hexp}
-\end{array}$
-\caption{Syntax of H-types and H-expressions. Metavariable $x$ ranges over variables and $n$ over numerals.}
-\label{fig:hexp-syntax}
-%\vspace{-5px}
-\end{figure}
 
 
 Partially in preparation for this proposal, we conducted preliminary research to define a static
