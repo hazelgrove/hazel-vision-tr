@@ -239,9 +239,9 @@ Some editors attempt to provide feedback during these incomplete states by using
 
 This paper advocates for a research program that seeks to understand both incomplete programs, and the editor services that interact with them, as semantically rich mathematical objects. In other words, we seek to broaden the scope of the ``programming language theory'' (PLT) tradition, which has made significant advances by treating complete programs, programming languages and logics as semantically rich mathematical objects. %Indeed, our view is that complete programs should ultimately be understood as ``trivially incomplete'' programs.
 
-In following the PLT tradition, we intend to start by developing a series of minimal calculi that build upon the well-understood typed lambda calculus to capture the essential character of incomplete programs and various editor services of interest. Editor designers can then apply the insights gained from studying these calculi (together with insights gained from the study of human factors and other topics) to design more elaborate program editors. Some of these editors will evolve directly from editors already in use today. At the same time, we plan to design a ``clean-slate'' programming environment, \Hazel, based directly on these first principles. This will allow researchers to cleanly explore the frontier of what is possible when one considers languages and editors within a common theoretical framework. Such a clean-slate design might also prove useful in certain educational settings, and perhaps even make its way into practice.
+In following the PLT tradition, we intend to start by developing a series of minimal calculi that build upon well-understood typed lambda calculi to capture the essential character of incomplete programs and various editor services of interest. Editor designers can then apply the insights gained from studying these calculi (together with insights gained from the study of human factors and other topics) to design more elaborate program editors. Some of these editors will evolve directly from editors already in use today. At the same time, we plan to design a ``clean-slate'' programming environment, \Hazel, based directly on these first principles. This will allow researchers to cleanly explore the frontier of what is possible when one considers languages and editors within a common theoretical framework. Such a clean-slate design might also prove useful in certain educational settings, and perhaps even make its way into practice.
 
-Figure \ref{fig:hazel-mockup} shows a mockup of the \Hazel ~user interface, which is loosely modeled on the widely adopted IPython / Jupyter lab notebook interface~\cite{PER-GRA:2007}. 
+Figure \ref{fig:hazel-mockup} shows a mockup of the \Hazel ~user interface, which is loosely modeled after the widely adopted IPython / Jupyter lab notebook interface~\cite{PER-GRA:2007}. 
 We use this figure as our running example 
 %We will refer to this figure
 throughout the remainder of the paper. Each section briefly summarizes a fundamental problem that we must confront as we seek to develop a semantic foundation for advanced program editors. For each problem, we discuss existing approaches, including our own recent research, and suggest a number of promising future research directions for the community to pursue.
@@ -251,7 +251,7 @@ Textual program editors frequently encounter edit states
 that are not well-formed with respect to the textual syntax of complete
 programs. For example, consider a programmer constructing a call to a function \lstinline{std}: 
 \[
-\texttt{std(y, }
+\texttt{std(m, }
 \]
 There is a syntax error, so editor services that require a syntactically
 complete program must be disabled. This is unsatisfying. 
@@ -272,26 +272,29 @@ We will return to the topic of structure editors and projections below.
 Structure editors have a long history. For example, the Cornell Program
 Synthesizer was developed in the early 1980s \cite{teitelbaum_cornell_1981}. 
 Although text-based syntax continues to predominate, there remains significant   
- interest in structure editors today. For example,  Scratch is a 
+ interest in structure editors today, particularly in practice. For example,  Scratch is a 
 structure editor that has achieved success as a tool for teaching children
 how to program \cite{Resnick:2009:SP:1592761.1592779}. \texttt{mbeddr} is an editor for a C-like
-language \cite{voelter_mbeddr:_2012}. TouchDevelop is an editor for an
+language \cite{voelter_mbeddr:_2012}, built using the commercially supported MPS structure editor workbench \cite{voelter2011language}. TouchDevelop is an editor for an
 object-oriented language \cite{tillmann_touchdevelop:_2011} and Lamdu is an
 editor for a functional language similar to Haskell \cite{lamdu}. Most work on structure editors has focused on the user
 interfaces that they present. Indeed, this is important work -- presenting a
 fluid user interface involving higher-level edit actions is a non-trivial
 problem, and some aspects of this problem remain open. There is reason to be optimistic, however, with recent studies 
-suggesting that programmers experienced with a keyboard-driven structure editors 
+suggesting that programmers experienced with a keyboard-driven structure editors (e.g. \texttt{mbeddr}) 
 can be highly productive \cite{DBLP:conf/vl/Asenov014,DBLP:conf/sle/VolterSBK14}.
 
 Researchers have also explored ``hybrid'' approaches. For example, recent work on \emph{syntactic placeholders} envisions 
-an editor where many edit actions cause textual placeholders to appear, rather than leaving the program malformed \cite{Amorim:2016:PSC:2997364.2997374}. This 
+an editor where many edit actions cause textual placeholders to appear, rather than leaving the program transiently malformed \cite{Amorim:2016:PSC:2997364.2997374}. This 
 ``approximates'' the experience of a structure editor in common usage, while allowing the programmer to perform arbitrary 
-text edits if desired. If a pure structure editor based approach proves too rigid for Hazel, we will explore such hybrid approaches. 
+text edits if desired. A related approach would be to perform error recovery by attempting to insert placeholders into the internal representation used 
+by the program editor, without including them in the surface syntax used by programmers. If ``pure'' structure editing proves too rigid as we design \Hazel, we will explore hybrid approaches like these.
 
 \begin{figure}
 \includegraphics[width=1.025\textwidth]{mockup-1}
+\vspace{-5px}
 \caption{A mockup of \HazelEnv.}
+\vspace{-5px}
 \label{fig:hazel-mockup}
 %\vspace{-2ex}
 \end{figure}
@@ -399,17 +402,6 @@ that establish the interactive expressive power of the action semantics. Our thi
 aim is thus to develop a sensible and expressive \textbf{semantics of edit actions} (Section~\ref{sec:actions})
 and, as above, to mechanize its metatheory.
 
-Designing the static semantics of \HazelEnv~together with its action semantics 
-will also allow us to rigorously investigate a number of novel constructs that 
-are defined with libraries but control aspects of the editor. In particular, we aim to explore:
-(1) \textbf{user-defined action macros}, which allow libraries to define new high-level
-actions built atop the primitive action language of \HazelEnv; (2) \textbf{type-specific
-projections}, which give library providers the ability to define type-specific structure editors (e.g. the matrix interface in Figure \ref{fig:hazel-mockup}, which is defined  
-by the \li{Numerics} library); and (3) an \textbf{interactive semantic documentation system} that
-allows programmers to document programs by revealing and commenting on portions of the 
-program in sequence. Each intermediate state during these ``tutorials'' can be explored 
-by the learner, due to the sensibility invariant. The comments can mention bindings, and are 
-subject to static operations like renaming.
 
 \section{Problem 5: Meaningless and Improbable Suggestions} 
 The simplest 
@@ -427,6 +419,17 @@ formally is that every suggestion assigned non-zero probability must be semantic
 relative to the edit state.% Moreover, all probability distributions must ``integrate'' to $1$.
 
 \section{Language-Editor Co-Design}
+Designing the static semantics of \HazelEnv~together with its action semantics 
+will also allow us to rigorously investigate a number of novel constructs that 
+are defined with libraries but control aspects of the editor. In particular, we aim to explore:
+(1) \textbf{user-defined action macros}, which allow libraries to define new high-level
+actions built atop the primitive action language of \HazelEnv; (2) \textbf{type-specific
+projections}, which give library providers the ability to define type-specific structure editors (e.g. the matrix interface in Figure \ref{fig:hazel-mockup}, which is defined  
+by the \li{Numerics} library); and (3) an \textbf{interactive semantic documentation system} that
+allows programmers to document programs by revealing and commenting on portions of the 
+program in sequence. Each intermediate state during these ``tutorials'' can be explored 
+by the learner, due to the sensibility invariant. The comments can mention bindings, and are 
+subject to static operations like renaming.
 
 \clearpage
 
