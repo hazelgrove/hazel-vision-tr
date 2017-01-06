@@ -172,7 +172,7 @@ actions available to programmers as they edit and inspect incomplete programs; a
 
 %
 This paper serves as a vision statement for a research program that seeks to develop these ``missing'' semantic 
-foundations. Our hope is that these contributions, which will take the form of a series of simple formal calculi equipped with a clear mechanized metatheory, will guide the design of a variety of current and future interactive programming tools, much as various lambda calculi have guided modern language designs. Our own research will apply these principles in the design of \HazelEnv, an experimental \emph{live lab notebook} programming environment designed for data science tasks. Perhaps controversially, we plan to co-design the \HazelEnv~language with the editor so that we can explore e.g. edit-time semantic conflict resolution mechanisms and mechanisms that allow library providers to install new library-specific edit-time features.
+foundations. Our hope is that these contributions, which will take the form of a series of simple formal calculi equipped with a clear mechanized metatheory, will guide the design of a variety of current and future interactive programming tools, much as various lambda calculi have guided modern language designs. Our own research will apply these principles in the design of \HazelEnv, an experimental \emph{live lab notebook} programming environment designed for data science tasks. We plan to co-design the \HazelEnv~language with the editor so that we can explore e.g. edit-time semantic conflict resolution mechanisms and mechanisms that allow library providers to install new library-specific edit-time features.
 
 % We propose:
 % %
@@ -412,7 +412,7 @@ There are a number of future research directions that are worth exploring.\todo{
 \subparagraph{Expressiveness.} The simple calculus discussed above 
     is only as expressive as the typed lambda calculus with numbers. We must scale up the semantics to handle other modern language
     features, focusing initially on functional language
-    constructs (so that \HazelEnv can be used to teach courses that
+    constructs (so that \HazelEnv ~can be used to teach courses that
     are today taught using Standard ML, OCaml or Haskell.) This will include recursive and
     polymorphic functions, recursive types, and labeled product (record) and sum types.
     We also propose to investigate ML-style structural pattern
