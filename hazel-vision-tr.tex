@@ -241,7 +241,7 @@ This paper advocates for a research program that seeks to understand both incomp
 
 In following the PLT tradition, we intend to start by developing a series of minimal calculi that build upon the well-understood typed lambda calculus to capture the essential character of incomplete programs and various editor services of interest. Editor designers can then apply the insights gained from studying these calculi (together with insights gained from the study of human factors and other topics) to design more elaborate program editors. Some of these editors will evolve directly from editors already in use today. At the same time, we plan to design a ``clean-slate'' programming environment, \Hazel, based directly on these first principles. This will allow researchers to cleanly explore the frontier of what is possible when one considers languages and editors within a common theoretical framework. Such a clean-slate design might also prove useful in certain educational settings, and perhaps even make its way into practice.
 
-Figure \ref{fig:hazel-mockup} shows a mockup of the \Hazel ~user interface, which is modeled on the widely adopted IPython / Jupyter lab notebook interface~\cite{PER-GRA:2007}. 
+Figure \ref{fig:hazel-mockup} shows a mockup of the \Hazel ~user interface, which is loosely modeled on the widely adopted IPython / Jupyter lab notebook interface~\cite{PER-GRA:2007}. 
 We use this figure as our running example 
 %We will refer to this figure
 throughout the remainder of the paper. Each section briefly summarizes a fundamental problem that we must confront as we seek to develop a semantic foundation for advanced program editors. For each problem, we discuss existing approaches, including our own recent research, and suggest a number of promising future research directions for the community to pursue.
@@ -258,19 +258,7 @@ complete program must be disabled. This is unsatisfying.
 
 Sophisticated editors like Eclipse, and editor generators like Spoofax \cite{DBLP:conf/oopsla/KatsV10}, use \emph{error recovery} heuristics that silently insert tokens so that the editor-internal representation is well-formed \cite{DBLP:journals/siamcomp/AhoP72,charles1991practical,graham1979practical,DBLP:conf/oopsla/KatsJNV09}. These heuristics are typically provided manually by the grammar designer, though certain heuristics can be generated semi-automatically by tools that are given a description of the scoping conventions of the language or the secondary notational conventions (e.g. whitespace) \cite{DBLP:conf/oopsla/KatsJNV09,DBLP:conf/sle/JongeNKV09}. Error recovery heuristics require guessing at the programmer's intent, so they are fundamentally \emph{ad hoc} and can confuse the programmer \cite{DBLP:conf/oopsla/KatsJNV09}.
 
-Structure editors have a long history. For example, the Cornell Program
-Synthesizer was developed in the early 1980s \cite{teitelbaum_cornell_1981}. There is still significant   
- interest in structure editors today. For example,  Scratch is a 
-structure editor that has achieved success as a tool for teaching children
-how to program \cite{Resnick:2009:SP:1592761.1592779}. \texttt{mbeddr} is an editor for a C-like
-language \cite{voelter_mbeddr:_2012}. TouchDevelop is an editor for an
-object-oriented language \cite{tillmann_touchdevelop:_2011} and Lamdu is an
-editor for a functional language similar to Haskell \cite{lamdu}. Most work on structure editors has focused on the user
-interfaces that they present. Indeed, this is important work -- presenting a
-fluid user interface involving higher-level edit actions is a non-trivial
-problem, and some aspects of this problem remain open.
-
-The alternative approach that we take for \HazelEnv~ is to build a
+A cleaner alternative approach, and the approach that we plan to take for \HazelEnv, is to build a
 \emph{structure editor} -- a program editor where every edit state
 maps onto a syntax tree, with \emph{holes} representing leaves of the tree
 that have not yet been constructed.  This representation choice sidesteps the
@@ -281,6 +269,25 @@ non-textual \emph{projections} of expressions, e.g.
 the 2D projection of a matrix value in cell \textbf{(b)}.
 We will return to the topic of structure editors and projections below.
 
+Structure editors have a long history. For example, the Cornell Program
+Synthesizer was developed in the early 1980s \cite{teitelbaum_cornell_1981}. 
+Although text-based syntax continues to predominate, there remains significant   
+ interest in structure editors today. For example,  Scratch is a 
+structure editor that has achieved success as a tool for teaching children
+how to program \cite{Resnick:2009:SP:1592761.1592779}. \texttt{mbeddr} is an editor for a C-like
+language \cite{voelter_mbeddr:_2012}. TouchDevelop is an editor for an
+object-oriented language \cite{tillmann_touchdevelop:_2011} and Lamdu is an
+editor for a functional language similar to Haskell \cite{lamdu}. Most work on structure editors has focused on the user
+interfaces that they present. Indeed, this is important work -- presenting a
+fluid user interface involving higher-level edit actions is a non-trivial
+problem, and some aspects of this problem remain open. There is reason to be optimistic, however, with recent studies 
+suggesting that programmers experienced with a keyboard-driven structure editors 
+can be highly productive \cite{DBLP:conf/vl/Asenov014,DBLP:conf/sle/VolterSBK14}.
+
+Researchers have also explored ``hybrid'' approaches. For example, recent work on \emph{syntactic placeholders} envisions 
+an editor where many edit actions cause textual placeholders to appear, rather than leaving the program malformed \cite{Amorim:2016:PSC:2997364.2997374}. This 
+``approximates'' the experience of a structure editor in common usage, while allowing the programmer to perform arbitrary 
+text edits if desired. If a pure structure editor based approach proves too rigid for Hazel, we will explore such hybrid approaches. 
 
 \begin{figure}
 \includegraphics[width=1.025\textwidth]{mockup-1}
