@@ -307,7 +307,7 @@ approaches are implemented in Eclipse and other sophisticated tools, but the
 formal character of these heuristics are obscure, buried deep within their implementations. This brings us to our first specific research aim: the 
 development, from type-theoretic first principles, of \textbf{a static semantics for incomplete programs} (Section~\ref{sec:statics}),
 i.e. programs that contain holes, type inconsistencies, unbound variables, and
-other static problems. Using such a semantics, \HazelEnv~ can 
+other static problems. Using such a semantics, \HazelEnv~can 
 communicate to the programmer (see right column of Figure \ref{fig:hazel-mockup}) that the expression at the cursor, highlighted in blue in cell \textbf{(a)}, must be of type \li{dimension}. The incomplete function
 \li{summary_stats} as a whole will be assigned the following incomplete function
 type: \texttt{matrix<float> -> \{ {mean} : vec<float>, std : vec<float>, median :~$\square$ \}}.
@@ -315,7 +315,7 @@ type: \texttt{matrix<float> -> \{ {mean} : vec<float>, std : vec<float>, median 
 \paragraph{Problem 3: Dynamically Meaningless Edit States.} Modern programming
 tools are increasingly moving beyond simple ``batch'' programming models by
 incorporating \emph{live programming} features that interleave editing and
-evaluation \cite{DBLP:conf/icse/Tanimoto13,DBLP:journals/vlc/Tanimoto90,McDirmid:2007:LUL:1297105.1297073}. These tools provide programmers with more rapid feedback about the
+evaluation \cite{DBLP:conf/icse/Tanimoto13,DBLP:journals/vlc/Tanimoto90,McDirmid:2007:LUL:1297105.1297073}. These tools provide programmers with rapid feedback about the
 dynamic behavior of the program they are editing, or selected portions thereof \cite{McDirmid:2013:ULP:2509578.2509585}. Examples include \emph{lab notebooks},
 e.g. the popular IPython/Jupyter~\cite{Perez:2007:ISI:1251563.1251831}, which allow the
 programmer to interactively edit and evaluate program fragments organized into a
@@ -328,11 +328,11 @@ sequence of cells (an extension of the read-eval-print loop (REPL)); spreadsheet
 %   \item edit the program and resume evaluation in certain circumstances. 
 %   \end{itemize}
 
-Our proposed design for \HazelEnv combines aspects of several of these designs to form a \emph{live lab notebook interface}. 
+Our proposed design for \HazelEnv~combines aspects of several of these designs to form a \emph{live lab notebook interface}. 
 It will use the edit state of each cell to continuously update the output
 value displayed for that cell and subsequent cells that depend on
 it. Uniquely, rather than providing meaningful feedback about the dynamic
-behavior only once a cell becomes complete, \HazelEnv will provide meaningful feedback also
+behavior only once a cell becomes complete, \HazelEnv~will provide meaningful feedback also
 about the dynamic behavior of incomplete cells (and thereby further tighten the live programming 
 feedback loop.)
 
@@ -381,7 +381,7 @@ that establish the interactive expressive power of the action semantics. Our thi
 aim is thus to develop a sensible and expressive \textbf{semantics of edit actions} (Section~\ref{sec:actions})
 and, as above, to mechanize its metatheory.
 
-Designing the static semantics of \HazelEnv together with its action semantics 
+Designing the static semantics of \HazelEnv~together with its action semantics 
 will also allow us to rigorously investigate a number of novel constructs that 
 are defined with libraries but control aspects of the editor. In particular, we aim to explore:
 (1) \textbf{user-defined action macros}, which allow libraries to define new high-level
@@ -394,7 +394,7 @@ by the learner, due to the sensibility invariant. The comments can mention bindi
 subject to static operations like renaming.
 
 \paragraph{Problem 5: Meaningless and Improbable Suggestions.} The simplest 
-edit actions will be bound to keyboard shortcuts (studies suggest that programmers experienced with a keyboard-driven structure editors can be highly productive \cite{DBLP:conf/vl/Asenov014}). However, \HazelEnv will 
+edit actions will be bound to keyboard shortcuts (studies suggest that programmers experienced with a keyboard-driven structure editors can be highly productive \cite{DBLP:conf/vl/Asenov014}). However, \HazelEnv~will 
 also present a search-based user
 interface for discovering relevant higher-level actions -- marked with \textbf{(d)} in Figure \ref{fig:hazel-mockup}. 
 The suggestions 
