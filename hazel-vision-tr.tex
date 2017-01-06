@@ -237,31 +237,39 @@ The problem, of course, is that many of the {edit states} encountered by a progr
 % THIS SENTENCE DOESN'T MAKE SENSE TO ME.  I REPLACED IT WITH WHAT I THINK WE ARE TRYING TI SAY. More advanced editors have developed various \emph{ad hoc} and poorly understood heuristics that attempt to recover from the problem and continue on, using some idiosyncratic internal representation of the incomplete program.
 Some editors attempt to provide feedback during these incomplete states by using various \emph{ad hoc} and poorly understood heuristics based on idiosyncratic internal representations of  incomplete programs.
 
-<<<<<<< HEAD
-This paper advocates for a research program that seeks to understand incomplete programs, and the editor services that interact with them, as semantically rich mathematical objects. In other words, we seek to broaden the scope of the ``programming language theory'' (PLT) tradition, which has made significant advances by treating complete programs, programming languages and logics as semantically rich mathematical objects. %Indeed, our view is that complete programs should ultimately be understood as ``trivially incomplete'' programs.
-=======
-This paper advocates for a research program that seeks to understand both incomplete programs, and the editor services that interact with them, as semantically rich mathematical objects. In other words, we seek to broaden the scope of the ``programming language theory'' (PLT) tradition, which has made significant advances by treating complete programs, programming languages, logics and compilers as semantically rich mathematical objects. %Indeed, our view is that complete programs should ultimately be understood as ``trivially incomplete'' programs.
->>>>>>> df8c2a6f4be7c0c109c67615089ce03f37b8bdff
+This paper advocates for a research program that seeks to understand both incomplete programs, and the editor services that interact with them, as semantically rich mathematical objects. In other words, we seek to broaden the scope of the ``programming language theory'' (PLT) tradition, which has made significant advances by treating complete programs, programming languages and logics as semantically rich mathematical objects. %Indeed, our view is that complete programs should ultimately be understood as ``trivially incomplete'' programs.
 
 In following the PLT tradition, we intend to start by developing a series of minimal calculi that build upon the well-understood typed lambda calculus to capture the essential character of incomplete programs and various editor services of interest. Editor designers can then apply the insights gained from studying these calculi (together with insights gained from the study of human factors and other topics) to design more elaborate program editors. Some of these editors will evolve directly from editors already in use today. At the same time, we plan to design a ``clean-slate'' programming environment, \Hazel, based directly on these first principles. This will allow researchers to cleanly explore the frontier of what is possible when one considers languages and editors within a common theoretical framework. Such a clean-slate design might also prove useful in certain educational settings, and perhaps even make its way into practice.
 
 Figure \ref{fig:hazel-mockup} shows a mockup of the \Hazel ~user interface, which is modeled on the widely adopted IPython / Jupyter lab notebook interface~\cite{PER-GRA:2007}. 
 We use this figure as our running example 
 %We will refer to this figure
-throughout the remainder of the paper, which briefly summarizes some of the fundamental problems that we must confront as we seek to develop a semantic foundation for advanced program editors. In each section, we discuss existing approaches, including our own recent research, and suggest a number of promising future research directions for the community to pursue.
+throughout the remainder of the paper. Each section briefly summarizes a fundamental problem that we must confront as we seek to develop a semantic foundation for advanced program editors. For each problem, we discuss existing approaches, including our own recent research, and suggest a number of promising future research directions for the community to pursue.
 
-\paragraph{Problem 1: Syntactically Malformed Edit States.} 
+\section{Problem 1: Syntactically Malformed Edit States} 
 Textual program editors frequently encounter edit states
 that are not well-formed with respect to the textual syntax of complete
-programs. For example, consider a programmer in the midst of
-constructing a call to a function \lstinline{std}: 
+programs. For example, consider a programmer constructing a call to a function \lstinline{std}: 
 \[
 \texttt{std(y, }
 \]
 There is a syntax
-error at this moment in the editing process, so editor services that require a syntactically
-complete program must be disabled. This is unsatisfying. Sophisticated editors like Eclipse, and editor generators like Spoofax \cite{DBLP:conf/oopsla/KatsV10}, use \emph{error recovery} heuristics that can support the continued provision 
-of various services in some formally malformed states, by using secondary notational conventions (e.g. whitespace) to segregate malformed portions of the program  \cite{DBLP:conf/oopsla/KatsJNV09,DBLP:conf/sle/JongeNKV09}. These heuristics work most, but not all, of the time.
+error, so editor services that require a syntactically
+complete program must be disabled. This is unsatisfying. 
+
+Sophisticated editors like Eclipse, and editor generators like Spoofax \cite{DBLP:conf/oopsla/KatsV10}, use \emph{error recovery} heuristics that silently insert tokens so that the editor-internal representation is well-formed \cite{DBLP:journals/siamcomp/AhoP72,charles1991practical,graham1979practical,DBLP:conf/oopsla/KatsJNV09}. These heuristics are typically provided manually by the grammar designer, though certain heuristics can be generated semi-automatically by tools that are given a description of the scoping conventions of the language or the secondary notational conventions (e.g. whitespace) \cite{DBLP:conf/oopsla/KatsJNV09,DBLP:conf/sle/JongeNKV09}. Error recovery heuristics require guessing at the programmer's intent, so they are fundamentally \emph{ad hoc} and can confuse the programmer \cite{DBLP:conf/oopsla/KatsJNV09}.
+
+Structure editors have a long history. For example, the Cornell Program
+Synthesizer was developed in the early 1980s \cite{teitelbaum_cornell_1981}. There is still significant   
+ interest in structure editors today. For example,  Scratch is a 
+structure editor that has achieved success as a tool for teaching children
+how to program \cite{Resnick:2009:SP:1592761.1592779}. \texttt{mbeddr} is an editor for a C-like
+language \cite{voelter_mbeddr:_2012}. TouchDevelop is an editor for an
+object-oriented language \cite{tillmann_touchdevelop:_2011} and Lamdu is an
+editor for a functional language similar to Haskell \cite{lamdu}. Most work on structure editors has focused on the user
+interfaces that they present. Indeed, this is important work -- presenting a
+fluid user interface involving higher-level edit actions is a non-trivial
+problem, and some aspects of this problem remain open.
 
 The alternative approach that we take for \HazelEnv is to build a
 \emph{structure editor} -- a program editor where every edit state
@@ -282,7 +290,8 @@ We will return to the topic of structure editors and projections below.
 %\vspace{-2ex}
 \end{figure}
 
-\paragraph{Problem 2: Statically Meaningless Edit States.} Regardless of how an 
+\section{Problem 2: Statically Meaningless Edit States} 
+Regardless of how an 
 editor confronts syntactically malformed edit states, it must also confront 
 edit states that are syntactically well-formed but statically meaningless. For
 example, the following value binding has a type inconsistency:
@@ -315,7 +324,7 @@ communicate to the programmer (see right column of Figure \ref{fig:hazel-mockup}
 \li{summary_stats} as a whole will be assigned the following incomplete function
 type: \texttt{matrix<float> -> \{ {mean} : vec<float>, std : vec<float>, median :~$\square$ \}}.
 
-\paragraph{Problem 3: Dynamically Meaningless Edit States.} Modern programming
+\section{Problem 3: Dynamically Meaningless Edit States.} Modern programming
 tools are increasingly moving beyond simple ``batch'' programming models by
 incorporating \emph{live programming} features that interleave editing and
 evaluation \cite{DBLP:conf/icse/Tanimoto13,DBLP:journals/vlc/Tanimoto90,McDirmid:2007:LUL:1297105.1297073}. These tools provide programmers with more rapid feedback about the
@@ -369,7 +378,7 @@ the sense of Milner to mean that it will not have undefined behavior~\cite{milne
 This represents the ``gold standard'' for evaluating claims in formal
 semantics.  Our preliminary work has used Agda~\cite{norell2009dependently}.
 
-\paragraph{Problem 4: Meaningless Edit Actions.} Our first two specific aims
+\section{Problem 4: Meaningless Edit Actions} Our first two specific aims
 allow us to assign meaning to intermediate edit states. However, to
 understand the act of \emph{editing} itself, we propose to develop a system of
 \emph{edit actions} that governs transitions between edit
@@ -396,7 +405,8 @@ program in sequence. Each intermediate state during these ``tutorials'' can be e
 by the learner, due to the sensibility invariant. The comments can mention bindings, and are 
 subject to static operations like renaming.
 
-\paragraph{Problem 5: Meaningless and Improbable Suggestions.} The simplest 
+\section{Problem 5: Meaningless and Improbable Suggestions} 
+The simplest 
 edit actions will be bound to keyboard shortcuts (studies suggest that programmers experienced with a keyboard-driven structure editors can be highly productive \cite{DBLP:conf/vl/Asenov014}). However, \HazelEnv will 
 also present a search-based user
 interface for discovering relevant higher-level actions -- marked with \textbf{(d)} in Figure \ref{fig:hazel-mockup}. 
@@ -410,6 +420,11 @@ matrices, so it marks that suggestion as the most probable. These suggestions ar
 our fourth specific aim: a \textbf{statistical action suggestion semantics} (Section~\ref{sec:statistics}). The key invariant here that, again, we aim to establish 
 formally is that every suggestion assigned non-zero probability must be semantically sensible 
 relative to the edit state.% Moreover, all probability distributions must ``integrate'' to $1$.
+
+\section{Language-Editor Co-Design}
+
+\clearpage
+
 
 \paragraph{Roadmap.} Sections~\ref{sec:statics}--\ref{sec:statistics} detail the
 specific aims mentioned above; our evaluation plan is discussed in Section~\ref{sec:eval}.
