@@ -176,79 +176,79 @@ classoffset=0,belowskip=\smallskipamount, aboveskip=\smallskipamount
 %% to be exclusive.
 
 
-Programming language definitions assign formal meaning to
-\emph{complete} programs.
-%
-Programmers, however, spend a substantial amount of time interacting
-with \emph{incomplete} programs -- programs with holes, type
-inconsistencies and binding inconsistencies.
-%
-Unlike complete programs, these incomplete programs are typically not
-assigned a formal meaning by a language's semantics.
-%
-Consequently, the tools that programmers use to \emph{edit} their
-(incomplete) programs lack a foundational semantics.
+% Programming language definitions assign formal meaning to
+% \emph{complete} programs.
+% %
+% Programmers, however, spend a substantial amount of time interacting
+% with \emph{incomplete} programs -- programs with holes, type
+% inconsistencies and binding inconsistencies.
+% %
+% Unlike complete programs, these incomplete programs are typically not
+% assigned a formal meaning by a language's semantics.
+% %
+% Consequently, the tools that programmers use to \emph{edit} their
+% (incomplete) programs lack a foundational semantics.
 
 %
 %% Semanticists have done comparatively little to formally characterize 1) the static and dynamic semantics of incomplete programs; 2) the 
 %% actions available to programmers as they edit and inspect incomplete programs; and 3) the behavior of editor services that suggest likely edit actions to the programmer based on semantic information extracted from the incomplete program being edited, and from programs that the system has encountered in the past.% As such, each tool designer has largely been left to develop their own \emph{ad hoc} heuristics. 
 
-This paper and talk will serve as a vision statement for a research
-program that seeks to develop these ``missing'' semantic foundations.
+This paper and talk will serve as a vision statement for a long-term research
+program that seeks to treat program editors as mathematical objects, just as we as PL theorists treat programming languages (and, by extension, programs) today. 
 %
 %Unlike most existing research on interactive tools, however, our
 %contributions are primarily formal in nature.
 %
-We will outline our planned contributions, which will take the form of
+We will outline our recent and planned future contributions, which have and will take the form of
 a series of simple formal calculi equipped with a clear mechanized
-metatheory.
+metatheory. 
 %
 At the same time, we have and will continue to implement these
 formalisms as interactive prototypes, culminating in an interactive
-programming environment that we refer to as \HazelEnv.
+programming environment that we refer to as \HazelEnv~in the paper. 
 %
-Perhaps controversially, we plan to co-design the \HazelEnv~language
-with the editor so that we can explore novel interactions of these
-designs.
+We plan to co-design the \HazelEnv~language
+with the editor so that we can explore novel interactions between the fields of language and editor design. SNAPL stood out as an ideal venue for a vision paper like this, as it aims to broaden the scope of PL theory to include editor design (an area today dominated by HCI researchers). It also discusses a research program that will span many future projects. We are eager to receive feedback from other SNAPL attendees, and hope to spur attendees to consider problems in this area for their own research.
+
 %
-Indeed, our exisitng and proposed research methology consists of
-mixing two typically desperate activities, both starting from a clean
-sheet (but with ML-like languages in mind, i.e., those with types and
-higher-order functions):
-%
-%\begin{itemize}
-%\item 
-(1) Evolve a theory of typing and operational semantics for
-  \emph{incomplete} programs.
-%\item 
-(2) Evolve an \textbf{editor} (as a formal semantics) for interacting
-  with these incomplete programs.
+% Indeed, our exisitng and proposed research methology consists of
+% mixing two typically desperate activities, both starting from a clean
+% sheet (but with ML-like languages in mind, i.e., those with types and
+% higher-order functions):
+% %
+% %\begin{itemize}
+% %\item 
+% (1) Evolve a theory of typing and operational semantics for
+%   \emph{incomplete} programs.
+% %\item 
+% (2) Evolve an \textbf{editor} (as a formal semantics) for interacting
+%   with these incomplete programs.
 %\end{itemize}
 
-We aim to produce an experience that can emulate (but someday perhaps
-surpass) today's user experiences of live lab notebooks (programming
-environments designed for data science tasks).
-%
-However, in reaching this level of experience, we also seek a \emph{compositional} theory of combined editor-and-language semantics.
-%
-By compositional, we mean that we can ``project out'' a language
-feature (e.g., ``functions'', ``sums'', ``products'', ``library for
-numbers'', ``library for matrices'', etc.), and that this projection
-should give us both the language fragment’s editing behavior and its
-typing and operational semantics (for incomplete programs).  In sum,
-we are seeking to create a compositional theory of combined
-editor-and-language semantics.
+% % % We aim to produce an experience that can emulate (but someday perhaps
+% % % surpass) today's user experiences of live lab notebooks (programming
+% % % environments designed for data science tasks).
+% % % %
+% % % However, in reaching this level of experience, we also seek a \emph{compositional} theory of combined editor-and-language semantics.
+% % % %
+% % % By compositional, we mean that we can ``project out'' a language
+% % % feature (e.g., ``functions'', ``sums'', ``products'', ``library for
+% % % numbers'', ``library for matrices'', etc.), and that this projection
+% % % should give us both the language fragment’s editing behavior and its
+% % % typing and operational semantics (for incomplete programs).  In sum,
+% % % we are seeking to create a compositional theory of combined
+% % % editor-and-language semantics.
 
-To reach this goal, we must lay concrete plans to evolve both our
-theory of incomplete programs, as well as our theory for editing them,
-both of which are currently rudimentary.
+% % To reach this goal, we must lay concrete plans to evolve both our
+% % theory of incomplete programs, as well as our theory for editing them,
+% % both of which are currently rudimentary.
+% % %
+% % Further, we have yet to give an \emph{operational} account of
+% % incomplete programs, focusing so far on their static semantics.
+% %
+% Our talk will motivate these directions and outline these frontiers.
 %
-Further, we have yet to give an \emph{operational} account of
-incomplete programs, focusing so far on their static semantics.
-%
-Our talk will motivate these directions and outline these frontiers.
-%
-We are eager to receive feedback from other SNAPL attendees.
+
 
 \section{Attendance statement}
 
