@@ -286,7 +286,7 @@ problem, and some aspects of this problem remain open even after many years of r
 suggesting that programmers experienced with a modern keyboard-driven structure editor (e.g. \texttt{mbeddr}) 
 can be highly productive \cite{DBLP:conf/vl/Asenov014,DBLP:conf/sle/VolterSBK14}.
 
-Researchers have also explored various ``hybrid'' approaches. For example, recent work on \emph{syntactic placeholders} envisions 
+Researchers have also explored various ``hybrid'' approaches, combining  the concept of holes with text based editing.  For example, recent work on \emph{syntactic placeholders} envisions 
 a textual program editor where edit actions cause textual placeholders (a.k.a. holes) to appear, rather than leaving the program transiently malformed \cite{Amorim:2016:PSC:2997364.2997374}. This 
 ``approximates'' the experience of a structure editor in common usage, while allowing the programmer to perform arbitrary 
 text edits when necessary. Some programming systems, e.g. recent iterations of the Glasgow Haskell Compiler (GHC) \cite{haskell-holes}\todo{cite GHC wiki page on holes} and the Agda proof assistant \cite{norell2009dependently}\todo{cite documentation on agda holes}, support a workflow where the programmer writes down holes manually at locations in the program that remain under construction. Another approach would be to perform error recovery by attempting to insert holes into the internal representation used 
