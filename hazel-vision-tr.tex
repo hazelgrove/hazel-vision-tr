@@ -411,7 +411,7 @@ There are a number of future research directions that are worth exploring.\todo{
 
 \subparagraph{Expressiveness.} The simple calculus discussed above 
     is only as expressive as the typed lambda calculus with numbers. We must scale up the semantics to handle other modern language
-    features, focusing initially on functional language
+    features. Our plan is to focus initially on functional language
     constructs (so that \HazelEnv ~can be used to teach courses that
     are today taught using Standard ML, OCaml or Haskell.) This will include recursive and
     polymorphic functions, recursive types, and labeled product (record) and sum types.
@@ -444,7 +444,9 @@ evaluation \cite{DBLP:conf/icse/Tanimoto13,DBLP:journals/vlc/Tanimoto90,McDirmid
 dynamic behavior of the program they are editing, or selected portions thereof \cite{McDirmid:2013:ULP:2509578.2509585}. Examples include \emph{lab notebooks},
 e.g. the popular IPython/Jupyter~\cite{Perez:2007:ISI:1251563.1251831}, which allow the
 programmer to interactively edit and evaluate program fragments organized into a
-sequence of cells (an extension of the read-eval-print loop (REPL)); spreadsheets; {live graphics programming environments}, e.g. SuperGlue \cite{McDirmid:2007:LUL:1297105.1297073}, Sketch-n-Sketch \cite{DBLP:conf/pldi/ChughHSA16,DBLP:conf/icse/Chugh25} and the tools demonstrated by Bret Victor in his lectures \cite{victor2012inventing}; the TouchDevelop live UI framework \cite{burckhardt2013s}; and live visual and auditory dataflow languages \cite{DBLP:conf/vl/BurnettAW98}. 
+sequence of cells (an extension of the read-eval-print loop (REPL)); spreadsheets; {live graphics programming environments}, e.g. SuperGlue \cite{McDirmid:2007:LUL:1297105.1297073}, Sketch-n-Sketch \cite{DBLP:conf/pldi/ChughHSA16,DBLP:conf/icse/Chugh25} and the tools demonstrated by Bret Victor in his lectures \cite{victor2012inventing}; the TouchDevelop live UI framework \cite{burckhardt2013s}; and live visual and auditory dataflow languages \cite{DBLP:conf/vl/BurnettAW98}. In the words of Burckhardt et al., live programming environments 
+``capture the imagination of today's programmers and promise to narrow the temporal and perceptive gap 
+between program development and code execution'' \cite{burckhardt2013s}. 
 % \item \emph{Live debuggers} allow the programmer to:
 %   \begin{itemize}
 %   \item insert breakpoints, which pause evaluation; 
@@ -458,8 +460,7 @@ It will use the edit state of each cell to continuously update the output
 value displayed for that cell and subsequent cells that depend on
 it. Uniquely, rather than providing meaningful feedback about the dynamic
 behavior only once a cell becomes complete, \HazelEnv~will provide meaningful feedback also
-about the dynamic behavior of incomplete cells (and thereby further tighten the live programming 
-feedback loop.)
+about the dynamic behavior of incomplete cells (and thereby further tighten the ``perceptive gap''.)
 
 For example, in cell \textbf{(c)} of Figure~\ref{fig:hazel-mockup}, the
 programmer applies  the incomplete function \li{summary_stats} to 
@@ -474,22 +475,172 @@ of imported library functions, evaluation does not step into functions, like
 \li{std}, that have been imported from external libraries indicated by the row at the top of Figure \ref{fig:hazel-mockup} (unless specifically
 requested, not shown.)}
 
-This brings us to our second specific aim: a
-\textbf{dynamic semantics for incomplete programs} (Section~\ref{sec:dynamics}) that builds upon our proposed
+To realize this functionality, we need a
+{dynamic semantics for incomplete programs} that builds upon our proposed
 static semantics. There is some precedent for this: research in gradual typing
-considers the dynamic semantics of programs with holes in types, and indeed, our
+considers the dynamic semantics of programs with holes in types, and our
 proposed static semantics for incomplete programs borrows technical machinery
 from theoretical work on gradual typing~\cite{Siek06a}. We seek a dynamic semantics for the
-other classes of incomplete programs that we will consider as well.
+ incomplete programs that also have expression holes (and in the future, other sorts of holes.) Research on CMTT has not yet 
+ considered the problem of evaluating expressions under a non-empty metavariable context. Accomplishing this goal will require great formal care, because the presence of type
+and binding errors would violate the usual notions of type safety -- evaluation can ``get stuck'' because a hole appears in a critical (elimination) position. Normally, this would violate the classical notion of Progress -- 
+evaluation can neither proceed, nor has it produced a value. We conjecture that this is
+resolved by (1) positively characterizing \emph{indeterminate} 
+evaluation states, those where a hole blocks progress at all locations
+within the expression, and (2) defining
+a notion of Indeterminate Progress that allows for evaluation to stop at an 
+indeterminate evaluation state.
 
-This will require great formal care, because the presence of type
-and binding errors would violate the usual notions of type safety. As such we plan to develop a \emph{mechanized
-  metatheory}~\cite{Lee:2007:TMM:1190216.1190245}: we will use a proof assistant to mechanize the semantics and
-accompanying metatheorems that establish essential properties, e.g. that
-evaluating a statically meaningful incomplete programs will not ``go wrong'' (which we take in
-the sense of Milner to mean that it will not have undefined behavior~\cite{milner1978theory,pfpl}).
-This represents the ``gold standard'' for evaluating claims in formal
-semantics.  Our preliminary work has used Agda~\cite{norell2009dependently}.
+% A subsequent cell (bottom left) applies $f$ to $2$ and $3$ (perhaps because the programmer intends this to be a test of $f$). Function application operates in the usual way: 
+% we substitute $2$ for $x$ and $3$ for $y$ in the body of $f$. Substitution proceeds also into the environment associated with each hole -- here, the environment for hole $u$ becomes $[2/x, 3/y][x/x, y/y] = [2/x, 3/y]$.
+
+% The next step of evaluation proceeds to reduce $2 * 3$ to $6$, again in the usual way.
+% %
+% The next step would divide $6$ by a number, except that the number is
+% absent; there is a hole in its place. No evaluation step can be taken. 
+% %
+% Normally, this would violate the classical notion of Progress -- 
+% evaluation can neither proceed, nor has it produced a value. We conjecture that this is
+% resolved by (1) positively characterizing \emph{indeterminate} 
+% evaluation states, those where a hole blocks progress at all locations
+% within the expression, and (2) defining
+% a notion of Indeterminate Progress that allows for evaluation to stop at an 
+% indeterminate evaluation state. This ``fix'' is in some ways analagous to the fix needed when introducing 
+% run-time errors into a language \cite{pfpl}.\footnote{%
+% This example is similar to the example shown in cell~\textbf{(c)} in
+% Figure~\ref{fig:hazel-mockup}, except that there, we also applied
+% the heuristic that we should not step
+% into the definition of \li{std} because it was defined in an imported library.}
+
+% \begin{figure}[ht]
+% \center
+% %\small
+% \ensuremath{
+% \begin{array}{rclcrcl}
+% \multicolumn{3}{l}{\textbf{\ScenerioOne: Testing}}
+% &
+% &
+% \multicolumn{3}{l}{\textbf{\ScenerioTwo: Edit and Resume}}
+% \\
+% \hline
+% \multicolumn{3}{l}{\texttt{fun}~f(x,y) = 3 + x * y {\div} \hehole{}^\metavar_{[x/x,y/y]}}
+% &
+% \multicolumn{1}{l}{
+% \colorbox{dVeryFaint}{$\xrightarrow{[\!| (x+1) / u |\!]}$}
+% }
+% &
+% \multicolumn{3}{l}{\texttt{fun}~f(x,y) = 3 + x * y {\div} (x+1)}
+% % \\
+% % \multicolumn{3}{l}{
+% % \colorbox{dVeryFaint}{  
+% % \textrm{where}~$\textrm{id} = [x/x, y/y]$
+% % }}
+% % &
+% % &
+% %\multicolumn{3}{l}{
+% %\colorbox{dVeryFaint}{  
+% %\textrm{where}~$\textrm{id} = [x/x, y/y]$
+% %}}
+% \\[2mm]
+% % - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+% \hline
+% f(2,3) &\longmapsto & 3 + 2 * 3 {\div} \hehole{}^\metavar_{[2/x, 3/y]}
+% &
+% % \multicolumn{1}{l}{
+% % \colorbox{dVeryFaint}{$\xrightarrow{[\!| (x+1) / u |\!]}$}
+% % }
+% &
+% f(2,3) &{\color{gray} \longmapsto} & {\color{gray} 3 + 2 * 3 {\div} (2+1)}
+% \\
+% &\longmapsto& 3 + 6 {\div} \hehole{}^\metavar_{[2/x, 3/y]}
+% &
+% %% \multicolumn{2}{l}{
+% %% \colorbox{dVeryFaint}{$\xrightarrow{[\!| (x+1) / u |\!]~\circ~{\textsf{det}}}$}
+% %% }
+% \multicolumn{1}{l}{
+% \colorbox{dVeryFaint}{$\xrightarrow{[\!| (x+1) / u |\!]}$}
+% }
+% && {\color{gray} \longmapsto} & 3 + 6 {\div} (2 + 1)
+% \\
+% &&
+% % \multicolumn{3}{l}{
+% %         \colorbox{dVeryFaint}{
+% %           \textrm{where}~$\sigma = [2/x,3/y]$
+% %         }
+% % }
+% %&&
+% % &\longmapsto& 3 + \indetaction{\lfloor} 6 {\div} \hehole{}^\metavar_{\sigma} \indetaction{\rfloor}
+% &&& \longmapsto& 3 + 6 {\div} 3
+% \\
+% &&
+% % &\longmapsto& \indetaction{\lfloor} 3 + \lfloor 6 {\div} \hehole{}^\metavar_\sigma \rfloor \indetaction{\rfloor}
+% &&& \longmapsto& 3 + 2
+% \\
+% &&
+% &&& \longmapsto& 5
+% \end{array}
+% }
+% \caption{An example demonstrating 1) evaluation of an incomplete program; 2) support for ``edit-and-resume'' when transitioning between edit states related by some edit that can be understood as hole instantiation.}
+% \label{fig:dynamics}
+% \end{figure}
+
+% \paragraph{Scenario 1: Testing.} 
+
+% \paragraph{Scenario 2: Edit and Resume.}
+% Suppose the programmer decides that the denominator should
+% be $x+1$, and, through some sequence of edits (considered formally in the next section), arrives at 
+% the new definition of $f$ shown on the top right of Figure \ref{fig:dynamics}. This edit state is now complete -- no holes remain -- so the live programming environment 
+% could evaluate $f(2, 3)$ in the usual way by taking the steps shown on
+% the bottom right of Figure \ref{fig:dynamics} (including the first
+% grayed out step).
+
+% However, if the editor has already computed the indeterminate evaluation 
+% state from the version of $f$ with a hole, and it also knows that the 
+% two edit states differ only up to \emph{hole instantiation}, written 
+% $[\!| (x+1) / u
+% |\!]$, then it can take advantage of an important commutativity property that we aim 
+% to prove about our dynamics: that 
+% \emph{hole instantiation commutes with evaluation}. 
+
+% Hole instantiation, $[\!| \hexp / u |\!]\hexp'$ is similar to substitution, except that it acts on
+%  hole(s) named $u$ in $\hexp'$. At each such hole, the corresponding substitution is applied to $\hexp$. For example,
+% $[\!| x + 1 / u |\!]\hehole{}^\metavar_{[2/x, 3/y]} = 2 + 1$. 
+
+% Assuming hole instantiation commutes with evaluation, then it suffices to start from any indeterminate evaluation 
+% state previously computed and perform hole instantiation on it. After doing so, evaluation can resume. The end result is guaranteed to coincide with that of evaluating the new version of $f$ from scratch. In Figure \ref{fig:dynamics}, this implies that we need not perform the two grayed out evaluation steps. This relates to PI Hammer's
+% ongoing research into combining general-purpose incremental
+% computation (IC) with static analysis~\cite{OVV2016}. 
+% %
+% Currently, IC research focuses on input
+% changes~\cite{TypedAdapton2016, Fisher2016, Hammer2015, Chen2014,
+% Hammer2014, Chen2011, Hammer2011, Hammer2009, Hammer2008}, whereas the
+% work proposed here considers incremental \emph{program changes}.
+
+% The notion of holes being associated with unique names and substitutions, and the notion of hole instantiation just described, is borrowed directly from work in \emph{contextual modal type theory (CMTT)} \cite{Nanevski2008}. Hole names correspond to \emph{metavariables} and holes themselves to \emph{closures}. CMTT is, in turn, the Curry-Howard interpretation of contextual modal logic. This gives us confidence that our approach is not \emph{ad hoc}, but rather rooted in the established logical tradition.
+
+% \subsection{Proposed Research}
+
+% The related work described in the previous section, with its roots in CMTT, suggests a theoretical foundation for moving forward. However, there remain two major missing pieces.
+
+% First, CMTT does not come equipped with a dynamic semantics that supports evaluation of terms with free metavariables, which is precisely what we require (see Scenario 1, above). As such, we need to formally develop the notion of an \emph{indeterminate evaluation state}, define a dynamics that can handle free metavariables, and formally state and prove our Indeterminate Progress conjecture.
+
+% Second, CMTT's closures nicely handle empty expression holes, but non-empty holes, type holes, and other problems that we plan to internalize with our statics need to be considered carefully. Non-empty holes can likely be understood as a simple variation on empty holes. In the previous section, we discussed the relationship between type holes and gradual typing. Work in gradual typing appears to provide one solution to the problem of evaluating terms with type holes (by inserting run-time casts \cite{Siek06a}.) This suggests that a comprehensive dynamics for incomplete programs, i.e. one that assigns dynamic meaning to every statically meaningful incomplete program, will require developing a \emph{gradual contextual modal type theory} (GCMTT).
+
+There are several more practical applications that we aim to explore after developing the initial foundations just described. For example, it would be useful to be able to continue evaluation where it left off after making an edit to the program that corresponds to hole instantiation. This would require proving a commutativity property regarding hole instantiation. Fortunately, initial research on commutativity properties for holes has been conducted for CMTT, which will serve as a starting point for this work \cite{Nanevski2008}. There are likely to be interesting new theoretical questions that arise when one adds non-termination and memory effects (e.g. regarding the shape of the heap.)
+
+It would also be useful for the programmer to be able to select a hole that appears in an indeterminate state and 1) be taken to its original location; 2) be able to inspect the \emph{value} of a subexpression under the cursor in the environment of the selected hole (rather than just its type.) Again, CMTT's closures provide a theoretical starting point for this editor service. 
+
+Finally, IPython/Jupyter \cite{Perez:2007:ISI:1251563.1251831} support a feature whereby numeric variable(s) in cells can be marked as being ``interactive'', which causes the user interface to display a slider. As the slider value changes, the new value of the cell is recomputed. It would be useful to be able to use the mechanisms just proposed to incrementalize parts of this recomputation.
+
+
+
+%  As such we plan to develop a \emph{mechanized
+%   metatheory} \cite{Lee:2007:TMM:1190216.1190245}: we will use a proof assistant to mechanize the semantics and
+% accompanying metatheorems that establish essential properties, e.g. that
+% evaluating a statically meaningful incomplete programs will not ``go wrong'' (which we take in
+% the sense of Milner to mean that it will not have undefined behavior~\cite{milner1978theory,pfpl}.)
+
+
 
 \section{Problem 4: Meaningless Edit Actions} Our first two specific aims
 allow us to assign meaning to intermediate edit states. However, to
