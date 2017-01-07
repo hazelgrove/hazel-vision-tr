@@ -301,7 +301,7 @@ by the program editor, without including them in the surface syntax exposed to p
 %\vspace{-2ex}
 \end{figure}
 
-\section{Problem 2: Statically Meaningless Edit States} 
+\section{Problem 2: Statically Meaningless Edit States} \label{sec:p-statics}
 
 \begin{figure}[t]
 %\small
@@ -437,7 +437,7 @@ There are a number of future research directions that are worth exploring.\todo{
     upon existing proof automation techniques, e.g. Agda's reflection \cite{van2012engineering} (in part because our present mechanization effort is in Agda.)
 
 
-\section{Problem 3: Dynamically Meaningless Edit States.} Modern programming
+\section{Problem 3: Dynamically Meaningless Edit States} Modern programming
 tools are increasingly moving beyond simple ``batch'' programming models by
 incorporating \emph{live programming} features that interleave editing and
 evaluation \cite{DBLP:conf/icse/Tanimoto13,DBLP:journals/vlc/Tanimoto90,McDirmid:2007:LUL:1297105.1297073}. These tools provide programmers with rapid feedback about the
@@ -626,7 +626,7 @@ indeterminate evaluation state.
 
 % Second, CMTT's closures nicely handle empty expression holes, but non-empty holes, type holes, and other problems that we plan to internalize with our statics need to be considered carefully. Non-empty holes can likely be understood as a simple variation on empty holes. In the previous section, we discussed the relationship between type holes and gradual typing. Work in gradual typing appears to provide one solution to the problem of evaluating terms with type holes (by inserting run-time casts \cite{Siek06a}.) This suggests that a comprehensive dynamics for incomplete programs, i.e. one that assigns dynamic meaning to every statically meaningful incomplete program, will require developing a \emph{gradual contextual modal type theory} (GCMTT).
 
-There are several more practical applications that we aim to explore after developing the initial foundations just described. For example, it would be useful to be able to continue evaluation where it left off after making an edit to the program that corresponds to hole instantiation. This would require proving a commutativity property regarding hole instantiation. Fortunately, initial research on commutativity properties for holes has been conducted for CMTT, which will serve as a starting point for this work \cite{Nanevski2008}. There are likely to be interesting new theoretical questions that arise when one adds non-termination and memory effects (e.g. regarding the shape of the heap.)
+There are several more practical applications that we aim to explore after developing the initial foundations just described. For example, it would be useful to be able to continue evaluation where it left off after making an edit to the program that corresponds to hole instantiation. This would require proving a commutativity property regarding hole instantiation. Fortunately, initial research on commutativity properties for holes has been conducted for CMTT, which will serve as a starting point for this work \cite{Nanevski2008}. There are likely to be interesting new theoretical questions that arise when one adds non-termination and memory effects (e.g. regarding the shape of the heap before and after the edit.)
 
 It would also be useful for the programmer to be able to select a hole that appears in an indeterminate state and 1) be taken to its original location; 2) be able to inspect the \emph{value} of a subexpression under the cursor in the environment of the selected hole (rather than just its type.) Again, CMTT's closures provide a theoretical starting point for this editor service. 
 
@@ -642,36 +642,75 @@ Finally, IPython/Jupyter \cite{Perez:2007:ISI:1251563.1251831} support a feature
 
 
 
-\section{Problem 4: Meaningless Edit Actions} Our first two specific aims
+\section{Problem 4: A Calculus of Edit Actions} Our first two specific aims
 allow us to assign meaning to intermediate edit states. However, to
-understand the act of \emph{editing} itself, we propose to develop a system of
+understand the act of \emph{editing} itself, we need a calculus of
 \emph{edit actions} that governs transitions between edit
-states. Our goal is for every intermediate edit state to be both statically and
-dynamically meaningful according to the semantics developed in the first two
-specific aims. This corresponds formally to proving a
+states. 
+
+Assuming that Hazel will be a structure editor, the goal will be for every possible edit state to be both statically and
+dynamically meaningful according to the semantics proposed in the previous two
+sections. This corresponds formally to proving a
 metatheorem about the action semantics: when the initial edit state is
 semantically meaningful, the edit state that results from performing an action
 is as well. In addition to this crucial metatheorem, which
 we call \emph{sensibility}, there are a number of other metatheorems of interest
-that establish the interactive expressive power of the action semantics. Our third specific
-aim is thus to develop a sensible and expressive \textbf{semantics of edit actions} (Section~\ref{sec:actions})
-and, as above, to mechanize its metatheory.
+that establish the interactive expressive power of the action semantics, e.g. that every well-typed term can be constructed by some sequence of edit actions. 
+(In a textual setting, these structured edit actions would need to be supplemented by lower-level text edit actions that do not maintain such invariants.)
+
+In our recent work on Hazelnut, we have developed an action calculus
+for the minimal calculus of H-types and H-expressions described in
+Section~\ref{sec:p-statics} \cite{popl-paper}. We have mechanically proven the sensibility invariant, as well as a number of other metatheorems. What remains is to scale this calculus up, 
+and to investigate \emph{action composition principles}. For example, it would be worthwhile to investigate the 
+notion of an \emph{action macro}, whereby 
+functional programs could themselves be lifted to the level of actions to
+compute non-trivial compound actions. Such compound actions would give a
+uniform description of transformations ranging from the simple---like
+``move the cursor to the next hole to the right''---to quite complex whole
+program refactorings, while remaining subject to the core semantics. Using proof automation, it should be possible to prove that an action macro implements derived action logic that 
+is admissible with respect to the core semantics. This would eliminate the possibility of ``edit-time'' errors. This is closely related to work on tactic languages in proof assistants, e.g. the Mtac typed macro language for Coq \cite{ziliani2015mtac}, differing again in that the action language involves notions other than hole filling.
 
 
-\section{Problem 5: Meaningless and Improbable Suggestions} 
+\section{Problem 5: Meaningful Suggestion Generation and Ranking} 
 The simplest 
-edit actions will be bound to keyboard shortcuts (studies suggest that programmers experienced with a keyboard-driven structure editors can be highly productive \cite{DBLP:conf/vl/Asenov014}). However, \HazelEnv will also present a search-based user
-interface for discovering relevant higher-level actions -- marked with \textbf{(d)} in Figure \ref{fig:hazel-mockup}. 
-The suggestions 
-listed are informed by the semantics at the cursor, i.e. they use the fact that
-the type at the cursor is \li{dimension} to suggest the two constructors of that
-type, \li{ColumnWise} and \li{RowWise}. The suggestions are further informed by
-the statistics of other programs that \HazelEnv has encountered.  Here, the
-environment has noticed that the programmer tends to prefer column-wise operations on 
-matrices, so it marks that suggestion as the most probable. These suggestions are governed by
-our fourth specific aim: a \textbf{statistical action suggestion semantics} (Section~\ref{sec:statistics}). The key invariant here that, again, we aim to establish 
-formally is that every suggestion assigned non-zero probability must be semantically sensible 
-relative to the edit state.% Moreover, all probability distributions must ``integrate'' to $1$.
+edit actions will be bound to keyboard shortcuts. However, \Hazel ~will also provide suggestions to help the programmer edit incomplete
+programs by providing a \emph{suggestion palette}, marked \textbf{(d)} in
+Figure~\ref{fig:hazel-mockup}.  This palette will suggest semantically
+relevant code  
+snippets when the cursor is on an empty hole. It will also suggest other relevant
+edit actions, including high-level edit actions implemented by imported action
+macros (e.g. the refactoring action in Figure~\ref{fig:hazel-mockup}.)  When the
+cursor is on a non-empty hole, indicating a static error, it will suggest
+bug fixes. We plan to also consider bugs that do not correspond to static
+errors, including those identified explicitly by the programmer, and those
+related to assertion failures or exceptions encountered when using the live
+programming features of \HazelEnv. In these situations, we plan to defer to
+existing automated fault localization techniques~\cite{Jones02,
+  Qi13issta,Renieris03}.
+
+Note that features like these are not themselves novel. Many editors provide
+contextually relevant suggestions. Indeed, code inference and suggestion is
+closely related to several major research areas: code
+completion~\cite{Muslu12icse-nier,icse-naturalness12}, program
+synthesis~\cite{Gulwani2010}, and program
+repair~\cite{legoues12tse,angelix,prophet,Ke15ase}.  
+
+The problems that existing systems encounter is exactly the problem we have 
+been discussing throughout this proposal: when attempting to integrate these 
+features into an editor, it is difficult to reason about malformed or meaningless
+edit states. As such, many of these systems use tokenized representations of programs \cite{icse-naturalness12}. Because \HazelEnv~ will maintain the invariant that every
+edit state is a syntactically and semantically meaningful formal structure, we can develop a
+more principled solution to the problem of generating meaningful suggestions. In particular,
+we will \emph{prove} that every action suggestion generated for a particular edit state is 
+meaningful for that edit state.
+
+In addition to investigating the problem of populating the suggestion palette
+with semantically valid actions, we will consider the problem of evaluating
+the statistical likelihood of the suggestions. This
+requires developing a statistical model over actions.  We will prove that this statistical model is a
+proper statistical distribution (e.g. that it ``integrates'' to 1), and that it
+assigns zero probability to semantically invalid actions. Collectively, we refer 
+to these contributions as a \emph{statistical action suggestion semantics}. 
 
 \section{Language-Editor Co-Design}
 Designing the static semantics of \HazelEnv~together with its action semantics 
