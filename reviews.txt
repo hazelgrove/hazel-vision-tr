@@ -1,0 +1,108 @@
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 22
+TITLE: Toward Semantic Foundations for Program Editors
+AUTHORS: Cyrus Omar, Ian Voysey, Michael Hilton, Joshua Sunshine, Claire Le Goues, Jonathan Aldrich and Matthew Hammer
+
+Overall evaluation: 3
+
+----------- Paper summary -----------
+This paper considers problems that arise in the common situation of
+    a programmer working with an incomplete or invalid program. This includes
+    cases where the program text is incomplete or where it is complete but
+    syntactically invalid or where it is syntactically complete and valid
+    but invalid with respect to the static semantics.
+
+    Editors need to provide developers with useful functionality in this
+    context. Apart from more conventional editing functionality, it is
+    even desirable if the environment provides users with functionality
+    for, e.g., executing such an incomplete or invalid program (to the
+    extent possible).
+
+    The paper presents an overview of the issues, challenges, and
+    presents some recent work that the authors have done in addressing these.
+
+----------- Overall evaluation -----------
+The problems considered are interesting and very relevant.
+    Overall, the paper presents a compelling vision.
+    The paper is very readable.
+
+    More specifically, the paper goes through a sequence of increasingly
+    more difficult problems. First they consider, syntactically malformed
+    programs in the context of editing, which are handled by many existing
+    editors, even though in potentially adhoc ways. They then move on to
+    challenges relating to static semantics, typing, execution (e.g., as in
+    live programming), and move on to a formal study of edit actions,
+    and conclude by considering a co-design of languages and editors.
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 22
+TITLE: Toward Semantic Foundations for Program Editors
+AUTHORS: Cyrus Omar, Ian Voysey, Michael Hilton, Joshua Sunshine, Claire Le Goues, Jonathan Aldrich and Matthew Hammer
+
+Overall evaluation: 3
+
+----------- Paper summary -----------
+Presents a compelling vision for foundational languages, semantics, and tools for "partial programs," using the development of a "live editor" as a running example.
+
+----------- Overall evaluation -----------
+This is a nice vision paper that presents a compelling research agenda for constructing rich program editors. To enable these editors to have a detailed syntactic/semantic understanding of programs as they are developed, it presents a series of calculi, semantic analyses, and tools for dealing with "partial programs." As a SNAPL paper, I think it works very well. Although the details of some aspects of the vision are sketchy, the overall direction seems solid. I appreciated that the paper uses a concrete example to ground the discussion. In fact, the choice of a structure editor is ingenius -- programmers are passionate about their coding environment, so most SNAPL attendees will be naturally drawn into the talk.
+
+Some aspects of the paper that could be improved:
+
+The scope of the paper is quite ambitious. I thought the paper could be made stronger by focusing on a smaller set of topics in more depth. Relatedly, the abstract mentions mechanized metatheory, but I couldn't find any other discussion in the paper. I think it might be better to leave this out of a SNAPL paper -- the task of fully developing the foundations of partial programs seems daunting enough already! But if this was a critical part of the vision, then it merits discussing.
+
+The challenges and proposed solution (based on CMTT?) presented in Section 4 are not described in enough detail for me to fully understand them. Some of the properties discussed seem relatively straightforward or even obvious -- e.g., of course Progress fails when the program has holes, and execution blocks at a hole -- while others seem unlikely to work out as expected -- e.g., the commutativity condition seems to strong to be broadly applicable.
+
+Nits and small questions
+
+* Do you think programmers will be willing to use a structure editor? If so, your argument might be added to Section 1.
+
+* I was glad to see the connection to gradual typing mentioned. I thought it could have been mentioned sooner.
+
+* Relatedly, is Amal Ahmed's work on multi-language semantics relevant?
+
+* Problem 4 is great! It is an important but under-studied problem :-)
+
+* What counts as "meaningful"? This concept is mentioned several times in the paper but is not described precisely.
+
+* p4: "generate a static [semantics]?"
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 22
+TITLE: Toward Semantic Foundations for Program Editors
+AUTHORS: Cyrus Omar, Ian Voysey, Michael Hilton, Joshua Sunshine, Claire Le Goues, Jonathan Aldrich and Matthew Hammer
+
+Overall evaluation: 3
+
+----------- Paper summary -----------
+The paper is a vision statement seeking to treat program editors as mathematical objects. It starts by reviewing the limitations of current editors and IDEs. The authors then propose solutions to deal with syntactically malformed edit states, statically and dynamically meaningless states. The solutions are not meant to be complete, but rather starting points for further research. Finally, solutions for edit actions are briefly presented, followed by discussions about future work: suggestion generation and ranking.
+
+----------- Overall evaluation -----------
+Excellent paper.
+
+Here are my notes.
+A general remark, is that the word "clean" comes back very often. I would encourage the authors to try to reformulate at least some of those occurence. Because at times it feels like the term is used to assert the superiority of an approach without much justification. For example, using a calculus could be justified in many ways (other than, it's cleaner): it's easier to approach the problem formally etc ...
+
+1:  Syntactically Malformed Edit States
+
+The missing part in the discussion is the rest of the toolchain. The textual form of the program is not just used by the editor, but by all sorts of tools: version control comes to mind, grep? I think it would be worth mentioning. If Hazel can only be modified by a structural editor, then, quid of the rest of the tool chain?
+
+2:  Statically Meaningless Edit States
+
+One simple sentence explaining how "holes" are different from unknown types would be nice. I understand it's not possible to reproduce the entire submission, but a simple example would help.
+I would remove this sentence:
+" ... gradual typing is also motivated by a desire to make sense of one class of “intermediate edit states” – programs
+that have not yet been fully annotated with types "
+A lot of people would argue that this is not what motivates gradual typing. Dynamic programs are seen by some (not me!), as more than just programs waiting to be annotated with types.
+Regarding interactive proof assistants, I was surprised you didn't mention Coq, especially because it's mentioned later in the paper. Any plans there?
+
+4: Dynamically Meaningless Edit States
+
+Is there anyway I could convince the authors not to go down that path? Don't change anything to the paper, that's something that we should discuss in person. But to me, the main problem with those "live programming" tools is when they let me enter a state that is not reachable without a program modification.
+
+5: Meaningful Suggestion Generation and Ranking
+
+What about machine learning? Could we "deep learn" what the next edit action will be?
