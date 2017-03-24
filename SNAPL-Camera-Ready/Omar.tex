@@ -10,66 +10,6 @@
  
 \usepackage{microtype}%if unwanted, comment out or use option "draft"
 
-% !TEX root = hazelnut-popl17.tex
-
-
-% From matt's dynamics
-
-\definecolor{dDkRed}{rgb}{0.35, 0.0, 0.0}
-\definecolor{dLighterGreen}{rgb}{0.70, 0.95, 0.70}
-\definecolor{dGreen}{rgb}{0.0, 0.65, 0.0}
-\definecolor{dDkGreen}{rgb}{0.0, 0.35, 0.0}
-\definecolor{dBlue}{rgb}{0.0, 0.0, 0.65}
-\definecolor{dLightBlue}{rgb}{0.4, 0.4, 0.9}
-\definecolor{dLighterBlue}{rgb}{0.8, 0.8, 1.0}
-\definecolor{dDkBlue}{rgb}{0.0, 0.0, 0.45}
-\definecolor{dLightPurple}{rgb}{0.9, 0.5, 0.9}
-\definecolor{dLighterPurple}{rgb}{1.0, 0.7, 1.0}
-\definecolor{dPurple}{rgb}{0.65, 0.0, 0.65}
-\definecolor{dDigPurple}{rgb}{0.5, 0.0, 0.5}
-% \definecolor{DDIGPURPLE}{rgb}{0.5, 0.0, 0.5}  % laughable
-\definecolor{dFaint}{rgb}{0.7, 0.7, 0.7}
-\definecolor{dVeryFaint}{rgb}{0.9, 0.9, 0.9}
-\definecolor{dGray}{rgb}{0.5, 0.5, 0.5}
-\definecolor{dDark}{rgb}{0.2, 0.2, 0.2}
-\definecolor{dAlmostBlack}{rgb}{0.1, 0.1, 0.1}
-\definecolor{lred}{rgb}{1.0, 0.8, 0.8}
-\definecolor{white}{rgb}{1.0, 1.0, 1.0}
-
-\newcommand{\OmitThis}[1]{}
-\newcommand{\metavar}[0]{u}
-
-%Matt's hole macro
-%\newcommand{\mhole}[1]{%
-%{\color{dPurple}(\!|}%
-%{#1}%
-%{\color{dPurple}|\!)}%
-%}
-%\newcommand{\mhole}[1]{\colorbox{dPurple}{\colorbox{white}{\ensuremath{#1}}}}
-\newcommand{\mhole}[1]{\hehole}
-\newcommand{\indet}[1]{\lfloor{#1}\rfloor}
-\newcommand{\desc}[1]{\textrm{#1}}
-%% \newcommand{\testaction}[1]{\colorbox{dLighterGreen}{\ensuremath{#1}}}
-%% \newcommand{\editaction}[1]{\colorbox{dLighterPurple}{\ensuremath{#1}}}
-%% \newcommand{\editreaction}[1]{\colorbox{dLightPurple}{\ensuremath{#1}}}
-%% \newcommand{\indetaction}[1]{\colorbox{dFaint}{\ensuremath{#1}}}
-%% \newcommand{\detaction}[1]{\colorbox{dLightPurple}{\ensuremath{#1}}}
-%% \newcommand{\stepaction}[1]{\colorbox{dLighterBlue}{#1}}
-\newcommand{\testaction}[1]{\ensuremath{#1}}
-\newcommand{\editaction}[1]{\ensuremath{#1}}
-\newcommand{\editreaction}[1]{\ensuremath{#1}}
-\newcommand{\indetaction}[1]{\ensuremath{#1}}
-\newcommand{\detaction}[1]{\ensuremath{#1}}
-\newcommand{\stepaction}[1]{{#1}}
-\newcommand{\ScenerioOne}{Scenario 1\xspace}
-\newcommand{\ScenerioOneA}{Scenario 1(a)\xspace}
-\newcommand{\ScenerioOneB}{Scenario 1(b)\xspace}
-\newcommand{\ScenerioTwo}{Scenario 2\xspace}
-\newcommand{\Pass}{\colorbox{dLighterBlue}{P}}
-\newcommand{\Fail}{\colorbox{lred}{F}}
-\newcommand{\Indet}{\colorbox{dFaint}{I}}
-
-
 %\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
 
 \bibliographystyle{plainurl}% the recommended bibstyle
