@@ -10,8 +10,6 @@
  
 \usepackage{microtype}%if unwanted, comment out or use option "draft"
 
-%\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
-
 \bibliographystyle{plainurl}% the recommended bibstyle
 
 % Author macros::begin %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,23 +35,13 @@
 
 \authorrunning{C. Omar, I. Voysey, M. Hilton, J. Sunshine, C. Le Goues, J. Aldrich, and M. Hammer} %mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et. al.'
 
-\Copyright{
-{
-\tiny % XXX --- \tiny avoids a line-break that isn't handled well
-Cyrus Omar,
-Ian Voysey,
-Michael Hilton,
-Joshua Sunshine,
-Claire Le Goues,
-Jonathan Aldrich,
-Matthew A. Hammer
-}
-}%mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+% The full author list does not fit into a single line, and the template does not handle that gracefully...
+\Copyright{the authors}%mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
 
 \subjclass{
 D.3.1 Formal Definitions and Theory,
 D.2.6 Programming Environments}% mandatory: Please choose ACM 1998 classifications from http://www.acm.org/about/class/ccs98-html . E.g., cite as "F.1.1 Models of Computation". 
-\keywords{program editors, structure editors, gradual type systems, incomplete programs, mechanized metatheory}% mandatory: Please provide 1-5 keywords
+\keywords{program editors; type systems; live programming; program prediction}% mandatory: Please provide 1-5 keywords
 % Author macros::end %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,14 +61,6 @@ D.2.6 Programming Environments}% mandatory: Please choose ACM 1998 classificatio
 \usepackage{etoolbox}
 \usepackage{hyperref}
 
-% \usepackage{srcltx}
-% \usepackage{goodcharter}
-% \usepackage{euler}
-
-% \usepackage{joshuadunfield}
-\usepackage{llproof}
-%\usepackage{jdproof}
-\usepackage{rulelinks}
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{wrapfig}
@@ -93,12 +73,6 @@ D.2.6 Programming Environments}% mandatory: Please choose ACM 1998 classificatio
 \usepackage{todonotes}
 \usepackage{enumerate}
 
-\renewcommand{\todo}[1]{} % XXX -- Uncomment me to show remaining TODOs in doc
-
-\declaretheoremstyle[
-  bodyfont=\sl
-]{mytheoremstyle}
-
 \lstset{tabsize=2, 
 basicstyle=\ttfamily, 
 % keywordstyle=\sffamily,
@@ -108,11 +82,11 @@ mathescape=false,escapechar=\#,
 numbers=left, numberstyle=\scriptsize\color{gray}\ttfamily, language=ML, moredelim=[il][\sffamily]{?},showspaces=false,showstringspaces=false,xleftmargin=15pt, 
 classoffset=0,belowskip=\smallskipamount, aboveskip=\smallskipamount
 }
-\lstloadlanguages{Java,VBScript,XML,HTML,ML}
+\lstloadlanguages{ML}
 \let\li\lstinline
 
 \newcommand{\Hazel}[0]{\textsf{Hazel}}
-\newcommand{\HazelEnv}[0]{\Hazel}
+
 
 % Violet hotdogs; highlight color helps distinguish them
 \newcommand{\llparenthesiscolor}{\textcolor{violet}{\llparenthesis}}
@@ -152,33 +126,31 @@ live programming environments (which interleave editing and
 evaluation).
 %
 Semanticists have done comparatively little to formally characterize (1) the static and dynamic semantics of incomplete programs; (2) the 
-actions available to programmers as they edit and inspect incomplete programs; and (3) the behavior of editor services that suggest likely edit actions to the programmer based on semantic information extracted from the incomplete program being edited, and from programs that the system has encountered in the past.% As such, each tool designer has largely been left to develop their own \emph{ad hoc} heuristics. 
+actions available to programmers as they edit and inspect incomplete programs; and (3) the behavior of editor services that suggest likely edit actions to the programmer.
 
 %
 This paper serves as a vision statement for a research program that seeks to develop these ``missing'' semantic 
-foundations. Our hope is that these contributions, which will take the form of a series of simple formal calculi equipped with a tractable metatheory, will guide the design of a variety of current and future interactive programming tools, much as various lambda calculi have guided modern language designs. Our own research will apply these principles in the design of \HazelEnv, an experimental \emph{live lab notebook} programming environment designed for data science tasks. We plan to co-design the \HazelEnv~language with the editor so that we can explore concepts such as edit-time semantic conflict resolution mechanisms and mechanisms that allow library providers to install library-specific editor services.
-
-
+foundations. Our hope is that these contributions, which will take the form of a series of simple formal calculi equipped with a tractable metatheory, will guide the design of a variety of current and future interactive programming tools, much as various lambda calculi have guided modern language designs. Our own research will apply these principles in the design of \Hazel, an experimental \emph{live lab notebook} programming environment designed for data science tasks. We plan to co-design the \Hazel~language with the editor so that we can explore concepts such as edit-time semantic conflict resolution mechanisms and mechanisms that allow library providers to install library-specific editor services.
 
 \end{abstract}
 
 
 \section{Introduction}
 
-
-Language-aware program editors (e.g. Eclipse
+Language-aware program editors (like Eclipse
 or Emacs, with the appropriate  
 extensions installed \cite{gamma2004contributing}) offer programmers a number of useful editor services. Simple examples include (1)
 syntax highlighting, (2)
 type inspection, (3)
 navigation to variable binding sites, and (4)
-refactoring. More sophisticated editors provide context-aware suggestions to the programmer (using various code completion, program synthesis and program repair techniques). Many editors also offer \emph{live programming}~\cite{McDirmid:2007:LUL:1297027.1297073,Burckhardt:2013:ACF:2491956.2462170} services, e.g. by displaying the run-time value of an expression directly within the editor as the program is running. 
+refactoring services. More sophisticated editors provide context-aware code and action suggestions to the programmer (using various code completion, program synthesis and program repair techniques). Many editors also offer \emph{live programming}~\cite{McDirmid:2007:LUL:1297027.1297073,Burckhardt:2013:ACF:2491956.2462170} services, e.g. by displaying the run-time value of an expression directly within the editor as the program runs. 
+%\todo{citations}
 
 When these editor services encounter \emph{complete programs} -- programs that are well-formed and semantically meaningful (i.e. assigned meaning) according to the definition of the language in use -- they can rely on a variety of well-understood reasoning principles and program manipulation techniques. For example, a syntax highlighter for well-formed programs can be generated automatically 
-from a context-free grammar \cite{DBLP:conf/tools/KrahnRV08,DBLP:conf/cc/BrandDHJJKKMOSVVV01} and the remaining editor services enumerated above can follow the language's type and binding structure as specified by a standard static
+from a context-free grammar \cite{Brand:2001hl} and the remaining editor services enumerated above can follow the language's type and binding structure as specified by a standard static
 semantics. Live programming services can additionally follow the language's dynamic semantics.
 
-The problem, of course, is that many of the {edit states} encountered by a program editor do not correspond to complete programs. For example, the programmer may be in the midst of a transient edit, or the programmer may have introduced a type error somewhere in the program. Standard language definitions are silent about incomplete programs, so in these situations, simple program editors disable various editor services until the program is again in a complete state. In other words, useful editor services become unavailable when the programmer needs them most! More advanced editors attempt to continue to provide editor services during these incomplete states by using various \emph{ad hoc} and poorly understood heuristics based on idiosyncratic internal representations of  incomplete programs.
+The problem, of course, is that many of the {edit states} encountered by a program editor do not correspond to complete programs. For example, the programmer may be in the midst of a transient edit, or the programmer may have introduced a type error somewhere in the program. Standard language definitions are silent about incomplete programs, so in these situations, simple program editors disable various editor services until the program is again in a complete state. In other words, useful editor services become unavailable when the programmer needs them most! More advanced editors attempt to continue to provide editor services during these incomplete states by using various \emph{ad hoc} and poorly understood heuristics that rely on idiosyncratic internal representations of  incomplete programs.
 
 This paper advocates for a research program that seeks to understand both incomplete programs, and the editor services that interact with them, as semantically rich mathematical objects. This research program will broaden the scope of the ``programming language theory'' (PLT) tradition, which has made significant advances by treating complete programs, programming languages and logics as semantically rich mathematical objects.
 
@@ -186,10 +158,11 @@ In following the PLT tradition, we intend to start by developing a series of min
 %
 This will allow researchers to explore the frontier of what is possible when one considers languages and editors within a common theoretical framework. 
 %
-Such a clean-slate design could also prove useful in certain educational settings, and even some day make its way into practice.
+Such a clean-slate design will also likely prove useful in certain educational settings, and even some day evolve into a practical tool.
 
-Figure \ref{fig:hazel-mockup} shows a mockup of the \Hazel ~user interface, which is loosely modeled after the widely adopted IPython / Jupyter lab notebook interface~\cite{PER-GRA:2007}. 
+Figure \ref{fig:hazel-mockup} shows a mockup of the \Hazel~user interface, which is loosely modeled after the widely adopted IPython / Jupyter lab notebook interface~\cite{PER-GRA:2007}. 
 This figure will serve as our running example 
+%We will refer to this figure
 throughout the remainder of the paper. Each section below briefly summarizes a fundamental problem that we must confront as we seek to develop a semantic foundation for advanced program editors. For each problem, we discuss existing approaches, including those advanced by our own recent research, and suggest a number of promising future research directions that we hope that the community will pursue.
 
 \section{Problem 1: Syntactically Malformed Edit States} 
@@ -204,7 +177,7 @@ complete program must be disabled. This is unsatisfying.
 
 Sophisticated editors like Eclipse, and editor generators like Spoofax \cite{DBLP:conf/oopsla/KatsV10}, use \emph{error recovery} heuristics that silently insert tokens so that the editor-internal representation is well-formed \cite{DBLP:journals/siamcomp/AhoP72,charles1991practical,graham1979practical,DBLP:conf/oopsla/KatsJNV09}. These heuristics are typically provided manually by the grammar designer, though certain heuristics can be generated semi-automatically by tools that are given a description of the scoping conventions of the language or of secondary notational conventions (e.g. whitespace) \cite{DBLP:conf/oopsla/KatsJNV09,DBLP:conf/sle/JongeNKV09}. Error recovery heuristics require guessing at the programmer's intent, so they are fundamentally \emph{ad hoc} and can confuse the programmer \cite{DBLP:conf/oopsla/KatsJNV09}.
 
-A more systematic alternative approach, and the approach that we plan to explore with \HazelEnv, is to build a
+A more systematic alternative approach, and the approach that we plan to explore with \Hazel, is to build a
 \emph{structure editor} -- a program editor where every edit state
 maps onto a syntax tree, with \emph{holes} representing leaves of the tree
 that have not yet been constructed.  This representation choice sidesteps the
@@ -219,7 +192,7 @@ We will return to the topic of non-textual projections below.
 \begin{figure}
 \includegraphics[width=1.025\textwidth]{mockup-1}
 \vspace{-5px}
-\caption{A mockup of \HazelEnv.}
+\caption{A mockup of \Hazel.}
 \vspace{-6px}
 \label{fig:hazel-mockup}
 \vspace{-6px}
@@ -242,9 +215,9 @@ suggesting that programmers experienced with a modern keyboard-driven structure 
 can be highly productive \cite{DBLP:conf/vl/Asenov014,DBLP:conf/sle/VolterSBK14}.
 
 Researchers have also explored various ``hybrid'' approaches, which incorporate holes into an otherwise textual program editor. These hybrid approaches are appealing in part because tools for interacting with text, like regular expressions and various differencing techniques used by version control systems, are already well-developed. For example, recent work on \emph{syntactic placeholders} envisions 
-a textual program editor where edit actions cause textual placeholders (a.k.a. holes) to appear, rather than leaving the program transiently malformed \cite{Amorim:2016:PSC:2997364.2997374}. This 
+a textual program editor where edit actions cause textual placeholders (a.k.a. holes) of various sorts to appear, rather than leaving the program transiently malformed \cite{Amorim:2016:PSC:2997364.2997374}. This 
 ``approximates'' the experience of a structure editor in common usage, while allowing the programmer to perform arbitrary 
-text edits when necessary. Some programming systems, e.g. recent iterations of the Glasgow Haskell Compiler (GHC) \cite{GCHWIKI} and the Agda proof assistant \cite{norell2009dependently}, support a workflow where the programmer writes down holes manually at locations in the program that remain under construction. Another approach would be to perform error recovery by attempting to insert holes into the internal representation used 
+text edits when necessary. Some programming systems, e.g. recent iterations of the Glasgow Haskell Compiler (GHC) \cite{GCHWIKI} and the Agda proof assistant \cite{norell2009dependently}, support a workflow where the programmer places holes manually at locations in the program that remain under construction. Another hybrid approach would be to perform error recovery by attempting to insert holes into the internal representation used 
 by the program editor, without including them in the surface syntax exposed to programmers.  If ``pure'' structure editing proves too rigid as we design \Hazel, we will explore hybrid approaches.
 
 \section{Problem 2: Statically Meaningless Edit States} \label{sec:p-statics}
@@ -269,6 +242,7 @@ $\arraycolsep=4pt\begin{array}{lllllll}
 \end{array}$
 \caption{Syntax of H-types and H-expressions in the Hazelnut calculus \cite{popl-paper}.}
 \label{fig:hexp-syntax}
+%\vspace{-5px}
 \end{figure}
 
 No matter how an 
@@ -292,8 +266,7 @@ semantics of complete expressions is again silent about these matters.
 Various heuristic
 approaches are implemented in Eclipse and other sophisticated tools, but the 
 formal character of these heuristics are obscure, buried deep within their implementations. What is needed is a clear static semantics for incomplete programs, i.e. programs that contain holes (in both expressions and types), type inconsistencies, binding inconsistencies (i.e. unbound variables), and
-other static problems. Such a static semantics is necessary for \HazelEnv~to be able to  
-communicate to the programmer that the expression at the cursor, highlighted in blue in cell \textbf{(a)}, must be of type \li{dimension} (see right column of Figure \ref{fig:hazel-mockup}). Moreover, \HazelEnv~must be able to assign the incomplete function
+other static problems. Such a static semantics is necessary for \Hazel~to be able to  provide type inspection services. For example, in the right column of Figure \ref{fig:hazel-mockup}, \Hazel~is informing the programmer that the expression at the cursor, highlighted in blue in cell \textbf{(a)}, must be of type \li{dimension}). Similarly, \Hazel~must be able to assign the incomplete function
 \li{summary_stats} an incomplete function
 type for it to be able to understand subsequent applications of \li{summary_stats}. Here, the function body has been filled out enough to be able to assign the function the following incomplete function type:
 \[\texttt{matrix(float) -> \{ {mean} : vec(float), std : vec(float), median :~$\square$ \}}\] 
@@ -301,7 +274,7 @@ type for it to be able to understand subsequent applications of \li{summary_stat
 We have investigated a subset of this problem in recent work \cite{popl-paper} by defining a static
 semantics for a simply typed lambda calculus (with a 
 single base type, $\tnum$, for simplicity) extended with holes and type
-inconsistencies (but no binding inconsistencies.) Figure~\ref{fig:hexp-syntax} defines the syntactic
+inconsistencies (but no binding inconsistencies). Figure~\ref{fig:hexp-syntax} defines the syntactic
 objects of this calculus -- \emph{H-types}, $\htau$,
 are types with holes $\tehole$, and \emph{H-expressions}, $\hexp$, are
 expressions with holes $\hehole$, and marked type inconsistencies,
@@ -313,11 +286,11 @@ incomplete and behave semantically much like empty holes. Types and expressions 
  We will not reproduce further details here. Instead, let us simply note some interesting connections with other work. 
 
  First, type holes behave much like unknown types, $?$, from Siek and Taha's pioneering work on gradual typing \cite{Siek06a}. This discovery is quite encouraging, given that gradual typing is also motivated by a 
-desire to make sense of one class of ``intermediate edit states'' -- programs that
-have not been fully annotated with types.\todo{ask nate foster about whether to further clarify the distinction b/w gradual and dynamic typing here?}
+desire to make sense of one class of ``incomplete program'' -- programs that
+have not been fully annotated with types.
 
 Empty expression holes have also been studied formally, e.g. as the \emph{metavariables} 
-of contextual modal type theory (CMTT) \cite{DBLP:journals/tocl/NanevskiPP08}. In particular, expression
+of contextual modal type theory (CMTT) \cite{Nanevski2008}. In particular, expression
 holes can have types and are surrounded by contexts, just as metavariables in
 CMTT are associated with types and contexts. This begins to clarify the
 logical meaning of a typing derivation in Hazelnut -- it conveys
@@ -334,15 +307,18 @@ filling, the connection to CMTT and similar systems is quite salient. For
 example, Beluga \cite{DBLP:conf/flops/Pientka10} is based on dependent CMTT
 and aspects of Idris' editor support \cite{brady2013idris} are based on a similar system -- 
 McBride's OLEG \cite{mcbride2000dependently}. 
-As we will discuss below, our notion of a program editor supports actions beyond hole filling.
+%Lee and Friedman have
+%explored a lambda calculus with contexts for a similar
+%purpose \cite{DBLP:conf/icfp/LeeF96}.
+As we will discuss in Sec. \ref{sec:actions}, our notion of a program editor supports actions beyond hole filling.
 
 There are a number of future research directions that are worth exploring.
 
 \vspace{-10px}
 \subparagraph{Binding inconsistencies.} In the simple calculus developed so far,
     all variables must be bound before they are used,
-    including those in holes. We must extend this system to support reasoning
-    when a variable is used before it is bound (as is a common workflow). Dagenais and
+    including those in holes. We plan extend Hazelnut to support reasoning
+    when a variable is mentioned without having been bound (as is a common workflow). Dagenais and
     Hendren also studied how to reason statically about programs
     with binding errors using a constraint system, focusing on
     Java programs whose imports are not completely known~\cite{DBLP:conf/oopsla/DagenaisH08}. They neither
@@ -354,7 +330,7 @@ There are a number of future research directions that are worth exploring.
 \subparagraph{Expressiveness.} The simple calculus discussed above 
     is only as expressive as the typed lambda calculus with numbers. We must scale up the semantics to handle other modern language
     features. Our plan is to focus initially on functional language
-    constructs (so that \HazelEnv ~can be used to teach courses that
+    constructs (so that \Hazel ~can be used to teach courses that
     are today taught using Standard ML, OCaml or Haskell). This will include recursive and
     polymorphic functions, recursive types, and labeled product (record) and sum types.
     We also propose to investigate ML-style structural pattern
@@ -382,19 +358,19 @@ There are a number of future research directions that are worth exploring.
 \section{Problem 3: Dynamically Meaningless Edit States} Modern programming
 tools are increasingly moving beyond simple ``batch'' programming models by
 incorporating \emph{live programming} features that interleave editing and
-evaluation \cite{DBLP:conf/icse/Tanimoto13,DBLP:journals/vlc/Tanimoto90,McDirmid:2007:LUL:1297105.1297073}. These tools provide programmers with rapid feedback about the
+evaluation \cite{DBLP:conf/icse/Tanimoto13,DBLP:journals/vlc/Tanimoto90,McDirmid:2007:LUL:1297027.1297073}. These tools provide programmers with rapid feedback about the
 dynamic behavior of the program they are editing, or selected portions thereof \cite{McDirmid:2013:ULP:2509578.2509585}. Examples include \emph{lab notebooks},
-e.g. the popular IPython/Jupyter~\cite{Perez:2007:ISI:1251563.1251831}, which allow the
+e.g. the popular IPython/Jupyter~\cite{PER-GRA:2007}, which allow the
 programmer to interactively edit and evaluate program fragments organized into a
-sequence of cells (an extension of the read-eval-print loop (REPL)); spreadsheets; {live graphics programming environments}, e.g. SuperGlue \cite{McDirmid:2007:LUL:1297105.1297073}, Sketch-n-Sketch \cite{DBLP:conf/pldi/ChughHSA16,DBLP:conf/icse/Chugh25} and the tools demonstrated by Bret Victor in his lectures \cite{victor2012inventing}; the TouchDevelop live UI framework \cite{burckhardt2013s}; and live visual and auditory dataflow languages \cite{DBLP:conf/vl/BurnettAW98}. In the words of Burckhardt et al.\cite{burckhardt2013s}, live programming environments 
+sequence of cells (an extension of the read-eval-print loop (REPL)); spreadsheets; {live graphics programming environments}, e.g. SuperGlue \cite{McDirmid:2007:LUL:1297027.1297073}, Sketch-n-Sketch \cite{DBLP:conf/pldi/ChughHSA16} and the tools demonstrated by Bret Victor in his lectures \cite{victor2012inventing}; the TouchDevelop live UI framework \cite{Burckhardt:2013:ACF:2491956.2462170}; and live visual and auditory dataflow languages \cite{DBLP:conf/vl/BurnettAW98}. In the words of Burckhardt et al. \cite{Burckhardt:2013:ACF:2491956.2462170}, live programming environments 
 ``capture the imagination of today's programmers and promise to narrow the temporal and perceptive gap 
 between program development and code execution''. 
 
-Our proposed design for \HazelEnv~combines aspects of several of these designs to form a \emph{live lab notebook interface}. 
+Our proposed design for \Hazel~combines aspects of several of these designs to form a \emph{live lab notebook interface}. 
 It will use the edit state of each cell to continuously update the output
 value displayed for that cell and subsequent cells that depend on
 it. Uniquely, rather than providing meaningful feedback about the dynamic
-behavior only once a cell becomes complete, \HazelEnv~will provide meaningful feedback also
+behavior only once a cell becomes complete, \Hazel~will provide meaningful feedback also
 about the dynamic behavior of incomplete cells (and thereby further tighten Burckhardt's ``perceptive gap'').
 
 For example, in cell \textbf{(c)} of Figure~\ref{fig:hazel-mockup}, the
@@ -430,30 +406,28 @@ indeterminate evaluation state. By gradualizing CMTT and defining these notions,
 
 There are several more applications that we aim to explore after developing these initial foundations. For example, it would be useful for the programmer to be able to select a hole that appears in an indeterminate state and be taken to its original location. There, they should be able to inspect the \emph{value} of a subexpression under the cursor in the environment of the selected hole (rather than just its type). Again, CMTT's closures provide a theoretical starting point for this debugger service. 
 
-It would also be useful to be able to continue evaluation where it left off after making an edit to the program that corresponds to hole instantiation. This would require proving a commutativity property regarding hole instantiation. Fortunately, initial research on commutativity properties for holes has been conducted for CMTT, which will serve as a starting point for this work \cite{Nanevski2008}. There are likely to be interesting new theoretical questions that arise if one adds non-termination and memory effects. 
+It would also be useful to be able to continue evaluation where it left off after making an edit to the program that corresponds to hole instantiation. This would require proving a commutativity property regarding hole instantiation. Fortunately, initial research on commutativity properties for holes has been conducted for CMTT, which will serve as a starting point for this work \cite{Nanevski2008}. There are likely to be interesting new theoretical questions (and, likely, some limitations) that arise if one adds non-termination and memory effects. 
 
-Relatedly, IPython/Jupyter \cite{Perez:2007:ISI:1251563.1251831} support a feature whereby numeric variable(s) in cells can be marked as being ``interactive'', which causes the user interface to display a slider. As the slider value changes, the value of the cell is recomputed. It would be useful to be able to use the mechanisms just proposed to incrementalize parts of this recomputation.
+Relatedly, IPython/Jupyter \cite{PER-GRA:2007} support a feature whereby numeric variable(s) in cells can be marked as being ``interactive'', which causes the user interface to display a slider. As the slider value changes, the value of the cell is recomputed. It would be useful to be able to use the mechanisms just proposed to incrementalize parts of this recomputation.
 
 
-       \section{Problem 4: A Calculus of Edit Actions} Our first two specific aims
-allow us to assign meaning to intermediate edit states. However, to
-understand the act of \emph{editing} itself, we need \emph{a calculus of edit actions} that governs transitions between edit
+       \section{Problem 4: A Calculus of Edit Actions}\label{sec:actions} The previous sections 
+considered the structure and meaning of intermediate edit states. However, to
+understand the act of \emph{editing} itself, we need \emph{a calculus of edit actions} that governs transitions between these edit
 states. 
 
-Assuming that \HazelEnv~ will be a structure editor, the goal will be for every possible edit state to be both statically and
+In a structure editor, the ideal would be for every possible edit state to be both statically and
 dynamically meaningful according to the semantics proposed in the previous two
 sections. This corresponds formally to proving a
 metatheorem about the action semantics: when the initial edit state is
 semantically meaningful, the edit state that results from performing an action
-is as well. In addition to this crucial metatheorem, which
+is as well. In a textual or hybrid setting, these structured edit actions would need to be supplemented by lower-level text edit actions that may not maintain this invariant. In addition to this crucial metatheorem, which
 we call \emph{sensibility}, there are a number of other metatheorems of interest
-that establish the interactive expressive power of the action semantics, e.g. that every well-typed term can be constructed by some sequence of edit actions. 
-(In a textual or hybrid setting, these structured edit actions would need to be supplemented by lower-level text edit actions that may not maintain such invariants.)
+that establish the expressive power of the action semantics, e.g. that every well-typed term can be constructed by some sequence of edit actions. 
 
 In our recent work on Hazelnut, we have developed an action calculus
 for the minimal calculus of H-types and H-expressions described in
-Section~\ref{sec:p-statics} \cite{popl-paper}. We have mechanically proven the sensibility invariant, as well as a number of other metatheorems. What remains is to scale this calculus up, 
-and to investigate \emph{action composition principles}. For example, it would be worthwhile to investigate the 
+Section~\ref{sec:p-statics} \cite{popl-paper}. We have mechanically proven the sensibility invariant, as well as expressivity metatheorems, using the Agda proof assistant. What remains is to investigate \emph{action composition principles}. For example, it would be worthwhile to investigate the 
 notion of an \emph{action macro}, whereby 
 functional programs could themselves be lifted to the level of actions to
 compute non-trivial compound actions. Such compound actions would give a
@@ -464,7 +438,7 @@ is admissible with respect to the core semantics. This would eliminate the possi
 
 \section{Problem 5: Meaningful Suggestion Generation and Ranking} 
 The simplest 
-edit actions will be bound to keyboard shortcuts. However, \Hazel ~will also provide suggestions to help the programmer edit incomplete
+edit actions will be bound to keyboard shortcuts. However, \Hazel~will also provide suggestions to help the programmer edit incomplete
 programs by providing a \emph{suggestion palette}, marked \textbf{(d)} in
 Figure~\ref{fig:hazel-mockup}.  This palette will suggest semantically
 relevant code  
@@ -475,7 +449,7 @@ cursor is on a non-empty hole, indicating a static error, it will suggest
 bug fixes. We plan to also consider bugs that do not correspond to static
 errors, including those identified explicitly by the programmer, and those
 related to assertion failures or exceptions encountered when using the live
-programming features of \HazelEnv. In these situations, we plan to build on 
+programming features of \Hazel. In these situations, we plan to build on 
 existing automated fault localization techniques~\cite{Jones02,
   Qi13issta,Renieris03}.
 
@@ -489,7 +463,7 @@ repair~\cite{legoues12tse,angelix,prophet,Ke15ase}.
 The problems that such existing systems encounter is exactly the problem we have 
 been discussing throughout this proposal: when attempting to integrate these 
 features into an editor, it is difficult to reason about malformed or meaningless
-edit states. Many of these systems must fall back onto tokenized representations of programs \cite{icse-naturalness12}. Because \HazelEnv~ will maintain the invariant that every
+edit states. Many of these systems therefore fall back onto tokenized representations of programs \cite{icse-naturalness12}. Because \Hazel~ will maintain the invariant that every
 edit state is a syntactically and semantically meaningful formal structure, we can develop a
 more principled solution to the problem of generating meaningful suggestions. In particular,
 we will be able to \emph{prove} that every action suggestion generated for a particular edit state is 
@@ -503,45 +477,36 @@ proper probability distribution (e.g. that it ``integrates'' to 1), and that it
 assigns zero probability to semantically invalid actions. We will also develop techniques for estimating the parameters of these distributions from a corpus of code or a corpus of edit actions. Collectively, we refer 
 to these contributions as a \emph{statistical action suggestion semantics}. 
 
-Ultimately, we envision this semantics being the foundation for an \emph{intelligent programmer's assistant} that is able to integrate semantic information gathered from the incomplete program with statistics gathered from other programs that the system has encountered to do much of the ``tedious'' labor of programming, without hiding the generated code from the programmer (as is the case with fully automated program synthesis techniques). 
+Ultimately, we envision this work as being the foundation for an \emph{intelligent programmer's assistant} that is able to integrate semantic information gathered from the incomplete program with statistics gathered from other programs and interactions that the system has observed to do much of the ``tedious'' labor of programming, without hiding the generated code from the programmer (as is the case with fully automated program synthesis techniques). 
 
 \section{Language-Editor Co-Design}
 
-With \HazelEnv, we are intentionally blurring the line between the programming language and the program editor. This opens up a number of interesting research directions in {language-editor co-design}. For example, it may be possible to recast  ``tricky'' language mechanisms, like function overloading, type classes, implicit values, and unqualified imports, as editor mechanisms. Because we will be treating programming as a structured conversation between the programmer and the programming environment, the editor can simply ask the programmer to resolve ambiguities when they arise. The programmer's choice is then stored unambiguously in the underlying syntax tree.
+In designing \Hazel, we are intentionally blurring the line between the programming language and the program editor. This opens up a number of interesting research directions in {language-editor co-design}. For example, it may be possible to recast  ``tricky'' language mechanisms, like function overloading, type classes \cite{hall96:_typeclasses}, implicit values, and unqualified imports, as editor mechanisms. Because we will be treating programming as a structured conversation between the programmer and the programming environment, the editor can simply ask the programmer to resolve ambiguities when they arise. The programmer's choice is then stored unambiguously in the underlying syntax tree.
 
 Another important research
 direction lies in exploring how types can be used to control  
-the presentation of expressions in the editor. Following an
-approach that we developed in a textual setting of \emph{type-specific
-languages} (TSLs), it should be possible to have the type that an
-expression is being analyzed against define a \emph{type-specific projection} defined by elaboration to the underlying static semantics and action semantics of \HazelEnv ~\cite{TSLs}. For example, the matrix projection shown in Figure \ref{fig:hazel-mockup} need not be built in to \HazelEnv. Instead, the \li{Numerics} library provider could introduce this logic. Indeed, it should be possible to switch between multiple projections (including purely textual projections) while editing code and interacting with values. This line of research is also related to our work on \emph{active code completion}, which investigated type-specific code generation interfaces \cite{Omar:2012:ACC:2337223.2337324}. 
+the presentation of expressions in the editor. In the textual setting, we have developed \emph{type-specific
+languages} (TSLs) \cite{TSLs}. It should be possible to define an analagous notion of \emph{type-specific projections} (TSPs) in the setting of a structure editor. For example, the matrix projection shown in Figure \ref{fig:hazel-mockup} need not be built in to \Hazel. Instead, the \li{Numerics} library provider will be able to introduce this logic. In particular, TSPs will define not only derived visual forms, but also derived edit actions (e.g. ``add new column'' for the example just given.) It should be possible to switch between multiple projections (including purely textual projections) while editing code and interacting with values. This line of research is also related to our work on \emph{active code completion}, which investigated type-specific code generation interfaces in a textual program editor (Eclipse) \cite{Omar:2012:ACC:2337223.2337324}. 
 
-Another interesting problem is that of {semantic, interactive documentation}. In particular, in \HazelEnv, references to program structures that appear in documentation will be treated in the same way as other references and be subject to renaming and other operations. Documentation will also be capable of containing expressions of arbitrary types (e.g. of the \li{Image} or \li{Link} type). Together with the type-specific projection mechanism mentioned above, we hope that this will allow \HazelEnv~ to function not only as a structured programming environment, but also as a {structured document authoring environment}! By understanding hyperlinks as variable references (in, perhaps, a different modality \cite{vii2007type}), we may be able to blur the line between a module and a webpage. 
+Another interesting direction is that of {semantic, interactive documentation}. In particular, in \Hazel, references to program structures that appear in documentation will be treated in the same way as other references and be subject to renaming and other operations. Documentation will also be capable of containing expressions of arbitrary types (e.g. of the \li{Image} or \li{Link} type). Together with the type-specific projection mechanism mentioned above, we hope that this will allow \Hazel~ to function not only as a structured programming environment, but also as a {structured document authoring environment}! By understanding hyperlinks as variable references (in, perhaps, a different modality \cite{vii2007type}), we may be able to blur the line between a module and a webpage. %Finally, I plan to explore the question of \textbf{adding a spatiotemporal dimension to the documentation system}, to help programmers construct structured tutorials of a codebase.
 
-\vspace{-5px}\section{Conclusion}
-To summarize, there are a number of interesting semantic questions that come up in the design of program editors. We advocate a research program that studies these problems using mathematical tools previously used to study programming languages and complete programs. This work will both demystify the design of program editors and open up the doors for a number of advanced editor services. Ultimately, we envision an intelligent programmer's assistant that combines a deep semantic understanding of our program with a broad statistical understanding of common idioms to help us author both programs and documents (as one and the same sort of artifact.)
+\section{Conclusion}
+To summarize, there are a number of interesting semantic questions that come up in the design of program editors. We advocate a research program that studies these problems using mathematical tools previously used to study programming languages and complete programs. This work will both demystify the design of program editors and open up the doors for a number of advanced editor services. Ultimately, we envision an intelligent programmer's assistant that combines a deep semantic understanding of incomplete programs with a broad statistical understanding of common idioms to help humans author both programs and documents (as one and the same sort of artifact.)
 
-\section{Acknowledgments}
+\section*{Acknowledgments}
 
-We thank the SNAPL~2017 reviewers for the comments and suggestions,
-and in particular, our paper shepherd Nate Foster.
+We thank the SNAPL~2017 reviewers and our paper shepherd Nate Foster for the thoughtful comments and suggestions. 
 %
-Matthew Hammer is supported by a gift from
-Mozilla, and support from the National Science Foundation under grant
-number CCF-1619282.
+This work is supported in part through a gift from
+Mozilla; by NSF under grant 
+numbers CCF-1619282, 1553741 and 1439957; by AFRL and DARPA under agreement \#FA8750-16-2-0042; and by the NSA under lablet contract \#H98230-14-C-0140.  
 %
 Any opinions, findings, and conclusions or recommendations expressed
 in this material are those of the author(s) and do not necessarily
-reflect the views of Mozilla or the National Science Foundation.
+reflect the views of Mozilla, NSF, AFRL, DARPA or NSA.
 
-
-%\clearpage
-
-
-\bibliographystyle{plainnat}
+\bibliographystyle{plainurl}
 
 \bibliography{Omar}
-
-\appendix
 
 \end{document}
